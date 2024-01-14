@@ -1,22 +1,25 @@
 package com.umc.intercom.domain;
 
 import com.umc.intercom.domain.common.BaseEntity;
-import com.umc.intercom.domain.common.enums.TableType;
+import com.umc.intercom.domain.common.enums.LikeScrapType;
 import jakarta.persistence.*;
-import org.springframework.data.annotation.Id;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class LikeScrap extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long scrapId;
+    private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(10)")
-    private LikeScrap likeScrap;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(10)")
-    private TableType tableType;
+    @Column(name = "like_scrap_type")
+    private LikeScrapType likeScrapType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

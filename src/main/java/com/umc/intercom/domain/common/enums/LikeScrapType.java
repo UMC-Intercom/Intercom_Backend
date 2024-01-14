@@ -1,5 +1,5 @@
 package com.umc.intercom.domain.common.enums;
 
-public enum LikeScrap {
+public enum LikeScrapType {
     LIKE, SCRAP
 }
