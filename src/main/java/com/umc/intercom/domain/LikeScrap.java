@@ -2,6 +2,7 @@ package com.umc.intercom.domain;
 
 import com.umc.intercom.domain.common.BaseEntity;
 import com.umc.intercom.domain.common.enums.LikeScrapType;
+import com.umc.intercom.domain.common.enums.PostType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -28,4 +29,8 @@ public class LikeScrap extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "post_type")
+    private PostType postType;
 }
