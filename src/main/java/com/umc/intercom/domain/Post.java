@@ -2,14 +2,18 @@ package com.umc.intercom.domain;
 
 import com.umc.intercom.domain.common.BaseEntity;
 import com.umc.intercom.domain.common.enums.Category;
-import com.umc.intercom.domain.common.enums.TableType;
+import com.umc.intercom.domain.common.enums.PostType;
 import jakarta.persistence.*;
-import org.springframework.data.annotation.Id;
+import lombok.*;
 
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long postId;
+    private Long id;
 
     @Column(nullable = false, length = 30)
     private String title;
@@ -19,17 +23,17 @@ public class Post extends BaseEntity {
     private String content;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(30)")
     private Category category;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(10)")
-    private TableType tableType;
+    @Column(name = "post_type")
+    private PostType postType;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String image_url;
+    @Column(nullable = false, columnDefinition = "TEXT", name = "image_url")
+    private String imageUrl;
 
-    private int view_count;
+    @Column(name = "view_count")
+    private int viewCount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

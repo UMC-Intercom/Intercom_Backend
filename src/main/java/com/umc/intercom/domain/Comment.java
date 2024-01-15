@@ -1,20 +1,29 @@
 package com.umc.intercom.domain;
 
 import com.umc.intercom.domain.common.BaseEntity;
+import com.umc.intercom.domain.common.enums.AdoptionStatus;
 import jakarta.persistence.*;
-import org.springframework.data.annotation.Id;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Comment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentId;
+    private Long id;
 
     @Lob //body 필드 매우 큰 텍스트 정보에 유리
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Column(nullable = false, columnDefinition = "boolean default false")
-    private Boolean is_adopted;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "adoption_status")
+    private AdoptionStatus adoptionStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -23,4 +32,8 @@ public class Comment extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Comment parentId;
 }
