@@ -20,11 +20,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class User extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @Column(nullable = false, length = 15)
-    private String username;
+    private String name;
 
     @Column(nullable = false, length = 15)
     private String password;
