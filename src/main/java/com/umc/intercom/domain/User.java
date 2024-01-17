@@ -20,18 +20,26 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class User extends BaseEntity {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, length = 50)
+    private String email;   // 이메일(= 아이디)
+
+    @Column(nullable = false, length = 20)
+    private String password;
 
     @Column(nullable = false, length = 15)
     private String name;
 
     @Column(nullable = false, length = 15)
-    private String password;
+    private String nickname;
 
+    @Column(nullable = false)
     private LocalDate birthday;
 
-    @Column(nullable = false, length = 50)
-    private String email;
+    @Column(nullable = false, length = 13)
+    private String phone;
 
     @ColumnDefault("0")
     private Integer coin;
