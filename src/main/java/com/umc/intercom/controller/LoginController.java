@@ -1,12 +1,17 @@
 package com.umc.intercom.controller;
 
 import com.umc.intercom.config.security.SecurityUtil;
+import com.umc.intercom.domain.User;
 import com.umc.intercom.dto.UserDto;
 import com.umc.intercom.service.LoginService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -27,12 +32,12 @@ public class LoginController {
         return ResponseEntity.ok(loginSuccessDto);
     }
 
-    @PostMapping("/test")
-    public String test() {
-        return SecurityUtil.getCurrentUsername();
-    }
-
-    // 현재 로그인된 사용자의 정보 가져오기
+//    @GetMapping("/test")
+//    public String test() {
+//        return SecurityUtil.getCurrentUsername();
+//    }
+//
+//    // 현재 로그인된 사용자의 정보 가져오기
 //    @GetMapping("/current-user")
 //    public ResponseEntity<UserDto.CurrentUserDto> getCurrentUser(Authentication authentication) {
 //        if (authentication != null && authentication.isAuthenticated()) {
@@ -52,10 +57,28 @@ public class LoginController {
 //                .map(GrantedAuthority::getAuthority)
 //                .collect(Collectors.toList());
 //
+//        System.out.println("** useremail: " + username);
+//        System.out.println("** authorities: " + authorities);
+//
 //        return UserDto.CurrentUserDto.builder()
 //                .username(username)
 //                .authorities(authorities)
 //                .build();
+//    }
+//
+//    @GetMapping("/current-user2")
+//    public String getCurrentUser2() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//
+//        if (authentication != null && authentication.isAuthenticated()) {
+//            String useremail = authentication.getName();
+//
+//            System.out.println("** useremail: " + useremail);
+//            System.out.println("** authentication: " + authentication);
+//
+//            return useremail;
+//        }
+//        return null;
 //    }
 
 }
