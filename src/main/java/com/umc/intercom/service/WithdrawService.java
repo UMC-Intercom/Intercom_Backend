@@ -27,11 +27,9 @@ public class WithdrawService {
         User user = userRepository.findByEmail(requestDto.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
-        //Todo : 탈퇴할때 비밀번호 인코딩쪽 문제 해결해야 함
-        /*
         if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
             throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
-        }*/
+        }
 
         userRepository.delete(user);
     }
