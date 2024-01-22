@@ -37,5 +37,3 @@ public class SignUpService {
                     throw new IllegalStateException("이미 존재하는 닉네임입니다.");
                 });
     }
-
-}
