@@ -35,7 +35,7 @@ public class SignUpService {
     }
 
     private void validateDuplicateMemberEmail(User user) {
-        userRepository.findByEmail(user.getUsername())
+        userRepository.findByEmail(user.getEmail())
                 .ifPresent(m -> {
                     throw new IllegalStateException("이미 존재하는 이메일입니다.");
                 });
