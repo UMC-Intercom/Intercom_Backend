@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SignUpService {
     private final UserRepository userRepository;
 
-    public SignUpService(UserRepository userRepository){
+    public SignUpService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -37,3 +37,4 @@ public class SignUpService {
                     throw new IllegalStateException("이미 존재하는 닉네임입니다.");
                 });
     }
+}
