@@ -4,29 +4,33 @@ import com.umc.intercom.domain.common.BaseEntity;
 import com.umc.intercom.domain.common.enums.Category;
 import com.umc.intercom.domain.common.enums.PostType;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Post extends BaseEntity {
+public class Talk extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 30)
-    private String company;
-
     @Column(nullable = false)
-    private String department;
+    private String title;
 
-    private String spec;
+    @Lob
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String content;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "post_type")
-    private PostType postType;
+    private Category category;
+
+    @Column(name = "image_url")
+    private String imageUrl;
 
     @ColumnDefault("0")
     @Column(name = "view_count")
