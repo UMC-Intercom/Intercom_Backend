@@ -19,6 +19,7 @@ import java.util.Collections;
 
 @Entity
 @Getter
+@Setter
 @DynamicUpdate
 @DynamicInsert
 @Builder
@@ -32,7 +33,7 @@ public class User {
     @Column(nullable = false, length = 50)
     private String email;   // 이메일(= 아이디)
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 100)
     private String password;
 
     @Column(nullable = false, length = 15)
@@ -61,7 +62,4 @@ public class User {
         return nickname;
     }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
 }

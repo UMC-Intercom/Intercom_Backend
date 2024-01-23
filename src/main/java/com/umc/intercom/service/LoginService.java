@@ -28,10 +28,8 @@ public class LoginService {
         Optional<User> user = userRepository.findByEmail(email);
 
         if (
-                user.isEmpty()
-                // TODO password 암호화 구현 후 주석 제거
-//                        ||
-//                        !passwordEncoder.matches(password, user.get().getPassword())
+                user.isEmpty() ||
+                        !passwordEncoder.matches(password, user.get().getPassword())
         ) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
