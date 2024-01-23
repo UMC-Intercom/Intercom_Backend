@@ -2,24 +2,28 @@ package com.umc.intercom.service;
 
 import com.umc.intercom.domain.User;
 import com.umc.intercom.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Transactional
 @Service
+@RequiredArgsConstructor
 public class SignUpService {
     private final UserRepository userRepository;
-
-    public SignUpService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final PasswordEncoder passwordEncoder;
 
     //회원가입
     public Long join(User user) {
         //같은 이름 중복 회원 X
 //        validateDuplicateMemberEmail(user); // 중복 회원 검증 이메일
 //        validateDuplicateMemberNickName(user); // 중복 회원 검증 닉네임
+
+        // 비밀번호 암호화
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        
         userRepository.save(user);
         return user.getId();
     }

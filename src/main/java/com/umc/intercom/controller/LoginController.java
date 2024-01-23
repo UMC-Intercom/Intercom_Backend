@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping
+@RequestMapping("/users")
 public class LoginController {
     
     private final LoginService loginService;
