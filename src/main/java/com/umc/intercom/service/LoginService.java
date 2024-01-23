@@ -39,6 +39,7 @@ public class LoginService {
             );
         }
 
-        return jwtTokenProvider.createToken(user.get().getNickname(), user.get().getRole());
+        // username으로 email 사용
+        return jwtTokenProvider.createToken(user.get().getEmail(), user.get().getRole());
     }
 }

@@ -31,7 +31,10 @@ public class UserDto {
     @Builder
     @Getter
     public static class CurrentUserDto {
-        private String username;
+//        private String username;
+        private String email;
+        private String name;
+        private String nickname;
         private List<String> authorities;
     }
 

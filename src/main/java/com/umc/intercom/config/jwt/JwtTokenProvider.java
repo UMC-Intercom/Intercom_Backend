@@ -4,12 +4,13 @@ import com.umc.intercom.domain.common.enums.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,19 +18,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.crypto.SecretKey;
+import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor = @__(@Lazy))
 @Component
 public class JwtTokenProvider {
 
     @Value("${jwt.secret}")
     private String secretKey;
 
-    // 토큰 유효시간 30분
-    private long tokenValidTime = 30 * 60 * 1000L;
+    // 토큰 유효시간 1일 (24시간)
+    private long tokenValidTime = 24 * 60 * 60 * 1000L;
 
     private final UserDetailsService userDetailsService;
 
@@ -41,19 +42,22 @@ public class JwtTokenProvider {
 
     // JWT 토큰 생성
     public String createToken(String userPk, Role roles) {
-        Claims claims = Jwts.claims().setSubject(userPk); // JWT payload 에 저장되는 정보단위
-        claims.put("roles", roles); // 정보는 key / value 쌍으로 저장된다.
+        Claims claims = Jwts.claims().setSubject(userPk);
+        claims.put("roles", roles);
         Date now = new Date();
-        // Keys.secretKeyFor 메서드를 사용하여 안전한 키 생성
-        SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
         return Jwts.builder()
-                .setClaims(claims) // 정보 저장
-                .setIssuedAt(now) // 토큰 발행 시간 정보
-                .setExpiration(new Date(now.getTime() + tokenValidTime)) // set Expire Time
-                .signWith(secretKey)  // secretKey를 사용하여 서명
-                // signature 에 들어갈 secret값 세팅
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + tokenValidTime))
+                .signWith(getSigningKey())  // secretKey를 사용하여 서명
                 .compact();
+    }
+
+    // Base64로 인코딩된 키를 사용하여 SecretKey 객체를 반환
+    private Key getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     // JWT 토큰에서 인증 정보 조회
