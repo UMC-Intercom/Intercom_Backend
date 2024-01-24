@@ -28,7 +28,7 @@ public class TalkController {
         return new ResponseEntity<>(createdTalk, HttpStatus.CREATED);
     }
 
-    // talk 리스트 조회(페이징 처리))
+    // talk 최신 순 리스트 조회(페이징 처리)
     @GetMapping
     public ResponseEntity<Page<Talk>> getAllTalks(@RequestParam(value = "page", defaultValue = "1") int page) {
         Page<Talk> talkPage = talkService.getAllTalks(page);
@@ -39,6 +39,13 @@ public class TalkController {
 //        System.out.println("총 페이지 수: " + talkPage.getTotalPages());
 //        System.out.println("총 데이터 수: " + talkPage.getTotalElements());
 
+        return ResponseEntity.ok(talkPage);
+    }
+
+    // talk 조회수 순 리스트 조회(페이징 처리)
+    @GetMapping("/sorted-by-view-counts")
+    public ResponseEntity<Page<Talk>> getAllTalksByViewCounts(@RequestParam(value = "page", defaultValue = "1") int page) {
+        Page<Talk> talkPage = talkService.getAllTalksByViewCounts(page);
         return ResponseEntity.ok(talkPage);
     }
 

@@ -40,7 +40,18 @@ public class TalkService {
         return talkRepository.findAll(pageable);
     }
 
+    public Page<Talk> getAllTalksByViewCounts(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("viewCount"));
+        sorts.add(Sort.Order.desc("createdAt"));    // 조회수가 동일하면 최신순으로 정렬
+        
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
+
+        return talkRepository.findAll(pageable);
+    }
+
     public Optional<Talk> getTalkById(Long id) {
         return talkRepository.findById(id);
     }
+
 }
