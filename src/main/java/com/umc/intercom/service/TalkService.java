@@ -5,6 +5,7 @@ import com.umc.intercom.domain.User;
 import com.umc.intercom.repository.TalkRepository;
 import com.umc.intercom.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -52,6 +53,20 @@ public class TalkService {
 
     public Optional<Talk> getTalkById(Long id) {
         return talkRepository.findById(id);
+    }
+
+    public Page<Talk> searchTalksByTitle(String title, int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createdAt"));
+
+        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(sorts));
+
+        if (StringUtils.isBlank(title)) {
+            // 제목이 공백이면 빈 페이지 반환
+            return Page.empty(pageable);
+        }
+
+        return talkRepository.findByTitleContaining(title, pageable);
     }
 
 }

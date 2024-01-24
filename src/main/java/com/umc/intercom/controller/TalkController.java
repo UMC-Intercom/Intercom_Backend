@@ -43,7 +43,7 @@ public class TalkController {
     }
 
     // talk 조회수 순 리스트 조회(페이징 처리)
-    @GetMapping("/sorted-by-view-counts")
+    @GetMapping("/view-counts")
     public ResponseEntity<Page<Talk>> getAllTalksByViewCounts(@RequestParam(value = "page", defaultValue = "1") int page) {
         Page<Talk> talkPage = talkService.getAllTalksByViewCounts(page);
         return ResponseEntity.ok(talkPage);
@@ -59,6 +59,14 @@ public class TalkController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    // 제목으로 talk 검색
+    @GetMapping("/search")
+    public ResponseEntity<Page<Talk>> searchTalksByTitle(@RequestParam("title") String title,
+                                                         @RequestParam(value = "page", defaultValue = "1") int page) {
+        Page<Talk> talkPage = talkService.searchTalksByTitle(title, page);
+        return ResponseEntity.ok(talkPage);
     }
 
 }
