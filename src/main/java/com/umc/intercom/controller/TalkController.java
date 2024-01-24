@@ -32,6 +32,13 @@ public class TalkController {
     @GetMapping
     public ResponseEntity<Page<Talk>> getAllTalks(@RequestParam(value = "page", defaultValue = "1") int page) {
         Page<Talk> talkPage = talkService.getAllTalks(page);
+
+        // 스웨거 테스트 시 확인
+//        System.out.println("현재 페이지 데이터 수(범위 넘어가면 0): " + talkPage.getContent().size());
+//        System.out.println("현재 페이지 번호: " + (talkPage.getNumber() + 1));
+//        System.out.println("총 페이지 수: " + talkPage.getTotalPages());
+//        System.out.println("총 데이터 수: " + talkPage.getTotalElements());
+
         return ResponseEntity.ok(talkPage);
     }
 
