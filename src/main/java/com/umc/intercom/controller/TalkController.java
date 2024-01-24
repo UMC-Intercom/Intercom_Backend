@@ -1,0 +1,50 @@
+package com.umc.intercom.controller;
+
+import com.umc.intercom.config.security.SecurityUtil;
+import com.umc.intercom.domain.Talk;
+import com.umc.intercom.service.TalkService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/talks")
+public class TalkController {
+
+    private final TalkService talkService;
+
+    // talk 생성
+    @PostMapping
+    public ResponseEntity<Talk> createTalk(@RequestBody Talk talk) {
+        // 현재 로그인한 유저의 이메일
+        String userEmail = SecurityUtil.getCurrentUsername();
+
+        Talk createdTalk = talkService.createTalk(talk, userEmail);
+        return new ResponseEntity<>(createdTalk, HttpStatus.CREATED);
+    }
+
+    // talk 리스트 조회(페이징 처리))
+    @GetMapping
+    public ResponseEntity<Page<Talk>> getAllTalks(@RequestParam(value = "page", defaultValue = "1") int page) {
+        Page<Talk> talkPage = talkService.getAllTalks(page);
+        return ResponseEntity.ok(talkPage);
+    }
+
+    // talk 상세 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<Talk> getTalkById(@PathVariable Long id) {
+        Optional<Talk> optionalTalk = talkService.getTalkById(id);
+
+        if (optionalTalk.isPresent()) {
+            return ResponseEntity.ok(optionalTalk.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+}
