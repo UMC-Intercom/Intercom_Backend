@@ -2,6 +2,7 @@ package com.umc.intercom.service;
 
 import com.umc.intercom.domain.Talk;
 import com.umc.intercom.domain.User;
+import com.umc.intercom.dto.TalkDto;
 import com.umc.intercom.repository.TalkRepository;
 import com.umc.intercom.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -23,13 +24,25 @@ public class TalkService {
     private TalkRepository talkRepository;
     private UserRepository userRepository;
 
-    public Talk createTalk(Talk talk, String userEmail) {
+    public TalkDto createTalk(TalkDto talkDto, String userEmail) {
         Optional<User> user = userRepository.findByEmail(userEmail);
-        talk.setUser(user.get());   // 작성자 설정 후 저장
-        return talkRepository.save(talk);
+
+        Talk talk = Talk.builder()
+                .title(talkDto.getTitle())
+                .content(talkDto.getContent())
+                .category(talkDto.getCategory())
+                .imageUrl(talkDto.getImageUrl())
+                .viewCount(talkDto.getViewCount())
+                .user(user.orElseThrow(() -> new RuntimeException("User not found")))
+                .build();
+
+        talk.getUser().setNickname(user.get().getNickname());
+
+        Talk createdTalk = talkRepository.save(talk);
+        return TalkDto.toDto(createdTalk);
     }
 
-    public Page<Talk> getAllTalks(int page) {
+    public Page<TalkDto> getAllTalks(int page) {
         // 페이징 처리
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createdAt"));
@@ -38,24 +51,27 @@ public class TalkService {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
 
         // jpa에서 기본적으로 제공 -> repo에 적어주지 않아도o
-        return talkRepository.findAll(pageable);
+        Page<Talk> talkPage =  talkRepository.findAll(pageable);
+        return TalkDto.toDtoPage(talkPage);
     }
 
-    public Page<Talk> getAllTalksByViewCounts(int page) {
+    public Page<TalkDto> getAllTalksByViewCounts(int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("viewCount"));
         sorts.add(Sort.Order.desc("createdAt"));    // 조회수가 동일하면 최신순으로 정렬
         
         Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
 
-        return talkRepository.findAll(pageable);
+        Page<Talk> talkPage = talkRepository.findAll(pageable);
+        return TalkDto.toDtoPage(talkPage);
     }
 
-    public Optional<Talk> getTalkById(Long id) {
-        return talkRepository.findById(id);
+    public Optional<TalkDto> getTalkById(Long id) {
+        Optional<Talk> talk = talkRepository.findById(id);
+        return talk.map(TalkDto::toDto);
     }
 
-    public Page<Talk> searchTalksByTitle(String title, int page) {
+    public Page<TalkDto> searchTalksByTitle(String title, int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createdAt"));
 
@@ -66,7 +82,8 @@ public class TalkService {
             return Page.empty(pageable);
         }
 
-        return talkRepository.findByTitleContaining(title, pageable);
+        Page<Talk> talkPage = talkRepository.findByTitleContaining(title, pageable);
+        return TalkDto.toDtoPage(talkPage);
     }
 
 }
