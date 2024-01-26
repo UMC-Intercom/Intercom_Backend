@@ -34,10 +34,10 @@ public class TalkController {
         Page<TalkDto> talkDtoPage = talkService.getAllTalks(page);
 
         // 스웨거 테스트 시 확인
-        System.out.println("현재 페이지 데이터 수(범위 넘어가면 0): " + talkDtoPage.getContent().size());
-        System.out.println("현재 페이지 번호: " + (talkDtoPage.getNumber() + 1));
-        System.out.println("총 페이지 수: " + talkDtoPage.getTotalPages());
-        System.out.println("총 데이터 수: " + talkDtoPage.getTotalElements());
+//        System.out.println("현재 페이지 데이터 수(범위 넘어가면 0): " + talkDtoPage.getContent().size());
+//        System.out.println("현재 페이지 번호: " + (talkDtoPage.getNumber() + 1));
+//        System.out.println("총 페이지 수: " + talkDtoPage.getTotalPages());
+//        System.out.println("총 데이터 수: " + talkDtoPage.getTotalElements());
 
         return ResponseEntity.ok(talkDtoPage);
     }
