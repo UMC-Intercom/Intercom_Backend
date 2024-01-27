@@ -32,4 +32,37 @@ public class LikeScrapController {
         return ResponseEntity.ok().build();
     }
 
+
+    // talk 스크랩 추가
+    @PostMapping("/scraps/talks/{talkId}")
+    public ResponseEntity<LikeScrapDto> addTalkScrap(@PathVariable Long talkId) throws Exception {
+        String userEmail = SecurityUtil.getCurrentUsername();
+        LikeScrapDto likeScrapDto = likeScrapService.addTalkScrap(talkId, userEmail);
+        return ResponseEntity.ok(likeScrapDto);
+    }
+
+    // talk 스크랩 삭제
+    @DeleteMapping("/scraps/talks/{talkId}")
+    public ResponseEntity<Void> deleteTalkScrap(@PathVariable Long talkId) {
+        String userEmail = SecurityUtil.getCurrentUsername();
+        likeScrapService.deleteTalkScrap(talkId, userEmail);
+        return ResponseEntity.ok().build();
+    }
+
+    // post 스크랩 추가
+    @PostMapping("/scraps/posts/{postId}")
+    public ResponseEntity<LikeScrapDto> addPostScrap(@PathVariable Long postId) throws Exception {
+        String userEmail = SecurityUtil.getCurrentUsername();
+        LikeScrapDto likeScrapDto = likeScrapService.addPostScrap(postId, userEmail);
+        return ResponseEntity.ok(likeScrapDto);
+    }
+
+    // post 스크랩 삭제
+    @DeleteMapping("/scraps/posts/{postId}")
+    public ResponseEntity<Void> deletePostScrap(@PathVariable Long postId) {
+        String userEmail = SecurityUtil.getCurrentUsername();
+        likeScrapService.deletePostScrap(postId, userEmail);
+        return ResponseEntity.ok().build();
+    }
+
 }
