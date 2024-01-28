@@ -46,6 +46,7 @@ public class Comment extends BaseEntity {
     private Comment parentId;
 
     public void updateContent(String content) {
+        this.content = null;
         this.content = content;
     }
 }
