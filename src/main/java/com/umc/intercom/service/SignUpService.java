@@ -17,9 +17,15 @@ public class SignUpService {
 
     //회원가입
     public Long join(User user) {
-        //같은 이름 중복 회원 X
-//        validateDuplicateMemberEmail(user); // 중복 회원 검증 이메일
-//        validateDuplicateMemberNickName(user); // 중복 회원 검증 닉네임
+        // 이메일 중복 검사
+        if (checkEmailDuplicate(user.getEmail())) {
+            throw new IllegalStateException("이미 존재하는 이메일입니다.");
+        }
+
+        // 닉네임 중복 검사
+        if (checkNicknameDuplicate(user.getNickname())) {
+            throw new IllegalStateException("이미 존재하는 닉네임입니다.");
+        }
 
         // 비밀번호 암호화
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -30,25 +36,11 @@ public class SignUpService {
 
     public Boolean checkEmailDuplicate(String email) {
         Optional<User> user = userRepository.findByEmail(email);
-        return user.isPresent();
+        return user.isPresent(); //이미 있으면 true
     }
 
     public Boolean checkNicknameDuplicate(String nickname) {
         Optional<User> user = userRepository.findByNickname(nickname);
-        return user.isPresent();
-    }
-
-    private void validateDuplicateMemberEmail(User user) {
-        userRepository.findByEmail(user.getEmail())
-                .ifPresent(m -> {
-                    throw new IllegalStateException("이미 존재하는 이메일입니다.");
-                });
-    }
-
-    private void validateDuplicateMemberNickName(User user) {
-        userRepository.findByNickname(user.getNickname())
-                .ifPresent(m -> {
-                    throw new IllegalStateException("이미 존재하는 닉네임입니다.");
-                });
+        return user.isPresent(); //이미 있으면 true
     }
 }

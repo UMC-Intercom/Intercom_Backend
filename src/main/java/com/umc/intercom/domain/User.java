@@ -34,6 +34,7 @@ public class User {
     @Column(nullable = false, length = 15)
     private String name;
 
+    @Getter
     @Column(nullable = false, length = 15)
     private String nickname;
 
@@ -52,9 +53,5 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(10) DEFAULT 'USER'")
     private Role role;
-
-    public String getNickname() {
-        return nickname;
-    }
 
 }
