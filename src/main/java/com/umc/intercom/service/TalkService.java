@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class TalkService {
                 .category(talkDto.getCategory())
                 .imageUrl(talkDto.getImageUrl())
                 .viewCount(talkDto.getViewCount())
-                .user(user.orElseThrow(() -> new RuntimeException("User not found")))
+                .user(user.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다.")))
                 .build();
 
         talk.getUser().setNickname(user.get().getNickname());
