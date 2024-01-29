@@ -8,17 +8,14 @@ import com.umc.intercom.domain.User;
 import com.umc.intercom.dto.UserDto.UserUpdateRequestDto;
 import com.umc.intercom.repository.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class UpdateService {
     
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    
-    @Autowired
-    public UpdateService(UserRepository userRepository, PasswordEncoder passwordEncoder){
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
     
     public void updateUser(UserUpdateRequestDto requestDto){
         User userToUpdate = userRepository.findByEmail(requestDto.getEmail())
