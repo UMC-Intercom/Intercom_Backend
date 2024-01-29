@@ -21,7 +21,7 @@ public class WithdrawController {
     }
 
     @DeleteMapping("/withdraw")
-    public ResponseEntity<Void> withdraw(@RequestBody UserDto.UserWithdrawRequestDto requestDto) {
+    public ResponseEntity<Void> withdraw(@RequestBody UserDto.UserRequestDto requestDto) {
         withdrawService.withdraw(requestDto);
         return ResponseEntity.noContent().build();
     }

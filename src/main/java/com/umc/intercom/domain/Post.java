@@ -1,7 +1,6 @@
 package com.umc.intercom.domain;
 
 import com.umc.intercom.domain.common.BaseEntity;
-import com.umc.intercom.domain.common.enums.Category;
 import com.umc.intercom.domain.common.enums.PostType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,6 +8,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Post extends BaseEntity {
@@ -22,7 +22,11 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     private String department;
 
-    private String spec;
+    @Column(nullable = false)
+    private String year;        // 합격 연도
+
+    @Column(nullable = false)
+    private String semester;    // 상반기, 하반기
 
     @Enumerated(EnumType.STRING)
     @Column(name = "post_type")
@@ -34,5 +38,6 @@ public class Post extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    //@OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 }

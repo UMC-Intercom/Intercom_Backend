@@ -3,14 +3,13 @@ package com.umc.intercom.service;
 import com.umc.intercom.domain.User;
 import com.umc.intercom.dto.UserDto;
 import com.umc.intercom.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
 @Service
 public class WithdrawService {
@@ -23,7 +22,7 @@ public class WithdrawService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void withdraw(UserDto.UserWithdrawRequestDto requestDto) {
+    public void withdraw(UserDto.UserRequestDto requestDto) {
         User user = userRepository.findByEmail(requestDto.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 

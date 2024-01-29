@@ -21,9 +21,9 @@ public class LoginService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public String login(UserDto.UserLoginRequestDto userLoginRequestDto) {
-        String email = userLoginRequestDto.getEmail();
-        String password = userLoginRequestDto.getPassword();
+    public String login(UserDto.UserRequestDto userRequestDto) {
+        String email = userRequestDto.getEmail();
+        String password = userRequestDto.getPassword();
 
         Optional<User> user = userRepository.findByEmail(email);
 

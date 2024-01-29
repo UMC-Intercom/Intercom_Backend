@@ -15,14 +15,7 @@ import com.umc.intercom.domain.common.enums.Gender;
 public class UserDto {
 
     @Getter
-    public static class UserLoginRequestDto {
-        String email;
-        String password;
-    }
-
-    @Getter
-    @Setter
-    public static class UserWithdrawRequestDto{
+    public static class UserRequestDto {
         String email;
         String password;
     }
