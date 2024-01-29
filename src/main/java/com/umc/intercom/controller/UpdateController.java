@@ -9,20 +9,18 @@ import org.springframework.web.bind.annotation.RestController;
 import com.umc.intercom.dto.UserDto.UserUpdateRequestDto;
 import com.umc.intercom.service.UpdateService;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/users")
 public class UpdateController {
     
     private final UpdateService updateService;
-    
-    @Autowired
-    public UpdateController(UpdateService updateService){
-        this.updateService = updateService;
-    }
     
     @PutMapping("/update")
     public ResponseEntity<Void> updateUser(@RequestBody UserUpdateRequestDto requestDto) {
