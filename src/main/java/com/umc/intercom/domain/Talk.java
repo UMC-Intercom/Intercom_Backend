@@ -28,8 +28,7 @@ public class Talk extends BaseEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Enumerated(EnumType.STRING)
-    private Category category;
+    private String category;
 
     @Column(name = "image_url")
     private String imageUrl;
