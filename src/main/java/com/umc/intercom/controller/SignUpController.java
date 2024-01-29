@@ -1,6 +1,7 @@
 package com.umc.intercom.controller;
 
 import com.umc.intercom.domain.User;
+import com.umc.intercom.dto.UserDto;
 import com.umc.intercom.service.SignUpService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,11 +14,12 @@ public class SignUpController {
     public SignUpController(SignUpService signUpService) {
         this.signUpService = signUpService;
     }
+
     @PostMapping("/signup")
-    public ResponseEntity<Long> signUp(@RequestBody User user) {
+    public ResponseEntity<String> signUp(@RequestBody UserDto.SignUpRequestDto signUpRequestDto) {
         try {
-            Long userId = signUpService.join(user);
-            return ResponseEntity.ok(userId);
+            String userNickname = signUpService.join(signUpRequestDto);
+            return ResponseEntity.ok(userNickname);
         } catch (IllegalStateException e) {
             return ResponseEntity.badRequest().build();
         }
