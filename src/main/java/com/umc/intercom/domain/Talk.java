@@ -2,16 +2,15 @@ package com.umc.intercom.domain;
 
 import com.umc.intercom.domain.common.BaseEntity;
 import com.umc.intercom.domain.common.enums.Category;
-import com.umc.intercom.domain.common.enums.PostType;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Talk extends BaseEntity {
@@ -38,5 +37,6 @@ public class Talk extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 }
