@@ -1,6 +1,5 @@
 package com.umc.intercom.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.util.List;
@@ -8,14 +7,7 @@ import java.util.List;
 public class UserDto {
 
     @Getter
-    public static class UserLoginRequestDto {
-        String email;
-        String password;
-    }
-
-    @Getter
-    @Setter
-    public static class UserWithdrawRequestDto{
+    public static class UserRequestDto {
         String email;
         String password;
     }
