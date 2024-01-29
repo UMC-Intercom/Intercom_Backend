@@ -38,12 +38,16 @@ public class ResumeService {
         post.getUser().setNickname(user.get().getNickname());
 
         PostDetail postDetail = PostDetail.builder()
+                .post(post)
                 .title(resumeDto.getTitle())
                 .content(resumeDto.getContent())
                 .imageUrl(resumeDto.getImageUrl())
                 .build();
 
+        postDetail.getPost().setId(resumeDto.getId());
+
         PostSpec postSpec = PostSpec.builder()
+                .post(post)
                 .education(resumeDto.getEducation())
                 .major(resumeDto.getMajor())
                 .gpa(resumeDto.getGpa())
@@ -52,6 +56,8 @@ public class ResumeService {
                 .english(resumeDto.getEnglish())
                 .score(resumeDto.getScore())
                 .build();
+
+        postSpec.getPost().setId(resumeDto.getId());
 
         Post createdPost = postRepository.save(post);
         PostDetail createdPostDetail = postDetailRepository.save(postDetail);
