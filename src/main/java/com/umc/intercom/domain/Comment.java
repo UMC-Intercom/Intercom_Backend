@@ -3,21 +3,19 @@ package com.umc.intercom.domain;
 import com.umc.intercom.domain.common.BaseEntity;
 import com.umc.intercom.domain.common.enums.AdoptionStatus;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Comment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Lob //body 필드 매우 큰 텍스트 정보에 유리
     @Column(nullable = false, columnDefinition = "TEXT")
@@ -46,4 +44,9 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "parent_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Comment parentId;
+
+    public void updateContent(String content) {
+        this.content = null;
+        this.content = content;
+    }
 }
