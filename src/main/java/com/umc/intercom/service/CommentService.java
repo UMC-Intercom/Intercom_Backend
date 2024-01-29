@@ -33,8 +33,6 @@ public class CommentService {
                 .user(user.orElseThrow(() -> new RuntimeException("User not found")))
                 .build();
 
-//        comment.getUser().setNickname(comment.getUser().getNickname());
-
         Comment savedComment = commentRepository.save(comment);
         return CommentDto.toDto(savedComment);
     }
@@ -56,5 +54,22 @@ public class CommentService {
     public List<CommentDto> getComments(Long talkId) {
         List<Comment> comments = commentRepository.findAllByPostId(talkId);
         return comments.stream().map(CommentDto::toDto).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public CommentDto createReplyComment(CommentDto commentDto) {
+        Optional<Talk> talk = talkRepository.findById(commentDto.getTalkId());
+        Optional<User> user = userRepository.findById(commentDto.getUserId());
+        Optional<Comment> parentId = commentRepository.findById(commentDto.getParentId());
+        Comment comment = Comment.builder()
+                .content(commentDto.getContent())
+                .adoptionStatus(commentDto.getAdoptionStatus())
+                .talk(talk.orElseThrow(() -> new RuntimeException("Talk not found")))
+                .user(user.orElseThrow(() -> new RuntimeException("User not found")))
+                .parentId(parentId.orElseThrow(() -> new RuntimeException("Parent comment not found")))
+                .build();
+
+        Comment savedComment = commentRepository.save(comment);
+        return CommentDto.toDto(savedComment);
     }
 }

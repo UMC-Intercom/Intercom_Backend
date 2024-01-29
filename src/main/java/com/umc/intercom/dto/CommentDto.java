@@ -13,6 +13,7 @@ public class CommentDto {
     private Long userId;
     private Long talkId;
     private Long id;
+    private Long parentId; // 부모 댓글 ID
     private String content;
     private String writer;
     private AdoptionStatus adoptionStatus;
@@ -22,6 +23,7 @@ public class CommentDto {
                 comment.getUser().getId(),
                 comment.getTalk().getId(),
                 comment.getId(),
+                comment.getParentId() != null ? comment.getParentId().getId() : null, // 부모 댓글 ID
                 comment.getContent(),
                 comment.getUser().getNickname(),
                 comment.getAdoptionStatus()
