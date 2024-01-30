@@ -49,6 +49,8 @@ public class UserDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class LoginSuccessDto {
+        private String name;
+        private String nickname;
         String token;
     }
 
