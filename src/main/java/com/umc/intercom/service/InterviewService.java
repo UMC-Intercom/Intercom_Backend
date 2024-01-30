@@ -40,11 +40,14 @@ public class InterviewService {
                         .build();
         post.getUser().setNickname(user.get().getNickname());
         
+        Post createdPost = postRepository.save(post);
+        
         
         PostDetail postDetail = PostDetail.builder()
                                         .title(interviewDto.getTitle())
                                         .content(interviewDto.getContent())
                                         .imageUrl(interviewDto.getImageUrl())
+                                        .post(createdPost)
                                         .build();
 
         PostSpec postSpec = PostSpec.builder()
@@ -55,9 +58,9 @@ public class InterviewService {
                                     .certification(interviewDto.getCertification())
                                     .english(interviewDto.getEnglish())
                                     .score(interviewDto.getScore())
+                                    .post(createdPost)
                                     .build();
 
-        Post createdPost = postRepository.save(post);
         PostDetail createdPostDetail = postDetailRepository.save(postDetail);
         PostSpec createdPostSpec = postSpecRepository.save(postSpec);
 
