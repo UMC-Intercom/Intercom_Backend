@@ -28,8 +28,7 @@ public class LoginController {
     // 로그인
     @PostMapping("/login")
     public ResponseEntity<UserDto.LoginSuccessDto> login(@RequestBody UserDto.UserRequestDto userRequestDto) {
-        String token = loginService.login(userRequestDto);
-        UserDto.LoginSuccessDto loginSuccessDto = UserDto.LoginSuccessDto.builder().token(token).build();
+        UserDto.LoginSuccessDto loginSuccessDto = loginService.login(userRequestDto);
         return ResponseEntity.ok(loginSuccessDto);
     }
     

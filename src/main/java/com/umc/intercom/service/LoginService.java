@@ -21,7 +21,7 @@ public class LoginService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public String login(UserDto.UserRequestDto userRequestDto) {
+    public UserDto.LoginSuccessDto login(UserDto.UserRequestDto userRequestDto) {
         String email = userRequestDto.getEmail();
         String password = userRequestDto.getPassword();
 
@@ -38,6 +38,12 @@ public class LoginService {
         }
 
         // username으로 email 사용
-        return jwtTokenProvider.createToken(user.get().getEmail(), user.get().getRole());
+        String token =  jwtTokenProvider.createToken(user.get().getEmail(), user.get().getRole());
+
+        return UserDto.LoginSuccessDto.builder()
+                .name(user.get().getName())
+                .nickname(user.get().getNickname())
+                .token(token)
+                .build();
     }
 }
