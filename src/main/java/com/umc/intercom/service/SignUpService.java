@@ -1,6 +1,8 @@
 package com.umc.intercom.service;
 
 import com.umc.intercom.domain.User;
+import com.umc.intercom.domain.common.enums.Gender;
+import com.umc.intercom.dto.UserDto;
 import com.umc.intercom.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,22 +18,44 @@ public class SignUpService {
     private final PasswordEncoder passwordEncoder;
 
     //회원가입
-    public Long join(User user) {
+    public String join(UserDto.SignUpRequestDto requestDto) {
         // 이메일 중복 검사
-        if (checkEmailDuplicate(user.getEmail())) {
+        if (checkEmailDuplicate(requestDto.getEmail())) {
             throw new IllegalStateException("이미 존재하는 이메일입니다.");
         }
 
         // 닉네임 중복 검사
-        if (checkNicknameDuplicate(user.getNickname())) {
+        if (checkNicknameDuplicate(requestDto.getNickname())) {
             throw new IllegalStateException("이미 존재하는 닉네임입니다.");
         }
 
         // 비밀번호 암호화
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        
-        userRepository.save(user);
-        return user.getId();
+        String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
+
+        // 성별
+        Gender gender;
+        if (requestDto.getGender().equals("male")) {
+            gender = Gender.MALE;
+        }
+        else if (requestDto.getGender().equals("female")) {
+            gender = Gender.FEMALE;
+        }
+        else {  // (requestDto.getGender().equals("no-selected")
+            gender = Gender.NONE;
+        }
+
+        User user = User.builder()
+                .email(requestDto.getEmail())
+                .password(encodedPassword)
+                .name(requestDto.getName())
+                .nickname(requestDto.getNickname())
+                .birthday(requestDto.getBirthday())
+                .phone(requestDto.getPhone())
+                .gender(gender)
+                .build();
+
+        User newUser = userRepository.save(user);
+        return newUser.getNickname();
     }
 
     public Boolean checkEmailDuplicate(String email) {
