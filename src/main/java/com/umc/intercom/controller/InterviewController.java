@@ -30,9 +30,10 @@ public class InterviewController {
         return new ResponseEntity<>(createdInterviewDto, HttpStatus.CREATED);
     }
     
-    /*@GetMapping
+    // 최신순으로 정렬된 검색 결과를 보여줌
+    @GetMapping
     public ResponseEntity<List<InterviewDto>> getAllInterviews() {
-        List<InterviewDto> interviewDtos = interviewService.getAllInterviews();
-        return ResponseEntity.ok(interviewDtos);
-    }*/
+        List<InterviewDto> interviewList = interviewService.getAllInterviews();
+        return new ResponseEntity<>(interviewList, HttpStatus.OK);
+    }
 }
