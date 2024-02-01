@@ -19,7 +19,19 @@ public class UserDto {
         String email;
         String password;
     }
-    
+
+    @Getter
+    @Setter
+    public static class SignUpRequestDto{
+        String email;
+        String password;
+        String name;
+        String nickname;
+        LocalDate birthday;
+        String phone;
+        String gender;
+    }
+
     @Getter
     @Setter
     public static class UserUpdateRequestDto{
@@ -37,6 +49,8 @@ public class UserDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class LoginSuccessDto {
+        private String name;
+        private String nickname;
         String token;
     }
 

@@ -12,7 +12,7 @@ public class TalkDto {
     private Long id;
     private String title;
     private String content;
-    private Category category;
+    private String category;
     private String imageUrl;
     private int viewCount;
     private String writer;
