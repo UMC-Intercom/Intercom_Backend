@@ -108,4 +108,19 @@ public class ResumeService {
         return new PageImpl<>(resumeDtos, pageable, postPage.getTotalElements());
     }
 
+    public Optional<ResumeDto> getResumeById(Long id){
+        Optional<Post> post = postRepository.findById(id);
+
+        if(post.isPresent()){
+                if(post.get().getPostType() != PostType.SUCCESSFUL_RESUME)
+                    return Optional.empty();
+                else {
+            PostDetail postDetail = postDetailRepository.findByPost(post.get()).orElseThrow(() -> new RuntimeException("PostDetail not Found"));
+            PostSpec postSpec = postSpecRepository.findByPost(post.get()).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
+            return Optional.of(ResumeDto.toDto(post.get(), postDetail, postSpec));
+        }}
+        return Optional.empty();
+
+    }
+
 }

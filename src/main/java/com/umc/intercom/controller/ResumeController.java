@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/resumes")
@@ -35,5 +37,16 @@ public class ResumeController {
 //        System.out.println("총 데이터 수: " + resumeDtoPage.getTotalElements());
 
         return ResponseEntity.ok(resumeDtoPage);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ResumeDto> getResumeById(@PathVariable Long id){
+        Optional<ResumeDto> optionalResumeDto = resumeService.getResumeById(id);
+
+        if(optionalResumeDto.isPresent()){
+            return ResponseEntity.ok(optionalResumeDto.get());
+        } else{
+            return ResponseEntity.notFound().build();
+        }
     }
 }
