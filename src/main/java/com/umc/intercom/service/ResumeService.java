@@ -4,15 +4,22 @@ import com.umc.intercom.domain.Post;
 import com.umc.intercom.domain.PostDetail;
 import com.umc.intercom.domain.PostSpec;
 import com.umc.intercom.domain.User;
+import com.umc.intercom.domain.common.enums.PostType;
 import com.umc.intercom.dto.ResumeDto;
 import com.umc.intercom.repository.PostDetailRepository;
 import com.umc.intercom.repository.PostRepository;
 import com.umc.intercom.repository.PostSpecRepository;
 import com.umc.intercom.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -67,4 +74,38 @@ public class ResumeService {
 
 
     }
+
+    public Page<ResumeDto> getAllResumes(int page){
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createdAt"));
+
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
+
+        //POSTTYPE으로 SUCCESSFUL_RESUME만 조회
+        Page<Post> postPage = postRepository.findByPostType(PostType.SUCCESSFUL_RESUME, pageable);
+
+        // Post의 id 리스트를 만듬
+        List<Long> postIds = postPage.getContent().stream()
+                .map(Post::getId)
+                .collect(Collectors.toList());
+
+        // id 리스트로 PostDetail, PostSpec 찾기
+        List<PostDetail> postDetails = postDetailRepository.findByPostIdIn(postIds);
+        List<PostSpec> postSpecs = postSpecRepository.findByPostIdIn(postIds);
+
+        // PostDetail, PostSpec을 Post의 id를 key로 하는 Map으로 변환
+        Map<Long, PostDetail> postDetailMap = postDetails.stream()
+                .collect(Collectors.toMap(detail -> detail.getPost().getId(), Function.identity()));
+        Map<Long, PostSpec> postSpecMap = postSpecs.stream()
+                .collect(Collectors.toMap(spec -> spec.getPost().getId(), Function.identity()));
+
+        // Post, PostDetail, PostSpec을 ResumeDto로 변환
+        List<ResumeDto> resumeDtos = postPage.getContent().stream()
+                .map(post -> ResumeDto.toDto(post, postDetailMap.get(post.getId()), postSpecMap.get(post.getId())))
+                .collect(Collectors.toList());
+
+        // 변환된 결과를 Page로
+        return new PageImpl<>(resumeDtos, pageable, postPage.getTotalElements());
+    }
+
 }
