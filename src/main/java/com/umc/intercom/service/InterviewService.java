@@ -28,7 +28,7 @@ public class InterviewService {
     private PostSpecRepository postSpecRepository;
     private UserRepository userRepository;
     
-    public InterviewDto createInterview(InterviewDto interviewDto, String userEmail){
+    public InterviewDto.InterviewResponseDto createInterview(InterviewDto.InterviewRequestDto  interviewDto, String userEmail){
         Optional<User> user = userRepository.findByEmail(userEmail);
     
         
@@ -37,8 +37,8 @@ public class InterviewService {
                         .department(interviewDto.getDepartment())
                         .year(interviewDto.getYear())
                         .semester(interviewDto.getSemester())
-                        .postType(interviewDto.getPostType())
-                        .viewCount(interviewDto.getViewCount())
+                        .postType(PostType.INTERVIEW_REVIEW)    // 저장할 때 postType 타입 지정
+                        .viewCount(0)
                         .user(user.orElseThrow(() -> new RuntimeException("User not Found")))
                         .build();
         post.getUser().setNickname(user.get().getNickname());
@@ -67,17 +67,17 @@ public class InterviewService {
         PostDetail createdPostDetail = postDetailRepository.save(postDetail);
         PostSpec createdPostSpec = postSpecRepository.save(postSpec);
 
-        return InterviewDto.toDto(createdPost, createdPostDetail, createdPostSpec);
+        return InterviewDto.InterviewResponseDto.toDto(createdPost, createdPostDetail, createdPostSpec);
     }
     
     
-    public List<InterviewDto> getAllInterviews() {
+    public List<InterviewDto.InterviewResponseDto> getAllInterviews() {
         List<Post> posts = postRepository.findByPostTypeOrderByCreatedAtDesc(PostType.INTERVIEW_REVIEW);
         
         return posts.stream().map(post -> {
             PostDetail postDetail = postDetailRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostDetail not Found"));
             PostSpec postSpec = postSpecRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
-            return InterviewDto.toDto(post, postDetail, postSpec);
+            return InterviewDto.InterviewResponseDto.toDto(post, postDetail, postSpec);
         }).collect(Collectors.toList());
     }
 }
