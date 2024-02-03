@@ -179,7 +179,7 @@ public class LikeScrapService {
         return scrapPage.map(scrap -> InterviewDto.toScrapListDto(scrap.getPost()));
     }
 
-    public Page<ResumeDto> getAllResumeScraps(String userEmail, int page) {
+    public Page<ResumeDto.ScrapResponseDto> getAllResumeScraps(String userEmail, int page) {
         User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
         
         List<Sort.Order> sorts = new ArrayList<>();

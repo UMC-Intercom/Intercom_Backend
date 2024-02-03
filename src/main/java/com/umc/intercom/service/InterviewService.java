@@ -18,6 +18,7 @@ import com.umc.intercom.repository.PostSpecRepository;
 import com.umc.intercom.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -27,7 +28,8 @@ public class InterviewService {
     private PostDetailRepository postDetailRepository;
     private PostSpecRepository postSpecRepository;
     private UserRepository userRepository;
-    
+
+    @Transactional
     public InterviewDto.InterviewResponseDto createInterview(InterviewDto.InterviewRequestDto  interviewDto, String userEmail){
         Optional<User> user = userRepository.findByEmail(userEmail);
     
@@ -41,7 +43,7 @@ public class InterviewService {
                         .viewCount(0)
                         .user(user.orElseThrow(() -> new RuntimeException("User not Found")))
                         .build();
-        post.getUser().setNickname(user.get().getNickname());
+//        post.getUser().setNickname(user.get().getNickname());
         
         Post createdPost = postRepository.save(post);
         

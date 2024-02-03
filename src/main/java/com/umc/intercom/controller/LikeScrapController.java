@@ -86,9 +86,9 @@ public class LikeScrapController {
 
     // 합격 자소서 스트랩 내역 조회
     @GetMapping("/scraps/resumes")
-    public ResponseEntity<Page<ResumeDto>> getAllResumeScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
+    public ResponseEntity<Page<ResumeDto.ScrapResponseDto>> getAllResumeScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
         String userEmail = SecurityUtil.getCurrentUsername();
-        Page<ResumeDto> resumeDto = likeScrapService.getAllResumeScraps(userEmail, page);
+        Page<ResumeDto.ScrapResponseDto> resumeDto = likeScrapService.getAllResumeScraps(userEmail, page);
 
         return ResponseEntity.ok(resumeDto);
     }

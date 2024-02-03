@@ -4,72 +4,115 @@ import com.umc.intercom.domain.Post;
 import com.umc.intercom.domain.PostDetail;
 import com.umc.intercom.domain.PostSpec;
 import com.umc.intercom.domain.common.enums.PostType;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class ResumeDto {
-    //Post 필드
-    private Long id;
-    private String company;
-    private String department;
-    private String year; //합격 년도
-    private String semester; //상반기 , 하반기
-    private PostType postType;
-    private int viewCount;
-    private String writer;
-    //PostDetail 필드
-    private String title;
-    private String content;
-    private String imageUrl;
-    //PostSpec 필드
-    private String education;
-    private String major;
-    private String gpa;
-    private String activity;
-    private String certification;
-    private String english;
-    private String score;
 
-    public static ResumeDto toDto(Post post, PostDetail postDetail, PostSpec postSpec){
-        return new ResumeDto(
-                post.getId(),
-                post.getCompany(),
-                post.getDepartment(),
-                post.getYear(),
-                post.getSemester(),
-                post.getPostType(),
-                post.getViewCount(),
-                post.getUser().getNickname(),
-                postDetail.getTitle(),
-                postDetail.getContent(),
-                postDetail.getImageUrl(),
-                postSpec.getEducation(),
-                postSpec.getMajor(),
-                postSpec.getGpa(),
-                postSpec.getActivity(),
-                postSpec.getCertification(),
-                postSpec.getEnglish(),
-                postSpec.getScore()
-        );
+    @Getter
+    public static class ResumeRequestDto {
+        private String company;
+        private String department;
+        private String year;
+        private String semester;
+
+        private String title;
+        private String content;
+        private String imageUrl;
+
+        private String education;
+        private String major;
+        private String gpa;
+        private String activity;
+        private String certification;
+        private String english;
+        private String score;
     }
 
-    public static ResumeDto toScrapListDto(Post post) {
-        ResumeDto dto = new ResumeDto();
+    @Getter
+    @Setter
+    @Builder
+    public static class ResumeResponseDto {
+        //Post 필드
+        private Long id;
+        private String company;
+        private String department;
+        private String year; //합격 년도
+        private String semester; //상반기 , 하반기
+        private PostType postType;
+        private int viewCount;
+        private String writer;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
+        //PostDetail 필드
+        private String title;
+        private String content;
+        private String imageUrl;
+        //PostSpec 필드
+        private String education;
+        private String major;
+        private String gpa;
+        private String activity;
+        private String certification;
+        private String english;
+        private String score;
 
-        dto.setId(post.getId());
-        dto.setCompany(post.getCompany());
-        dto.setDepartment(post.getDepartment());
-        dto.setYear(post.getYear());
-        dto.setSemester(post.getSemester());
-        dto.setPostType(post.getPostType());
-        dto.setViewCount(post.getViewCount());
-        dto.setWriter(post.getUser().getNickname());
+        public static ResumeResponseDto toDto(Post post, PostDetail postDetail, PostSpec postSpec) {
+            return new ResumeResponseDto(
+                    post.getId(),
+                    post.getCompany(),
+                    post.getDepartment(),
+                    post.getYear(),
+                    post.getSemester(),
+                    post.getPostType(),
+                    post.getViewCount(),
+                    post.getUser().getNickname(),
+                    post.getCreatedAt(),
+                    post.getUpdatedAt(),
+                    postDetail.getTitle(),
+                    postDetail.getContent(),
+                    postDetail.getImageUrl(),
+                    postSpec.getEducation(),
+                    postSpec.getMajor(),
+                    postSpec.getGpa(),
+                    postSpec.getActivity(),
+                    postSpec.getCertification(),
+                    postSpec.getEnglish(),
+                    postSpec.getScore()
+            );
+        }
+    }
 
-        return dto;
+    @Getter
+    @Builder
+    public static class ScrapResponseDto {
+        private Long id;
+        private String company;
+        private String department;
+        private String year;
+        private String semester;
+        private PostType postType;
+        private int viewCount;
+        private String writer;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
+    }
+
+    public static ScrapResponseDto toScrapListDto(Post post) {
+        return ScrapResponseDto.builder()
+                .id(post.getId())
+                .company(post.getCompany())
+                .department(post.getDepartment())
+                .year(post.getYear())
+                .semester(post.getSemester())
+                .postType(post.getPostType())
+                .viewCount(post.getViewCount())
+                .writer(post.getUser().getNickname())
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
+                .build();
     }
 
 }

@@ -94,8 +94,8 @@ public class InterviewDto {
         private Long id;
         private String company;
         private String department;
-        private String year; //합격 년도
-        private String semester; //상반기 , 하반기
+        private String year;
+        private String semester;
         private PostType postType;
         private int viewCount;
         private String writer;
