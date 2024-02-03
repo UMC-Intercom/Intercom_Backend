@@ -152,7 +152,7 @@ public class LikeScrapService {
         }
     }
 
-    public Page<TalkDto> getAllTalkScraps(String userEmail, int page) {
+    public Page<TalkDto.TalkResponseDto> getAllTalkScraps(String userEmail, int page) {
         User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         // 페이징
@@ -163,7 +163,7 @@ public class LikeScrapService {
         Page<LikeScrap> scrapPage = likeScrapRepository.findByUserAndLikeScrapTypeAndPostType(user, LikeScrapType.SCRAP, PostType.TALK, pageable);
 
         // LikeScrap을 TalkDto로 변환해서 반환
-        return scrapPage.map(scrap -> TalkDto.toDto(scrap.getTalk()));
+        return scrapPage.map(scrap -> TalkDto.TalkResponseDto.toDto(scrap.getTalk()));
     }
 
     public Page<InterviewDto> getAllInterviewScraps(String userEmail, int page) {

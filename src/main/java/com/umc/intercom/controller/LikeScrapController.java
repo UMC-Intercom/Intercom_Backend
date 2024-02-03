@@ -68,9 +68,9 @@ public class LikeScrapController {
 
     // talk 스크랩 내역 조회
     @GetMapping("/scraps/talks")
-    public ResponseEntity<Page<TalkDto>> getAllTalkScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
+    public ResponseEntity<Page<TalkDto.TalkResponseDto>> getAllTalkScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
         String userEmail = SecurityUtil.getCurrentUsername();
-        Page<TalkDto> talkDtoPage = likeScrapService.getAllTalkScraps(userEmail, page);
+        Page<TalkDto.TalkResponseDto> talkDtoPage = likeScrapService.getAllTalkScraps(userEmail, page);
 
         return ResponseEntity.ok(talkDtoPage);
     }
