@@ -75,7 +75,7 @@ public class LikeScrapController {
         return ResponseEntity.ok(talkDtoPage);
     }
 
-    // 면접 후기 스트랩 내역 조회
+    // 면접 후기 스크랩 내역 조회
     @GetMapping("/scraps/interviews")
     public ResponseEntity<Page<InterviewDto.ScrapResponseDto>> getAllInterviewScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
         String userEmail = SecurityUtil.getCurrentUsername();
@@ -84,7 +84,7 @@ public class LikeScrapController {
         return ResponseEntity.ok(interviewDto);
     }
 
-    // 합격 자소서 스트랩 내역 조회
+    // 합격 자소서 스크랩 내역 조회
     @GetMapping("/scraps/resumes")
     public ResponseEntity<Page<ResumeDto.ScrapResponseDto>> getAllResumeScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
         String userEmail = SecurityUtil.getCurrentUsername();
