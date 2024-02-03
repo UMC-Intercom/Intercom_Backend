@@ -1,14 +1,15 @@
 package com.umc.intercom.controller;
 
 import com.umc.intercom.config.security.SecurityUtil;
+import com.umc.intercom.dto.InterviewDto;
 import com.umc.intercom.dto.LikeScrapDto;
+import com.umc.intercom.dto.ResumeDto;
+import com.umc.intercom.dto.TalkDto;
 import com.umc.intercom.service.LikeScrapService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
@@ -65,4 +66,30 @@ public class LikeScrapController {
         return ResponseEntity.ok().build();
     }
 
+    // talk 스크랩 내역 조회
+    @GetMapping("/scraps/talks")
+    public ResponseEntity<Page<TalkDto>> getAllTalkScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
+        String userEmail = SecurityUtil.getCurrentUsername();
+        Page<TalkDto> talkDtoPage = likeScrapService.getAllTalkScraps(userEmail, page);
+
+        return ResponseEntity.ok(talkDtoPage);
+    }
+
+    // 면접 후기 스트랩 내역 조회
+    @GetMapping("/scraps/interviews")
+    public ResponseEntity<Page<InterviewDto>> getAllInterviewScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
+        String userEmail = SecurityUtil.getCurrentUsername();
+        Page<InterviewDto> interviewDto = likeScrapService.getAllInterviewScraps(userEmail, page);
+
+        return ResponseEntity.ok(interviewDto);
+    }
+
+    // 합격 자소서 스트랩 내역 조회
+    @GetMapping("/scraps/resumes")
+    public ResponseEntity<Page<ResumeDto>> getAllResumeScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
+        String userEmail = SecurityUtil.getCurrentUsername();
+        Page<ResumeDto> resumeDto = likeScrapService.getAllResumeScraps(userEmail, page);
+
+        return ResponseEntity.ok(resumeDto);
+    }
 }
