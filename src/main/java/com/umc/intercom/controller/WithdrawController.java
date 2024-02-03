@@ -1,6 +1,7 @@
 package com.umc.intercom.controller;
 
 
+import com.umc.intercom.config.security.SecurityUtil;
 import com.umc.intercom.dto.UserDto;
 import com.umc.intercom.service.WithdrawService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,9 @@ public class WithdrawController {
     }
 
     @DeleteMapping("/withdraw")
-    public ResponseEntity<Void> withdraw(@RequestBody UserDto.UserRequestDto requestDto) {
-        withdrawService.withdraw(requestDto);
+    public ResponseEntity<Void> withdraw(@RequestBody String password) {
+        String userEmail = SecurityUtil.getCurrentUsername();
+        withdrawService.withdraw(userEmail, password);
         return ResponseEntity.noContent().build();
     }
 }
