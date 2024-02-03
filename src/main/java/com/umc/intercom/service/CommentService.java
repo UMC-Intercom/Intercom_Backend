@@ -3,6 +3,7 @@ package com.umc.intercom.service;
 import com.umc.intercom.domain.Comment;
 import com.umc.intercom.domain.Talk;
 import com.umc.intercom.domain.User;
+import com.umc.intercom.domain.common.enums.AdoptionStatus;
 import com.umc.intercom.dto.CommentDto;
 import com.umc.intercom.repository.CommentRepository;
 import com.umc.intercom.repository.TalkRepository;
@@ -23,25 +24,25 @@ public class CommentService {
     private TalkRepository talkRepository;
 
     @Transactional
-    public CommentDto createComment(CommentDto commentDto) {
+    public CommentDto.CommentResponseDto  createComment(String userEmail, CommentDto.CommentRequestDto commentDto) {
         Optional<Talk> talk = talkRepository.findById(commentDto.getTalkId());
-        Optional<User> user = userRepository.findById(commentDto.getUserId());
+        Optional<User> user = userRepository.findByEmail(userEmail);
         Comment comment = Comment.builder()
                 .content(commentDto.getContent())
-                .adoptionStatus(commentDto.getAdoptionStatus())
+                .adoptionStatus(AdoptionStatus.NOT_ADOPTED)     // 초기 상태는 채택x로 설정
                 .talk(talk.orElseThrow(() -> new RuntimeException("Talk not found")))
                 .user(user.orElseThrow(() -> new RuntimeException("User not found")))
                 .build();
 
         Comment savedComment = commentRepository.save(comment);
-        return CommentDto.toDto(savedComment);
+        return CommentDto.CommentResponseDto.toDto(savedComment);
     }
 
     @Transactional
-    public CommentDto updateComment(Long id, CommentDto commentDto) {
+    public CommentDto.CommentResponseDto updateComment(Long id, CommentDto.CommentRequestDto commentDto) {
         Comment comment = commentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 댓글이 없습니다. id= " + id));
         comment.updateContent(commentDto.getContent());
-        return CommentDto.toDto(comment);
+        return CommentDto.CommentResponseDto.toDto(comment);
     }
 
     @Transactional
@@ -51,25 +52,25 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentDto> getComments(Long talkId) {
-        List<Comment> comments = commentRepository.findAllByPostId(talkId);
-        return comments.stream().map(CommentDto::toDto).collect(Collectors.toList());
+    public List<CommentDto.CommentResponseDto> getComments(Long talkId) {
+        List<Comment> comments = commentRepository.findAllByTalkId(talkId); // talk은 finaAllByTalkId, post는 findAllByPostId로
+        return comments.stream().map(CommentDto.CommentResponseDto::toDto).collect(Collectors.toList());
     }
 
     @Transactional
-    public CommentDto createReplyComment(CommentDto commentDto) {
+    public CommentDto.CommentResponseDto createReplyComment(String userEmail, CommentDto.ReplyRequestDto commentDto) {
         Optional<Talk> talk = talkRepository.findById(commentDto.getTalkId());
-        Optional<User> user = userRepository.findById(commentDto.getUserId());
+        Optional<User> user = userRepository.findByEmail(userEmail);
         Optional<Comment> parentId = commentRepository.findById(commentDto.getParentId());
         Comment comment = Comment.builder()
                 .content(commentDto.getContent())
-                .adoptionStatus(commentDto.getAdoptionStatus())
+                .adoptionStatus(AdoptionStatus.NOT_ADOPTED)     // 초기 상태는 채택x로 설정
                 .talk(talk.orElseThrow(() -> new RuntimeException("Talk not found")))
                 .user(user.orElseThrow(() -> new RuntimeException("User not found")))
                 .parentId(parentId.orElseThrow(() -> new RuntimeException("Parent comment not found")))
                 .build();
 
         Comment savedComment = commentRepository.save(comment);
-        return CommentDto.toDto(savedComment);
+        return CommentDto.CommentResponseDto.toDto(savedComment);
     }
 }
