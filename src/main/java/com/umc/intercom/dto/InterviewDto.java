@@ -59,4 +59,20 @@ public class InterviewDto {
                 postSpec.getScore()
         );
     }
+
+    public static InterviewDto toScrapListDto(Post post) {
+        InterviewDto dto = new InterviewDto();
+
+        dto.setId(post.getId());
+        dto.setCompany(post.getCompany());
+        dto.setDepartment(post.getDepartment());
+        dto.setYear(post.getYear());
+        dto.setSemester(post.getSemester());
+        dto.setPostType(post.getPostType());
+        dto.setViewCount(post.getViewCount());
+        dto.setWriter(post.getUser().getNickname());
+
+        return dto;
+    }
+
 }

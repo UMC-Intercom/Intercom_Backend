@@ -57,4 +57,19 @@ public class ResumeDto {
         );
     }
 
+    public static ResumeDto toScrapListDto(Post post) {
+        ResumeDto dto = new ResumeDto();
+
+        dto.setId(post.getId());
+        dto.setCompany(post.getCompany());
+        dto.setDepartment(post.getDepartment());
+        dto.setYear(post.getYear());
+        dto.setSemester(post.getSemester());
+        dto.setPostType(post.getPostType());
+        dto.setViewCount(post.getViewCount());
+        dto.setWriter(post.getUser().getNickname());
+
+        return dto;
+    }
+
 }
