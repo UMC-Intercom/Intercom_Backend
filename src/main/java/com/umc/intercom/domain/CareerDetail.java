@@ -1,10 +1,9 @@
 package com.umc.intercom.domain;
 
-import com.umc.intercom.domain.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -30,8 +29,8 @@ public class CareerDetail {
     private String job;
 
     @Column(name = "start_date")
-    private LocalDateTime startDate;
+    private LocalDate startDate;    // LocalDate는 YYYY-MM-DD 형식
 
     @Column(name = "end_date")
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 }
