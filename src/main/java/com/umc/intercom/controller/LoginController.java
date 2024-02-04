@@ -5,6 +5,7 @@ import com.umc.intercom.domain.User;
 import com.umc.intercom.dto.UserDto;
 import com.umc.intercom.repository.UserRepository;
 import com.umc.intercom.service.LoginService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,6 +27,7 @@ public class LoginController {
     private final UserDetailsService userDetailsService;
 
     // 로그인
+    @Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인")
     @PostMapping("/login")
     public ResponseEntity<UserDto.LoginSuccessDto> login(@RequestBody UserDto.UserRequestDto userRequestDto) {
         UserDto.LoginSuccessDto loginSuccessDto = loginService.login(userRequestDto);
@@ -33,6 +35,7 @@ public class LoginController {
     }
     
     // 현재 로그인한 사용자 정보 조회
+    @Operation(summary = "현재 로그인한 사용자 정보 조회", description = "서버 테스트용 api")
     @GetMapping("/current-user")
     public ResponseEntity<UserDto.CurrentUserDto> getCurrentUser() {
         String username = SecurityUtil.getCurrentUsername();

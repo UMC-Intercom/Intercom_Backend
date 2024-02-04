@@ -2,6 +2,7 @@ package com.umc.intercom.dto;
 
 import com.umc.intercom.domain.Comment;
 import com.umc.intercom.domain.common.enums.AdoptionStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -11,14 +12,19 @@ public class CommentDto {
 
     @Getter
     public static class CommentRequestDto {
+        @Schema(description = "댓글 달 톡톡 게시글 id")
         private Long talkId;
+        @Schema(description = "댓글 내용", example = "댓글 내용")
         private String content;
     }
 
     @Getter
     public static class ReplyRequestDto {
+        @Schema(description = "댓글 달 톡톡 게시글 id")
         private Long talkId;
+        @Schema(description = "대댓글 달 부모 댓글의 id")
         private Long parentId;
+        @Schema(description = "댓글 내용", example = "댓글 내용")
         private String content;
     }
 

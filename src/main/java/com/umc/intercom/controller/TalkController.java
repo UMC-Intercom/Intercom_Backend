@@ -3,6 +3,7 @@ package com.umc.intercom.controller;
 import com.umc.intercom.config.security.SecurityUtil;
 import com.umc.intercom.dto.TalkDto;
 import com.umc.intercom.service.TalkService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ public class TalkController {
     private final TalkService talkService;
 
     // talk 생성
+    @Operation(summary = "톡톡 게시글 작성")
     @PostMapping
     public ResponseEntity<TalkDto.TalkResponseDto> createTalk(@RequestBody TalkDto.TalkRequestDto talkRequestDto) {
         // 현재 로그인한 유저의 이메일
@@ -29,6 +31,7 @@ public class TalkController {
     }
 
     // talk 최신 순 리스트 조회(페이징 처리)
+    @Operation(summary = "최신 순으로 톡톡 게시글 목록 조회")
     @GetMapping
     public ResponseEntity<Page<TalkDto.TalkResponseDto>> getAllTalks(@RequestParam(value = "page", defaultValue = "1") int page) {
         Page<TalkDto.TalkResponseDto> talkDtoPage = talkService.getAllTalks(page);
@@ -43,6 +46,7 @@ public class TalkController {
     }
 
     // talk 조회수 순 리스트 조회(페이징 처리)
+    @Operation(summary = "조회수 많은 순으로 톡톡 게시글 목록 조회")
     @GetMapping("/view-counts")
     public ResponseEntity<Page<TalkDto.TalkResponseDto>> getAllTalksByViewCounts(@RequestParam(value = "page", defaultValue = "1") int page) {
         Page<TalkDto.TalkResponseDto> talkDtoPage = talkService.getAllTalksByViewCounts(page);
@@ -50,6 +54,7 @@ public class TalkController {
     }
 
     // talk 상세 조회
+    @Operation(summary = "톡톡 게시글 상세 조회", description = "{id} 자리에 상세 조회할 톡톡 게시글 id를 전달해주세요.")
     @GetMapping("/{id}")
     public ResponseEntity<TalkDto.TalkResponseDto> getTalkById(@PathVariable Long id) {
         Optional<TalkDto.TalkResponseDto> optionalTalkDto = talkService.getTalkById(id);
@@ -59,6 +64,7 @@ public class TalkController {
     }
 
     // 제목으로 talk 검색
+    @Operation(summary = "톡톡 게시글 검색", description = "제목으로 검색")
     @GetMapping("/search")
     public ResponseEntity<Page<TalkDto.TalkResponseDto>> searchTalksByTitle(@RequestParam("title") String title,
                                                          @RequestParam(value = "page", defaultValue = "1") int page) {

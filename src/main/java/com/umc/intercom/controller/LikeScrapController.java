@@ -6,6 +6,7 @@ import com.umc.intercom.dto.LikeScrapDto;
 import com.umc.intercom.dto.ResumeDto;
 import com.umc.intercom.dto.TalkDto;
 import com.umc.intercom.service.LikeScrapService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ public class LikeScrapController {
     private final LikeScrapService likeScrapService;
 
     // talk 좋아요 추가
+    @Operation(summary = "톡톡 게시글에 좋아요 추가", description = "{talkId} 자리에 좋아요할 톡톡 게시글 id를 전달해주세요.")
     @PostMapping("/likes/{talkId}")
     public ResponseEntity<LikeScrapDto> addLike(@PathVariable Long talkId) throws Exception {
         String userEmail = SecurityUtil.getCurrentUsername();
@@ -26,6 +28,7 @@ public class LikeScrapController {
     }
 
     // talk 좋아요 삭제
+    @Operation(summary = "톡톡 게시글에 좋아요 삭제", description = "{talkId} 자리에 좋아요 삭제할 톡톡 게시글 id를 전달해주세요.")
     @DeleteMapping("/likes/{talkId}")
     public ResponseEntity<Void> deleteLike(@PathVariable Long talkId) {
         String userEmail = SecurityUtil.getCurrentUsername();
@@ -35,6 +38,7 @@ public class LikeScrapController {
 
 
     // talk 스크랩 추가
+    @Operation(summary = "톡톡 게시글에 스크랩 추가", description = "{talkId} 자리에 스크랩할 톡톡 게시글 id를 전달해주세요.")
     @PostMapping("/scraps/talks/{talkId}")
     public ResponseEntity<LikeScrapDto> addTalkScrap(@PathVariable Long talkId) throws Exception {
         String userEmail = SecurityUtil.getCurrentUsername();
@@ -43,6 +47,7 @@ public class LikeScrapController {
     }
 
     // talk 스크랩 삭제
+    @Operation(summary = "톡톡 게시글에 스크랩 삭제", description = "{talkId} 자리에 스크랩 삭제할 톡톡 게시글 id를 전달해주세요.")
     @DeleteMapping("/scraps/talks/{talkId}")
     public ResponseEntity<Void> deleteTalkScrap(@PathVariable Long talkId) {
         String userEmail = SecurityUtil.getCurrentUsername();
@@ -51,6 +56,7 @@ public class LikeScrapController {
     }
 
     // post 스크랩 추가
+    @Operation(summary = "면접 후기 or 합격 자소서 게시글에 스크랩 추가", description = "{postId} 자리에 스크랩할 게시글 id를 전달해주세요.")
     @PostMapping("/scraps/posts/{postId}")
     public ResponseEntity<LikeScrapDto> addPostScrap(@PathVariable Long postId) throws Exception {
         String userEmail = SecurityUtil.getCurrentUsername();
@@ -59,6 +65,7 @@ public class LikeScrapController {
     }
 
     // post 스크랩 삭제
+    @Operation(summary = "면접 후기 or 합격 자소서 게시글에 스크랩 삭제", description = "{postId} 자리에 스크랩 삭제할 게시글 id를 전달해주세요.")
     @DeleteMapping("/scraps/posts/{postId}")
     public ResponseEntity<Void> deletePostScrap(@PathVariable Long postId) {
         String userEmail = SecurityUtil.getCurrentUsername();
@@ -67,6 +74,7 @@ public class LikeScrapController {
     }
 
     // talk 스크랩 내역 조회
+    @Operation(summary = "톡톡 게시글 스크랩 내역 조회")
     @GetMapping("/scraps/talks")
     public ResponseEntity<Page<TalkDto.TalkResponseDto>> getAllTalkScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
         String userEmail = SecurityUtil.getCurrentUsername();
@@ -77,6 +85,7 @@ public class LikeScrapController {
 
     // 면접 후기 스크랩 내역 조회
     @GetMapping("/scraps/interviews")
+    @Operation(summary = "면접 후기 게시글 스크랩 내역 조회")
     public ResponseEntity<Page<InterviewDto.ScrapResponseDto>> getAllInterviewScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
         String userEmail = SecurityUtil.getCurrentUsername();
         Page<InterviewDto.ScrapResponseDto> interviewDto = likeScrapService.getAllInterviewScraps(userEmail, page);
@@ -85,6 +94,7 @@ public class LikeScrapController {
     }
 
     // 합격 자소서 스크랩 내역 조회
+    @Operation(summary = "합격 자소서 스크랩 내역 조회")
     @GetMapping("/scraps/resumes")
     public ResponseEntity<Page<ResumeDto.ScrapResponseDto>> getAllResumeScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
         String userEmail = SecurityUtil.getCurrentUsername();
