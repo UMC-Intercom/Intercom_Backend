@@ -33,9 +33,15 @@ public class Talk extends BaseEntity {
     @Column(name = "image_url")
     private String imageUrl;
 
+    @Setter
     @ColumnDefault("0")
     @Column(name = "view_count")
     private int viewCount;
+
+    @Setter
+    @ColumnDefault("0")
+    @Column(name = "like_count")
+    private int likeCount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

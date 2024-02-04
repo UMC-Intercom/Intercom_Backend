@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.webjars.NotFoundException;
 
 import java.util.ArrayList;
@@ -40,7 +41,8 @@ public class LikeScrapService {
     public Optional<LikeScrap> checkIfUserLiked(User user, Talk talk) {
         return likeScrapRepository.findByUserAndTalkAndPostTypeAndLikeScrapType(user, talk, PostType.TALK, LikeScrapType.LIKE);
     }
-    
+
+    @Transactional
     public LikeScrapDto addLike(Long talkId, String userEmail) throws Exception {
         User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
         Talk talk = talkRepository.findById(talkId).orElseThrow(() -> new NotFoundException("Talk 게시글을 찾을 수 없습니다."));
@@ -60,9 +62,14 @@ public class LikeScrapService {
 
         likeScrapRepository.save(like);
 
+        // 좋아요 수 업데이트
+        talk.setLikeCount(talk.getLikeCount() + 1);
+        talkRepository.save(talk);
+
         return LikeScrapDto.toDtoFromTalk(like);
     }
 
+    @Transactional
     public void deleteLike(Long talkId, String userEmail) {
         User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
         Talk talk = talkRepository.findById(talkId).orElseThrow(() -> new NotFoundException("Talk 게시글을 찾을 수 없습니다."));
@@ -71,6 +78,10 @@ public class LikeScrapService {
         Optional<LikeScrap> likeOptional = checkIfUserLiked(user, talk);
         if (likeOptional.isPresent()) {
             likeScrapRepository.delete(likeOptional.get());
+
+            // 좋아요 수 업데이트
+            talk.setLikeCount(talk.getLikeCount() - 1);
+            talkRepository.save(talk);
         }
     }
 

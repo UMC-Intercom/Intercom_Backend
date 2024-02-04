@@ -33,6 +33,7 @@ public class TalkDto {
         private String category;
         private String imageUrl;
         private int viewCount;
+        private int likeCount;
         private String writer;
 
         public static TalkResponseDto toDto(Talk talk) {
@@ -43,6 +44,7 @@ public class TalkDto {
                     .category(talk.getCategory())
                     .imageUrl(talk.getImageUrl())
                     .viewCount(talk.getViewCount())
+                    .likeCount(talk.getLikeCount())
                     .writer(talk.getUser().getNickname())
                     .build();
         }
