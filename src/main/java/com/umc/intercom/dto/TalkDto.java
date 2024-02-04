@@ -5,31 +5,45 @@ import com.umc.intercom.domain.common.enums.Category;
 import lombok.*;
 import org.springframework.data.domain.Page;
 
+import static com.umc.intercom.dto.TalkDto.TalkResponseDto.toDto;
+
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class TalkDto {
-    private Long id;
-    private String title;
-    private String content;
-    private String category;
-    private String imageUrl;
-    private int viewCount;
-    private String writer;
-
-    public static TalkDto toDto(Talk talk) {
-        return new TalkDto(
-                talk.getId(),
-                talk.getTitle(),
-                talk.getContent(),
-                talk.getCategory(),
-                talk.getImageUrl(),
-                talk.getViewCount(),
-                talk.getUser().getNickname()
-        );
+    @Getter
+    public static class TalkRequestDto {
+        String title;
+        String content;
+        String category;
+        String imageUrl;
     }
 
-    public static Page<TalkDto> toDtoPage(Page<Talk> talkPage) {
-        return talkPage.map(TalkDto::toDto);
+    @Getter
+    @Setter
+    @Builder
+    public static class TalkResponseDto {
+        private Long id;
+        private String title;
+        private String content;
+        private String category;
+        private String imageUrl;
+        private int viewCount;
+        private String writer;
+
+        public static TalkResponseDto toDto(Talk talk) {
+            return TalkResponseDto.builder()
+                    .id(talk.getId())
+                    .title(talk.getTitle())
+                    .content(talk.getContent())
+                    .category(talk.getCategory())
+                    .imageUrl(talk.getImageUrl())
+                    .viewCount(talk.getViewCount())
+                    .writer(talk.getUser().getNickname())
+                    .build();
+        }
+    }
+
+    public static Page<TalkResponseDto> toDtoPage(Page<Talk> talkPage) {
+        return talkPage.map(talk -> toDto(talk));
     }
 }

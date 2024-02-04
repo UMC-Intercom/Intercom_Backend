@@ -18,10 +18,10 @@ public class CareerController {
     private final CareerService careerService;
 
     @PostMapping
-    public ResponseEntity<CareerDto> createCareer(@RequestBody CareerDto careerDto){
+    public ResponseEntity<CareerDto.CareerResponseDto> createCareer(@RequestBody CareerDto.CareerRequestDto careerRequestDto){
         String userEmail = SecurityUtil.getCurrentUsername();
 
-        CareerDto createdCareerDto = careerService.createCareer(careerDto, userEmail);
+        CareerDto.CareerResponseDto createdCareerDto = careerService.createCareer(careerRequestDto, userEmail);
         return new ResponseEntity<>(createdCareerDto, HttpStatus.CREATED);
     }
 }

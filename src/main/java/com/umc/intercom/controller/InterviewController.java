@@ -24,16 +24,16 @@ public class InterviewController {
     private final InterviewService interviewService;
     
     @PostMapping
-    public ResponseEntity<InterviewDto> createInterview(@RequestBody InterviewDto interviewDto) {
+    public ResponseEntity<InterviewDto.InterviewResponseDto> createInterview(@RequestBody InterviewDto.InterviewRequestDto interviewRequestDto) {
         String userEmail = SecurityUtil.getCurrentUsername();
-        InterviewDto createdInterviewDto = interviewService.createInterview(interviewDto, userEmail);
+        InterviewDto.InterviewResponseDto  createdInterviewDto = interviewService.createInterview(interviewRequestDto, userEmail);
         return new ResponseEntity<>(createdInterviewDto, HttpStatus.CREATED);
     }
     
     // 최신순으로 정렬된 검색 결과를 보여줌
     @GetMapping
-    public ResponseEntity<List<InterviewDto>> getAllInterviews() {
-        List<InterviewDto> interviewList = interviewService.getAllInterviews();
+    public ResponseEntity<List<InterviewDto.InterviewResponseDto>> getAllInterviews() {
+        List<InterviewDto.InterviewResponseDto> interviewList = interviewService.getAllInterviews();
         return new ResponseEntity<>(interviewList, HttpStatus.OK);
     }
 }

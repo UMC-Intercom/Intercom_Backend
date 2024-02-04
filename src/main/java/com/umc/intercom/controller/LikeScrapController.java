@@ -68,27 +68,27 @@ public class LikeScrapController {
 
     // talk 스크랩 내역 조회
     @GetMapping("/scraps/talks")
-    public ResponseEntity<Page<TalkDto>> getAllTalkScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
+    public ResponseEntity<Page<TalkDto.TalkResponseDto>> getAllTalkScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
         String userEmail = SecurityUtil.getCurrentUsername();
-        Page<TalkDto> talkDtoPage = likeScrapService.getAllTalkScraps(userEmail, page);
+        Page<TalkDto.TalkResponseDto> talkDtoPage = likeScrapService.getAllTalkScraps(userEmail, page);
 
         return ResponseEntity.ok(talkDtoPage);
     }
 
-    // 면접 후기 스트랩 내역 조회
+    // 면접 후기 스크랩 내역 조회
     @GetMapping("/scraps/interviews")
-    public ResponseEntity<Page<InterviewDto>> getAllInterviewScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
+    public ResponseEntity<Page<InterviewDto.ScrapResponseDto>> getAllInterviewScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
         String userEmail = SecurityUtil.getCurrentUsername();
-        Page<InterviewDto> interviewDto = likeScrapService.getAllInterviewScraps(userEmail, page);
+        Page<InterviewDto.ScrapResponseDto> interviewDto = likeScrapService.getAllInterviewScraps(userEmail, page);
 
         return ResponseEntity.ok(interviewDto);
     }
 
-    // 합격 자소서 스트랩 내역 조회
+    // 합격 자소서 스크랩 내역 조회
     @GetMapping("/scraps/resumes")
-    public ResponseEntity<Page<ResumeDto>> getAllResumeScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
+    public ResponseEntity<Page<ResumeDto.ScrapResponseDto>> getAllResumeScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
         String userEmail = SecurityUtil.getCurrentUsername();
-        Page<ResumeDto> resumeDto = likeScrapService.getAllResumeScraps(userEmail, page);
+        Page<ResumeDto.ScrapResponseDto> resumeDto = likeScrapService.getAllResumeScraps(userEmail, page);
 
         return ResponseEntity.ok(resumeDto);
     }

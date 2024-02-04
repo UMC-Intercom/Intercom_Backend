@@ -25,25 +25,25 @@ public class TalkService {
     private TalkRepository talkRepository;
     private UserRepository userRepository;
 
-    public TalkDto createTalk(TalkDto talkDto, String userEmail) {
+    public TalkDto.TalkResponseDto createTalk(TalkDto.TalkRequestDto talkRequestDto, String userEmail) {
         Optional<User> user = userRepository.findByEmail(userEmail);
 
         Talk talk = Talk.builder()
-                .title(talkDto.getTitle())
-                .content(talkDto.getContent())
-                .category(talkDto.getCategory())
-                .imageUrl(talkDto.getImageUrl())
-                .viewCount(talkDto.getViewCount())
+                .title(talkRequestDto.getTitle())
+                .content(talkRequestDto.getContent())
+                .category(talkRequestDto.getCategory())
+                .imageUrl(talkRequestDto.getImageUrl())
+                .viewCount(0) // 초기 조회수는 0으로 설정
                 .user(user.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다.")))
                 .build();
 
         talk.getUser().setNickname(user.get().getNickname());
 
         Talk createdTalk = talkRepository.save(talk);
-        return TalkDto.toDto(createdTalk);
+        return TalkDto.TalkResponseDto.toDto(createdTalk);
     }
 
-    public Page<TalkDto> getAllTalks(int page) {
+    public Page<TalkDto.TalkResponseDto> getAllTalks(int page) {
         // 페이징 처리
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createdAt"));
@@ -56,7 +56,7 @@ public class TalkService {
         return TalkDto.toDtoPage(talkPage);
     }
 
-    public Page<TalkDto> getAllTalksByViewCounts(int page) {
+    public Page<TalkDto.TalkResponseDto> getAllTalksByViewCounts(int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("viewCount"));
         sorts.add(Sort.Order.desc("createdAt"));    // 조회수가 동일하면 최신순으로 정렬
@@ -67,12 +67,12 @@ public class TalkService {
         return TalkDto.toDtoPage(talkPage);
     }
 
-    public Optional<TalkDto> getTalkById(Long id) {
+    public Optional<TalkDto.TalkResponseDto> getTalkById(Long id) {
         Optional<Talk> talk = talkRepository.findById(id);
-        return talk.map(TalkDto::toDto);
+        return talk.map(TalkDto.TalkResponseDto::toDto);
     }
 
-    public Page<TalkDto> searchTalksByTitle(String title, int page) {
+    public Page<TalkDto.TalkResponseDto> searchTalksByTitle(String title, int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createdAt"));
 
