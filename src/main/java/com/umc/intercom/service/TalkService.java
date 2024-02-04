@@ -34,6 +34,7 @@ public class TalkService {
                 .category(talkRequestDto.getCategory())
                 .imageUrl(talkRequestDto.getImageUrl())
                 .viewCount(0) // 초기 조회수는 0으로 설정
+                .likeCount(0)
                 .user(user.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다.")))
                 .build();
 
@@ -67,9 +68,31 @@ public class TalkService {
         return TalkDto.toDtoPage(talkPage);
     }
 
-    public Optional<TalkDto.TalkResponseDto> getTalkById(Long id) {
-        Optional<Talk> talk = talkRepository.findById(id);
-        return talk.map(TalkDto.TalkResponseDto::toDto);
+    public Page<TalkDto.TalkResponseDto> getAllTalksByLikeCounts(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("likeCount"));
+        sorts.add(Sort.Order.desc("createdAt"));
+
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
+
+        Page<Talk> talkPage = talkRepository.findAll(pageable);
+        return TalkDto.toDtoPage(talkPage);
+    }
+
+    public Optional<TalkDto.TalkResponseDto> getTalkById(String userEmail, Long id) {
+        Optional<Talk> optionalTalk = talkRepository.findById(id);
+
+        if (optionalTalk.isPresent()) {
+            Talk talk = optionalTalk.get();
+
+            if (!talk.getUser().getEmail().equals(userEmail)) {
+                // 작성자 != 현재 로그인 한 유저
+                talk.setViewCount(talk.getViewCount()+1);
+                talkRepository.save(talk);
+            }
+        }
+
+        return optionalTalk.map(TalkDto.TalkResponseDto::toDto);
     }
 
     public Page<TalkDto.TalkResponseDto> searchTalksByTitle(String title, int page) {

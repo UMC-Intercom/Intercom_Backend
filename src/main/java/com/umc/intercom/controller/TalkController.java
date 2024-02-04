@@ -53,11 +53,20 @@ public class TalkController {
         return ResponseEntity.ok(talkDtoPage);
     }
 
+    // talk 조회수 순 리스트 조회(페이징 처리)
+    @Operation(summary = "좋아요 많은 순으로 톡톡 게시글 목록 조회")
+    @GetMapping("/like-counts")
+    public ResponseEntity<Page<TalkDto.TalkResponseDto>> getAllTalksByLikeCounts(@RequestParam(value = "page", defaultValue = "1") int page) {
+        Page<TalkDto.TalkResponseDto> talkDtoPage = talkService.getAllTalksByLikeCounts(page);
+        return ResponseEntity.ok(talkDtoPage);
+    }
+
     // talk 상세 조회
     @Operation(summary = "톡톡 게시글 상세 조회", description = "{id} 자리에 상세 조회할 톡톡 게시글 id를 전달해주세요.")
     @GetMapping("/{id}")
     public ResponseEntity<TalkDto.TalkResponseDto> getTalkById(@PathVariable Long id) {
-        Optional<TalkDto.TalkResponseDto> optionalTalkDto = talkService.getTalkById(id);
+        String userEmail = SecurityUtil.getCurrentUsername();
+        Optional<TalkDto.TalkResponseDto> optionalTalkDto = talkService.getTalkById(userEmail, id);
 
         return optionalTalkDto.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
