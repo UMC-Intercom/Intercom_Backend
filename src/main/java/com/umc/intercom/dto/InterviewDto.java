@@ -5,6 +5,7 @@ import com.umc.intercom.domain.PostDetail;
 import com.umc.intercom.domain.PostSpec;
 import com.umc.intercom.domain.common.enums.PostType;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -14,22 +15,36 @@ public class InterviewDto {
 
     @Getter
     public static class InterviewRequestDto {
+        @Schema(description = "step1) 지원 회사", example = "회사명")
         private String company;
+        @Schema(description = "지원 부서 및 직무", example = "부서 및 직무명")
         private String department;
+        @Schema(description = "합격 연도", example = "2024")
         private String year;
+        @Schema(description = "상반기 or 하반기", example = "상반기")
         private String semester;
 
-        private String title;
-        private String content;
-        private String imageUrl;
-
+        @Schema(description = "step2) 학력", example = "학교명")
         private String education;
+        @Schema(description = "학과", example = "학과명")
         private String major;
+        @Schema(description = "학점", example = "4.0/4.5")
         private String gpa;
+        @Schema(description = "대외활동", example = "대외활동 내용")
         private String activity;
+        @Schema(description = "자격증", example = "자격증1, 자격증2, 자격증3,")
         private String certification;
+        @Schema(description = "어학", example = "어학 종류1, 종류2, 종류3,")
         private String english;
+        @Schema(description = "취득 점수", example = "취득 점수1, 점수2, 점수3,")
         private String score;
+
+        @Schema(description = "step3) 자소서 문항", example = "문항")
+        private String title;
+        @Schema(description = "자소서 답변", example = "답변")
+        private String content;
+        @Schema(description = "이미지 url", example = "이미지 url")
+        private String imageUrl;
     }
 
     @Getter
