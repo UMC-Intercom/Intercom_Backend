@@ -39,6 +39,9 @@ public class CommentService {
 
         Comment savedComment = commentRepository.save(comment);
 
+        // 코인 부여
+        checkAndAddCoins(user.get());
+
         // 알림 전송
         sendNotification(savedComment.getUser(), savedComment);
 
@@ -78,6 +81,10 @@ public class CommentService {
                 .build();
 
         Comment savedComment = commentRepository.save(comment);
+
+        // 코인 부여
+        checkAndAddCoins(user.get());
+
         // 알림 전송
         sendNotification(savedComment.getUser(), savedComment);
 
@@ -92,5 +99,15 @@ public class CommentService {
                 .build();
 
         notificationRepository.save(notification);
+    }
+
+    private void checkAndAddCoins(User user) {
+        long totalInteractions = commentRepository.countByUser(user);
+
+        // 5의 배수일 때 코인 부여
+        if (totalInteractions % 5 == 0) {
+            user.setCoin(user.getCoin() + 10);
+            userRepository.save(user);
+        }
     }
 }
