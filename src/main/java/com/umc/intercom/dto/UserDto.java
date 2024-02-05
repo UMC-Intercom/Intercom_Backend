@@ -21,6 +21,11 @@ public class UserDto {
     }
 
     @Getter
+    public static class ValidateRequestDto {
+        String password;
+    }
+
+    @Getter
     @Setter
     public static class SignUpRequestDto{
         String email;
