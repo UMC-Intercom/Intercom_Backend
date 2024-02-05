@@ -1,5 +1,6 @@
 package com.umc.intercom.controller;
 
+import com.umc.intercom.config.security.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,8 @@ public class UpdateController {
     @Operation(summary = "회원 정보 수정")
     @PutMapping("/update")
     public ResponseEntity<Void> updateUser(@RequestBody UserUpdateRequestDto requestDto) {
-        updateService.updateUser(requestDto);
+        String userEmail = SecurityUtil.getCurrentUsername();
+        updateService.updateUser(userEmail, requestDto);
         return ResponseEntity.noContent().build();
     }
     
