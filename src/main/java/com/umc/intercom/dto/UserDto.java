@@ -26,6 +26,23 @@ public class UserDto {
     }
 
     @Getter
+    public static class FindEmailRequestDto {
+        String phone;
+    }
+
+    @Getter
+    @Setter
+    public static class FindEmailResponseDto {
+        String name;
+        String email;
+
+        public FindEmailResponseDto(String name, String email) {
+            this.name = name;
+            this.email = email;
+        }
+    }
+
+    @Getter
     @Setter
     public static class SignUpRequestDto{
         String email;
