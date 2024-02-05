@@ -61,10 +61,23 @@ public class LikeScrapService {
         talk.setLikeCount(talk.getLikeCount() + 1);
         talkRepository.save(talk);
 
+        // 코인 부여
+        checkAndAddCoins(user);
+
         // 알림 전송
         sendNotification(like.getUser(), like);
 
         return LikeScrapDto.toDtoFromTalk(like);
+    }
+
+    private void checkAndAddCoins(User user) {
+        long totalInteractions = likeScrapRepository.countByUserAndLikeScrapType(user, LikeScrapType.LIKE);
+
+        // 5의 배수일 때 코인 부여
+        if (totalInteractions % 5 == 0) {
+            user.setCoin(user.getCoin() + 10);
+            userRepository.save(user);
+        }
     }
 
     @Transactional
