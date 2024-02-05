@@ -35,13 +35,12 @@ public class UserDto {
     @Getter
     @Setter
     public static class UserUpdateRequestDto{
-        String email;
         String password;
         String name;
         String nickname;
         LocalDate birthday;
         String phone;
-        Gender gender;
+        String gender;
     }
     
     @Builder
