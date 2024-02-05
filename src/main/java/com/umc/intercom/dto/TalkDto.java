@@ -1,7 +1,6 @@
 package com.umc.intercom.dto;
 
 import com.umc.intercom.domain.Talk;
-import com.umc.intercom.domain.common.enums.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import org.springframework.data.domain.Page;
@@ -34,6 +33,7 @@ public class TalkDto {
         private String imageUrl;
         private int viewCount;
         private int likeCount;
+        private int commentCount;
         private String writer;
 
         public static TalkResponseDto toDto(Talk talk) {
@@ -45,6 +45,7 @@ public class TalkDto {
                     .imageUrl(talk.getImageUrl())
                     .viewCount(talk.getViewCount())
                     .likeCount(talk.getLikeCount())
+                    .commentCount(talk.getCommentCount())
                     .writer(talk.getUser().getNickname())
                     .build();
         }

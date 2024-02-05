@@ -18,4 +18,6 @@ public interface LikeScrapRepository extends JpaRepository<LikeScrap, Long> {
     Optional<LikeScrap> findByUserAndPostAndPostTypeAndLikeScrapType(User user, Post post, PostType postType, LikeScrapType likeScrapType);
 
     Page<LikeScrap> findByUserAndLikeScrapTypeAndPostType(User user, LikeScrapType likeScrapType, PostType postType, Pageable pageable);
+
+    long countByUserAndLikeScrapType(User user, LikeScrapType likeScrapType);
 }
