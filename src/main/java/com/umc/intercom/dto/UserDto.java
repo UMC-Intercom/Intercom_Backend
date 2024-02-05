@@ -43,6 +43,11 @@ public class UserDto {
     }
 
     @Getter
+    public static class EmailRequestDto {
+        String email;
+    }
+
+    @Getter
     @Setter
     public static class SignUpRequestDto{
         String email;
