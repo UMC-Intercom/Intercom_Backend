@@ -1,11 +1,13 @@
 package com.umc.intercom.service;
 
 import com.umc.intercom.domain.Comment;
+import com.umc.intercom.domain.Notification;
 import com.umc.intercom.domain.Talk;
 import com.umc.intercom.domain.User;
 import com.umc.intercom.domain.common.enums.AdoptionStatus;
 import com.umc.intercom.dto.CommentDto;
 import com.umc.intercom.repository.CommentRepository;
+import com.umc.intercom.repository.NotificationRepository;
 import com.umc.intercom.repository.TalkRepository;
 import com.umc.intercom.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -22,6 +24,7 @@ public class CommentService {
     private CommentRepository commentRepository;
     private UserRepository userRepository;
     private TalkRepository talkRepository;
+    private NotificationRepository notificationRepository;
 
     @Transactional
     public CommentDto.CommentResponseDto  createComment(String userEmail, CommentDto.CommentRequestDto commentDto) {
@@ -35,6 +38,10 @@ public class CommentService {
                 .build();
 
         Comment savedComment = commentRepository.save(comment);
+
+        // 알림 전송
+        sendNotification(savedComment.getUser(), savedComment);
+
         return CommentDto.CommentResponseDto.toDto(savedComment);
     }
 
@@ -71,6 +78,19 @@ public class CommentService {
                 .build();
 
         Comment savedComment = commentRepository.save(comment);
+        // 알림 전송
+        sendNotification(savedComment.getUser(), savedComment);
+
         return CommentDto.CommentResponseDto.toDto(savedComment);
+    }
+
+    private void sendNotification(User user, Comment comment) {
+        Notification notification = Notification.builder()
+                .user(user)
+                .comment(comment)
+                .isRead(false)  // 초기에 알림은 읽지 않음
+                .build();
+
+        notificationRepository.save(notification);
     }
 }
