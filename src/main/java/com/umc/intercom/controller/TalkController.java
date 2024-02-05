@@ -61,6 +61,13 @@ public class TalkController {
         return ResponseEntity.ok(talkDtoPage);
     }
 
+    @Operation(summary = "댓글 많은 순으로 톡톡 게시글 목록 조회")
+    @GetMapping("/comment-counts")
+    public ResponseEntity<Page<TalkDto.TalkResponseDto>> getTalksWithCommentCounts(@RequestParam(defaultValue = "1") int page) {
+        Page<TalkDto.TalkResponseDto> resultPage = talkService.getTalksWithCommentCounts(page);
+        return ResponseEntity.ok(resultPage);
+    }
+
     // talk 상세 조회
     @Operation(summary = "톡톡 게시글 상세 조회", description = "{id} 자리에 상세 조회할 톡톡 게시글 id를 전달해주세요.")
     @GetMapping("/{id}")

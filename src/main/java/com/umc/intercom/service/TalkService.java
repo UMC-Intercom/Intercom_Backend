@@ -3,14 +3,12 @@ package com.umc.intercom.service;
 import com.umc.intercom.domain.Talk;
 import com.umc.intercom.domain.User;
 import com.umc.intercom.dto.TalkDto;
+import com.umc.intercom.repository.CommentRepository;
 import com.umc.intercom.repository.TalkRepository;
 import com.umc.intercom.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +22,7 @@ public class TalkService {
 
     private TalkRepository talkRepository;
     private UserRepository userRepository;
+    private CommentRepository commentRepository;
 
     public TalkDto.TalkResponseDto createTalk(TalkDto.TalkRequestDto talkRequestDto, String userEmail) {
         Optional<User> user = userRepository.findByEmail(userEmail);
@@ -77,6 +76,23 @@ public class TalkService {
 
         Page<Talk> talkPage = talkRepository.findAll(pageable);
         return TalkDto.toDtoPage(talkPage);
+    }
+
+    public Page<TalkDto.TalkResponseDto> getTalksWithCommentCounts(int page) {
+        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(Sort.Order.desc("createdAt")));
+
+        Page<Object[]> result = talkRepository.findTalksWithCommentCounts(pageable);
+
+        List<TalkDto.TalkResponseDto> talkDtoList = new ArrayList<>();
+        for (Object[] row : result.getContent()) {
+            Talk talk = (Talk) row[0];
+            int commentCount = ((Number) row[1]).intValue(); // Long에서 int로 변환
+            TalkDto.TalkResponseDto talkDto = TalkDto.TalkResponseDto.toDto(talk);
+            talkDto.setCommentCount(commentCount);
+            talkDtoList.add(talkDto);
+        }
+
+        return new PageImpl<>(talkDtoList, pageable, result.getTotalElements());
     }
 
     public Optional<TalkDto.TalkResponseDto> getTalkById(String userEmail, Long id) {

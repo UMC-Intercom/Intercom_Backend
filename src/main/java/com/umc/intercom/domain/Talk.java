@@ -1,7 +1,6 @@
 package com.umc.intercom.domain;
 
 import com.umc.intercom.domain.common.BaseEntity;
-import com.umc.intercom.domain.common.enums.Category;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -43,6 +42,10 @@ public class Talk extends BaseEntity {
     @Column(name = "like_count")
     private int likeCount;
 
+    @Setter
+    @Transient  // DB에 저장x
+    private int commentCount;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -50,4 +53,5 @@ public class Talk extends BaseEntity {
 
     @OneToMany(mappedBy = "talk", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
+
 }
