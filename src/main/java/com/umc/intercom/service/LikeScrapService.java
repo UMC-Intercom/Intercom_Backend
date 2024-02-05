@@ -1,19 +1,13 @@
 package com.umc.intercom.service;
 
-import com.umc.intercom.domain.LikeScrap;
-import com.umc.intercom.domain.Post;
-import com.umc.intercom.domain.Talk;
-import com.umc.intercom.domain.User;
+import com.umc.intercom.domain.*;
 import com.umc.intercom.domain.common.enums.LikeScrapType;
 import com.umc.intercom.domain.common.enums.PostType;
 import com.umc.intercom.dto.InterviewDto;
 import com.umc.intercom.dto.LikeScrapDto;
 import com.umc.intercom.dto.ResumeDto;
 import com.umc.intercom.dto.TalkDto;
-import com.umc.intercom.repository.LikeScrapRepository;
-import com.umc.intercom.repository.PostRepository;
-import com.umc.intercom.repository.TalkRepository;
-import com.umc.intercom.repository.UserRepository;
+import com.umc.intercom.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,6 +30,7 @@ public class LikeScrapService {
     private final TalkRepository talkRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final NotificationRepository notificationRepository;
 
     /* talk 좋아요 */
     public Optional<LikeScrap> checkIfUserLiked(User user, Talk talk) {
@@ -65,6 +60,9 @@ public class LikeScrapService {
         // 좋아요 수 업데이트
         talk.setLikeCount(talk.getLikeCount() + 1);
         talkRepository.save(talk);
+
+        // 알림 전송
+        sendNotification(like.getUser(), like);
 
         return LikeScrapDto.toDtoFromTalk(like);
     }
@@ -201,5 +199,15 @@ public class LikeScrapService {
 
         // LikeScrap을 ResumeDto로 변환해서 반환
         return scrapPage.map(scrap -> ResumeDto.toScrapListDto(scrap.getPost()));
+    }
+
+    private void sendNotification(User user, LikeScrap likeScrap) {
+        Notification notification = Notification.builder()
+                .user(user)
+                .likeScrap(likeScrap)
+                .isRead(false)  // 초기에 알림은 읽지 않음
+                .build();
+
+        notificationRepository.save(notification);
     }
 }
