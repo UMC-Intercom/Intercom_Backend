@@ -8,6 +8,8 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import java.util.ArrayList;
+import java.util.List;
 
 import java.time.LocalDate;
 
@@ -54,4 +56,6 @@ public class User {
     @Column(columnDefinition = "VARCHAR(10) DEFAULT 'USER'")
     private Role role;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Notification> notifications = new ArrayList<>();
 }
