@@ -21,6 +21,7 @@ public class Comment extends BaseEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(name = "adoption_status")
     private AdoptionStatus adoptionStatus;
