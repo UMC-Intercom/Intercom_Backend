@@ -27,9 +27,10 @@ public class CareerController {
         return new ResponseEntity<>(createdCareerDto, HttpStatus.CREATED);
     }
 
+    @Operation(summary = "이메일로 커리어 조회")
     @GetMapping("/{userEmail}")
-    public ResponseEntity<List<CareerDto>> getCareerByEmail(@PathVariable String userEmail) {
-        List<CareerDto> careerDtos = careerService.getCareerByEmail(userEmail);
+    public ResponseEntity<List<CareerDto.CareerResponseDto>> getCareerByEmail(@PathVariable String userEmail) {
+        List<CareerDto.CareerResponseDto> careerDtos = careerService.getCareerByEmail(userEmail);
 
         return ResponseEntity.ok(careerDtos);
     }

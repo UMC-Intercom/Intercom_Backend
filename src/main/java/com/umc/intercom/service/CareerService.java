@@ -69,7 +69,7 @@ public class CareerService {
         return CareerDto.CareerResponseDto.toDto(createdCareer, createdCareerDetail, createdSpec);
     }
 
-    public List<CareerDto> getCareerByEmail(String userEmail){
+    public List<CareerDto.CareerResponseDto> getCareerByEmail(String userEmail){
         Optional<User> user = userRepository.findByEmail(userEmail);
         if (!user.isPresent()) {
             throw new RuntimeException("User Not Found");
@@ -83,7 +83,7 @@ public class CareerService {
             Spec spec = specRepository.findByCareer(career)
                     .orElseThrow(() -> new RuntimeException("Spec Not Found"));
 
-            return CareerDto.toDto(career, careerDetail, spec);
+            return CareerDto.CareerResponseDto.toDto(career, careerDetail, spec);
         }).collect(Collectors.toList());
 
     }
