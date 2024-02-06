@@ -39,12 +39,10 @@ public class InterviewDto {
         @Schema(description = "취득 점수", example = "취득 점수1, 점수2, 점수3,")
         private String score;
 
-        @Schema(description = "step3) 자소서 문항", example = "문항")
+        @Schema(description = "step3) 면접 후기 제목", example = "제목")
         private String title;
-        @Schema(description = "자소서 답변", example = "답변")
+        @Schema(description = "면접 후기 내용", example = "내용")
         private String content;
-        @Schema(description = "이미지 url", example = "이미지 url")
-        private String imageUrl;
     }
 
     @Getter

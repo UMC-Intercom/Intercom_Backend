@@ -1,43 +1,59 @@
 package com.umc.intercom.service;
 
+import com.umc.intercom.aws.AmazonS3Manager;
 import com.umc.intercom.domain.Talk;
 import com.umc.intercom.domain.User;
+import com.umc.intercom.domain.Uuid;
 import com.umc.intercom.dto.TalkDto;
-import com.umc.intercom.repository.CommentRepository;
 import com.umc.intercom.repository.TalkRepository;
 import com.umc.intercom.repository.UserRepository;
+import com.umc.intercom.repository.UuidRepository;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @AllArgsConstructor
 @Service
 public class TalkService {
 
-    private TalkRepository talkRepository;
-    private UserRepository userRepository;
-    private CommentRepository commentRepository;
+    private final TalkRepository talkRepository;
+    private final UserRepository userRepository;
+    private final UuidRepository uuidRepository;
+    private final AmazonS3Manager s3Manager;
 
-    public TalkDto.TalkResponseDto createTalk(TalkDto.TalkRequestDto talkRequestDto, String userEmail) {
+    @Transactional
+    public TalkDto.TalkResponseDto createTalk(TalkDto.TalkRequestDto talkRequestDto, MultipartFile file, String userEmail) {
         Optional<User> user = userRepository.findByEmail(userEmail);
+
+        // 이미지 업로드
+        String pictureUrl = null;
+        if (file != null){
+            String uuid = UUID.randomUUID().toString();
+            Uuid savedUuid = uuidRepository.save(Uuid.builder()
+                    .uuid(uuid).build());
+            pictureUrl = s3Manager.uploadFile(s3Manager.generateTalkKeyName(savedUuid), file);
+        }
+
+        System.out.println("s3 url(클릭 시 브라우저에 사진 뜨는지 확인): " + pictureUrl);
 
         Talk talk = Talk.builder()
                 .title(talkRequestDto.getTitle())
                 .content(talkRequestDto.getContent())
                 .category(talkRequestDto.getCategory())
-                .imageUrl(talkRequestDto.getImageUrl())
-                .viewCount(0) // 초기 조회수는 0으로 설정
+                .imageUrl(pictureUrl)  // 이미지 URL을 S3 업로드 후의 URL로 설정
+                .viewCount(0)
                 .likeCount(0)
                 .user(user.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다.")))
                 .build();
-
-        talk.getUser().setNickname(user.get().getNickname());
 
         Talk createdTalk = talkRepository.save(talk);
         return TalkDto.TalkResponseDto.toDto(createdTalk);

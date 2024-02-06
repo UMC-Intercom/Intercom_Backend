@@ -7,8 +7,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -20,13 +22,23 @@ public class TalkController {
     private final TalkService talkService;
 
     // talk 생성
-    @Operation(summary = "톡톡 게시글 작성")
-    @PostMapping
-    public ResponseEntity<TalkDto.TalkResponseDto> createTalk(@RequestBody TalkDto.TalkRequestDto talkRequestDto) {
+    @Operation(summary = "톡톡 게시글 작성", description = "Content-Type을 multipart/form-data 형식으로 보내주세요.")
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<TalkDto.TalkResponseDto> createTalk(@RequestPart(value = "file", required = false) MultipartFile file,
+                                                              @RequestParam(name = "title") String title,
+                                                              @RequestParam(name = "content") String content,
+                                                              @RequestParam(name = "category") String category) {
+
+        TalkDto.TalkRequestDto talkRequestDto = TalkDto.TalkRequestDto.builder()
+                .title(title)
+                .content(content)
+                .category(category)
+                .build();
+
         // 현재 로그인한 유저의 이메일
         String userEmail = SecurityUtil.getCurrentUsername();
 
-        TalkDto.TalkResponseDto createdTalkDto = talkService.createTalk(talkRequestDto, userEmail);
+        TalkDto.TalkResponseDto createdTalkDto = talkService.createTalk(talkRequestDto, file, userEmail);
         return new ResponseEntity<>(createdTalkDto, HttpStatus.CREATED);
     }
 
