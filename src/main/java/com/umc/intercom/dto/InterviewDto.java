@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class InterviewDto {
@@ -64,7 +65,7 @@ public class InterviewDto {
         // PostDetail
         private String title;
         private String content;
-        private String imageUrl;
+        private List<String> imageUrls;
 
         // PostSpec
         private String education;
@@ -89,7 +90,7 @@ public class InterviewDto {
                     post.getUpdatedAt(),
                     postDetail.getTitle(),
                     postDetail.getContent(),
-                    postDetail.getImageUrl(),
+                    postDetail.getImageUrls(),
                     postSpec.getEducation(),
                     postSpec.getMajor(),
                     postSpec.getGpa(),

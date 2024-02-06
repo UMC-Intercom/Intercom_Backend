@@ -29,14 +29,14 @@ public class InterviewController {
             "\"education\": \"학교명\", \"major\": \"학과명\", \"gpa\": \"4.0/4.5\", \"activity\": \"대외활동 내용\", \"certification\": \"자격증1, 자격증2, 자격증3,\", \"english\": \"어학 종류1, 종류2, 종류3,\", \"score\": \"취득 점수1, 점수2, 점수3,\", " +
             "\"title\": \"문항\", \"content\": \"답변\" }")
     @PostMapping(value = "", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<InterviewDto.InterviewResponseDto> createInterview(@RequestPart(value = "file", required = false) MultipartFile file,
+    public ResponseEntity<InterviewDto.InterviewResponseDto> createInterview(@RequestPart(value = "file", required = false) List<MultipartFile> files,
                                                                              @RequestPart("interviewRequestDto") String interviewRequestDtoString) throws JsonProcessingException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         InterviewDto.InterviewRequestDto interviewRequestDto = objectMapper.readValue(interviewRequestDtoString, InterviewDto.InterviewRequestDto.class);
 
         String userEmail = SecurityUtil.getCurrentUsername();
-        InterviewDto.InterviewResponseDto  createdInterviewDto = interviewService.createInterview(file, interviewRequestDto, userEmail);
+        InterviewDto.InterviewResponseDto  createdInterviewDto = interviewService.createInterview(files, interviewRequestDto, userEmail);
         return new ResponseEntity<>(createdInterviewDto, HttpStatus.CREATED);
     }
 
