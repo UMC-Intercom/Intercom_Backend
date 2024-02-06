@@ -110,4 +110,33 @@ public class CommentService {
             userRepository.save(user);
         }
     }
+
+    public boolean checkAdoptionStatus(Long talkId) {
+        Optional<Comment> adoptedComment = commentRepository.findByTalkIdAndAdoptionStatus(talkId, AdoptionStatus.ADOPTED);
+        return adoptedComment.isPresent();  // 채택된 댓글이 존재하면 true
+    }
+
+    public CommentDto.CommentResponseDto adoptComment(String userEmail, Long commentId) {
+        Optional<User> user = userRepository.findByEmail(userEmail);
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        if (user.isPresent()) {
+            if (user.get().getEmail().equals(comment.getUser().getEmail())) {   // 나 == 댓글 작성자
+                System.out.println("나 댓글: " + user.get().getEmail() + " , " + comment.getUser().getEmail());
+                throw new IllegalStateException("내가 작성한 답변은 채택할 수 없습니다.");
+            }
+        }
+        if (!user.get().getEmail().equals(comment.getTalk().getUser().getEmail())) {    // 나 != 톡톡 작성자
+            throw new IllegalStateException("톡톡 게시글 작성자만 답변을 채택할 수 있습니다.");
+        }
+        if (comment.getAdoptionStatus() == AdoptionStatus.ADOPTED) {
+            throw new IllegalStateException("이미 채택된 답변입니다.");
+        }
+
+        comment.setAdoptionStatus(AdoptionStatus.ADOPTED);
+        Comment savedComment = commentRepository.save(comment);
+        return CommentDto.CommentResponseDto.toDto(savedComment);
+    }
+
 }
