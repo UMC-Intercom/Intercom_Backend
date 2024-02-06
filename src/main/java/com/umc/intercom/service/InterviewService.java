@@ -2,23 +2,20 @@ package com.umc.intercom.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.umc.intercom.aws.AmazonS3Manager;
+import com.umc.intercom.domain.*;
+import com.umc.intercom.repository.*;
 import org.springframework.stereotype.Service;
 
-import com.umc.intercom.domain.Post;
-import com.umc.intercom.domain.PostDetail;
-import com.umc.intercom.domain.PostSpec;
-import com.umc.intercom.domain.User;
 import com.umc.intercom.domain.common.enums.PostType;
 import com.umc.intercom.dto.InterviewDto;
-import com.umc.intercom.repository.PostDetailRepository;
-import com.umc.intercom.repository.PostRepository;
-import com.umc.intercom.repository.PostSpecRepository;
-import com.umc.intercom.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @AllArgsConstructor
@@ -28,12 +25,26 @@ public class InterviewService {
     private PostDetailRepository postDetailRepository;
     private PostSpecRepository postSpecRepository;
     private UserRepository userRepository;
+    private UuidRepository uuidRepository;
+    private AmazonS3Manager s3Manager;
+
 
     @Transactional
-    public InterviewDto.InterviewResponseDto createInterview(InterviewDto.InterviewRequestDto  interviewDto, String userEmail){
+    public InterviewDto.InterviewResponseDto createInterview(MultipartFile file, InterviewDto.InterviewRequestDto  interviewDto, String userEmail){
         Optional<User> user = userRepository.findByEmail(userEmail);
-    
-        
+
+        // 이미지 업로드
+        String pictureUrl = null;
+        if (file != null){
+            String uuid = UUID.randomUUID().toString();
+            Uuid savedUuid = uuidRepository.save(Uuid.builder()
+                    .uuid(uuid).build());
+            pictureUrl = s3Manager.uploadFile(s3Manager.generatePostKeyName(savedUuid), file);
+        }
+
+        System.out.println("s3 url(클릭 시 브라우저에 사진 뜨는지 확인): " + pictureUrl);
+
+
         Post post = Post.builder()
                         .company(interviewDto.getCompany())
                         .department(interviewDto.getDepartment())
@@ -51,7 +62,7 @@ public class InterviewService {
         PostDetail postDetail = PostDetail.builder()
                                         .title(interviewDto.getTitle())
                                         .content(interviewDto.getContent())
-                                        .imageUrl(interviewDto.getImageUrl())
+                                        .imageUrl(pictureUrl)   // S3 url 저장
                                         .post(createdPost)
                                         .build();
 
