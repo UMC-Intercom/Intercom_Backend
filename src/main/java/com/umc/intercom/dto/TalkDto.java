@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 import static com.umc.intercom.dto.TalkDto.TalkResponseDto.toDto;
 
 @Data
@@ -30,7 +32,7 @@ public class TalkDto {
         private String title;
         private String content;
         private String category;
-        private String imageUrl;
+        private List<String> imageUrls;
         private int viewCount;
         private int likeCount;
         private int commentCount;
@@ -42,7 +44,7 @@ public class TalkDto {
                     .title(talk.getTitle())
                     .content(talk.getContent())
                     .category(talk.getCategory())
-                    .imageUrl(talk.getImageUrl())
+                    .imageUrls(talk.getImageUrls())
                     .viewCount(talk.getViewCount())
                     .likeCount(talk.getLikeCount())
                     .commentCount(talk.getCommentCount())

@@ -29,9 +29,10 @@ public class Talk extends BaseEntity {
 
     private String category;
 
-    @Lob
+    @ElementCollection
+    @CollectionTable(name = "talk_images", joinColumns = @JoinColumn(name = "talk_id"))
     @Column(name = "image_url")
-    private String imageUrl;
+    private List<String> imageUrls;
 
     @Setter
     @ColumnDefault("0")

@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -24,7 +25,7 @@ public class TalkController {
     // talk 생성
     @Operation(summary = "톡톡 게시글 작성", description = "Content-Type을 multipart/form-data 형식으로 보내주세요.")
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<TalkDto.TalkResponseDto> createTalk(@RequestPart(value = "file", required = false) MultipartFile file,
+    public ResponseEntity<TalkDto.TalkResponseDto> createTalk(@RequestPart(value = "file", required = false) List<MultipartFile> files,
                                                               @RequestParam(name = "title") String title,
                                                               @RequestParam(name = "content") String content,
                                                               @RequestParam(name = "category") String category) {
@@ -38,7 +39,7 @@ public class TalkController {
         // 현재 로그인한 유저의 이메일
         String userEmail = SecurityUtil.getCurrentUsername();
 
-        TalkDto.TalkResponseDto createdTalkDto = talkService.createTalk(talkRequestDto, file, userEmail);
+        TalkDto.TalkResponseDto createdTalkDto = talkService.createTalk(talkRequestDto, files, userEmail);
         return new ResponseEntity<>(createdTalkDto, HttpStatus.CREATED);
     }
 

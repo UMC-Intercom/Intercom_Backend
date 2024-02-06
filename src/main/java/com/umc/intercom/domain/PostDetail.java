@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -23,8 +25,10 @@ public class PostDetail {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @ElementCollection
+    @CollectionTable(name = "post_images", joinColumns = @JoinColumn(name = "post_detail_id"))
     @Column(name = "image_url")
-    private String imageUrl;
+    private List<String> imageUrls;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")

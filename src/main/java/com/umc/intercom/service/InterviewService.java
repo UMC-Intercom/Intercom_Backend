@@ -1,5 +1,6 @@
 package com.umc.intercom.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,20 +31,22 @@ public class InterviewService {
 
 
     @Transactional
-    public InterviewDto.InterviewResponseDto createInterview(MultipartFile file, InterviewDto.InterviewRequestDto  interviewDto, String userEmail){
+    public InterviewDto.InterviewResponseDto createInterview(List<MultipartFile> files, InterviewDto.InterviewRequestDto  interviewDto, String userEmail){
         Optional<User> user = userRepository.findByEmail(userEmail);
 
         // 이미지 업로드
-        String pictureUrl = null;
-        if (file != null){
-            String uuid = UUID.randomUUID().toString();
-            Uuid savedUuid = uuidRepository.save(Uuid.builder()
-                    .uuid(uuid).build());
-            pictureUrl = s3Manager.uploadFile(s3Manager.generatePostKeyName(savedUuid), file);
+        List<String> pictureUrls = new ArrayList<>(); // 이미지 URL들을 저장할 리스트
+        if (files != null && !files.isEmpty()){
+            for (MultipartFile file : files) {
+                String uuid = UUID.randomUUID().toString();
+                Uuid savedUuid = uuidRepository.save(Uuid.builder()
+                        .uuid(uuid).build());
+                String pictureUrl = s3Manager.uploadFile(s3Manager.generatePostKeyName(savedUuid), file);
+                pictureUrls.add(pictureUrl); // 리스트에 이미지 URL 추가
+
+                System.out.println("s3 url(클릭 시 브라우저에 사진 뜨는지 확인): " + pictureUrl);
+            }
         }
-
-        System.out.println("s3 url(클릭 시 브라우저에 사진 뜨는지 확인): " + pictureUrl);
-
 
         Post post = Post.builder()
                         .company(interviewDto.getCompany())
@@ -62,7 +65,7 @@ public class InterviewService {
         PostDetail postDetail = PostDetail.builder()
                                         .title(interviewDto.getTitle())
                                         .content(interviewDto.getContent())
-                                        .imageUrl(pictureUrl)   // S3 url 저장
+                                        .imageUrls(pictureUrls)   // S3 url 저장
                                         .post(createdPost)
                                         .build();
 

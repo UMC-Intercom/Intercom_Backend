@@ -50,7 +50,6 @@ public class ResumeService {
                 .post(post)
                 .title(resumeDto.getTitle())
                 .content(resumeDto.getContent())
-                .imageUrl(resumeDto.getImageUrl())
                 .build();
 
 //        postDetail.getPost().setId(resumeDto.getId());
