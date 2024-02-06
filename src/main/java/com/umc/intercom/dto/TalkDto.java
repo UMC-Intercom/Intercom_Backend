@@ -9,8 +9,10 @@ import static com.umc.intercom.dto.TalkDto.TalkResponseDto.toDto;
 
 @Data
 @NoArgsConstructor
+@Builder
 public class TalkDto {
     @Getter
+    @Builder
     public static class TalkRequestDto {
         @Schema(description = "제목", example = "제목")
         private String title;
@@ -18,8 +20,6 @@ public class TalkDto {
         private String content;
         @Schema(description = "카테고리", example = "경영/사무, 마케팅/홍보,")
         private String category;
-        @Schema(description = "이미지 url", example = "이미지 url")
-        private String imageUrl;
     }
 
     @Getter

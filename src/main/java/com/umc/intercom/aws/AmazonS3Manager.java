@@ -3,9 +3,8 @@ package com.umc.intercom.aws;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.umc.intercom.config.AmazonConfig;
+import com.umc.intercom.config.AmazonS3Config;
 import com.umc.intercom.domain.Uuid;
-import com.umc.intercom.repository.UuidRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -20,24 +19,32 @@ public class AmazonS3Manager{
 
     private final AmazonS3 amazonS3;
 
-    private final AmazonConfig amazonConfig;
-
-    private final UuidRepository uuidRepository;
+    private final AmazonS3Config amazonConfig;
 
     // 어떤 디렉토리의 어떤 식별자인지는 KeyName으로 지정
     public String uploadFile(String keyName, MultipartFile file){
+        // 원본 파일 이름 가져오기
+        String originalFilename = file.getOriginalFilename();
+        // 확장자 가져오기
+        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+
+        // 업로드할 파일의 사이즈를 S3에 알려주기 위함
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(file.getSize());
+        metadata.setContentType(file.getContentType()); // Content-Type 설정(브라우저에서 바로 열어볼 수 있도록)
+
         try {
-            amazonS3.putObject(new PutObjectRequest(amazonConfig.getBucket(), keyName, file.getInputStream(), metadata));
-        }catch (IOException e){
+            // S3 API 메소드(putObject)로 파일 Stream을 열어서 S3에 파일 업로드
+            amazonS3.putObject(new PutObjectRequest(amazonConfig.getBucket(), keyName + extension, file.getInputStream(), metadata));
+        } catch (IOException e){
             log.error("error at AmazonS3Manager uploadFile : {}", (Object) e.getStackTrace());
         }
 
-        return amazonS3.getUrl(amazonConfig.getBucket(), keyName).toString();
+        // S3에 업로드된 사진 url 가져오기
+        return amazonS3.getUrl(amazonConfig.getBucket(), keyName + extension).toString();
     }
 
-    // KeyName을 만들어서 리턴 해주는 메서드
+    // KeyName을 만들어서 리턴 해주는 메서드 - 파일 이름이 중복되지 않게 경로와 uuid 값 연결
     // talk 디렉토리
     public String generateTalkKeyName(Uuid uuid) {
         return amazonConfig.getTalkPath() + '/' + uuid.getUuid();
