@@ -31,25 +31,28 @@ public class TalkService {
     private final AmazonS3Manager s3Manager;
 
     @Transactional
-    public TalkDto.TalkResponseDto createTalk(TalkDto.TalkRequestDto talkRequestDto, MultipartFile file, String userEmail) {
+    public TalkDto.TalkResponseDto createTalk(TalkDto.TalkRequestDto talkRequestDto, List<MultipartFile> files, String userEmail) {
         Optional<User> user = userRepository.findByEmail(userEmail);
 
         // 이미지 업로드
-        String pictureUrl = null;
-        if (file != null){
-            String uuid = UUID.randomUUID().toString();
-            Uuid savedUuid = uuidRepository.save(Uuid.builder()
-                    .uuid(uuid).build());
-            pictureUrl = s3Manager.uploadFile(s3Manager.generateTalkKeyName(savedUuid), file);
-        }
+        List<String> pictureUrls = new ArrayList<>(); // 이미지 URL들을 저장할 리스트
+        if (files != null && !files.isEmpty()){
+            for (MultipartFile file : files) {
+                String uuid = UUID.randomUUID().toString();
+                Uuid savedUuid = uuidRepository.save(Uuid.builder()
+                        .uuid(uuid).build());
+                String pictureUrl = s3Manager.uploadFile(s3Manager.generateTalkKeyName(savedUuid), file);
+                pictureUrls.add(pictureUrl); // 리스트에 이미지 URL 추가
 
-        System.out.println("s3 url(클릭 시 브라우저에 사진 뜨는지 확인): " + pictureUrl);
+                System.out.println("s3 url(클릭 시 브라우저에 사진 뜨는지 확인): " + pictureUrl);
+            }
+        }
 
         Talk talk = Talk.builder()
                 .title(talkRequestDto.getTitle())
                 .content(talkRequestDto.getContent())
                 .category(talkRequestDto.getCategory())
-                .imageUrl(pictureUrl)  // 이미지 URL을 S3 업로드 후의 URL로 설정
+                .imageUrls(pictureUrls)  // 이미지 URL을 S3 업로드 후의 URL로 설정
                 .viewCount(0)
                 .likeCount(0)
                 .user(user.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다.")))
