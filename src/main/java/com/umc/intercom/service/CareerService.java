@@ -5,7 +5,6 @@ import com.umc.intercom.domain.CareerDetail;
 import com.umc.intercom.domain.Spec;
 import com.umc.intercom.domain.User;
 import com.umc.intercom.dto.CareerDto;
-import com.umc.intercom.dto.ResumeDto;
 import com.umc.intercom.repository.CareerDetailRepository;
 import com.umc.intercom.repository.CareerRepository;
 import com.umc.intercom.repository.SpecRepository;
@@ -14,7 +13,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -47,7 +49,7 @@ public class CareerService {
                 .startDate(careerDto.getStartDate())
                 .endDate(careerDto.getEndDate())
                 .build();
-        
+
 
         Spec spec = Spec.builder()
                 .career(career)
@@ -65,5 +67,24 @@ public class CareerService {
 
 
         return CareerDto.CareerResponseDto.toDto(createdCareer, createdCareerDetail, createdSpec);
+    }
+
+    public List<CareerDto> getCareerByEmail(String userEmail){
+        Optional<User> user = userRepository.findByEmail(userEmail);
+        if (!user.isPresent()) {
+            throw new RuntimeException("User Not Found");
+        }
+
+        List<Career> careers = careerRepository.findByUser(user.get());
+
+        return careers.stream().map(career -> {
+            CareerDetail careerDetail = careerDetailRepository.findByCareer(career)
+                    .orElseThrow(() -> new RuntimeException("CareerDetail Not Found"));
+            Spec spec = specRepository.findByCareer(career)
+                    .orElseThrow(() -> new RuntimeException("Spec Not Found"));
+
+            return CareerDto.toDto(career, careerDetail, spec);
+        }).collect(Collectors.toList());
+
     }
 }

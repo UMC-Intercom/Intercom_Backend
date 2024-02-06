@@ -7,10 +7,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,5 +25,12 @@ public class CareerController {
 
         CareerDto.CareerResponseDto createdCareerDto = careerService.createCareer(careerRequestDto, userEmail);
         return new ResponseEntity<>(createdCareerDto, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{userEmail}")
+    public ResponseEntity<List<CareerDto>> getCareerByEmail(@PathVariable String userEmail) {
+        List<CareerDto> careerDtos = careerService.getCareerByEmail(userEmail);
+
+        return ResponseEntity.ok(careerDtos);
     }
 }
