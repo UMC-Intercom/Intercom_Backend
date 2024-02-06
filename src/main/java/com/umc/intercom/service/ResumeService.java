@@ -13,6 +13,7 @@ import com.umc.intercom.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,8 @@ public class ResumeService {
     private PostSpecRepository postSpecRepository;
     private UserRepository userRepository;
 
-    public ResumeDto createResume(ResumeDto resumeDto, String userEmail){
+    @Transactional
+    public ResumeDto.ResumeResponseDto  createResume(ResumeDto.ResumeRequestDto  resumeDto, String userEmail){
         Optional<User> user = userRepository.findByEmail(userEmail);
 
         Post post = Post.builder()
@@ -37,12 +39,12 @@ public class ResumeService {
                 .department(resumeDto.getDepartment())
                 .year(resumeDto.getYear())
                 .semester(resumeDto.getSemester())
-                .postType(resumeDto.getPostType())
-                .viewCount(resumeDto.getViewCount())
+                .postType(PostType.SUCCESSFUL_RESUME)   // 저장할 때 postType 타입 지정
+                .viewCount(0)
                 .user(user.orElseThrow(() -> new RuntimeException("User not Found")))
                 .build();
 
-        post.getUser().setNickname(user.get().getNickname());
+//        post.getUser().setNickname(user.get().getNickname());
 
         PostDetail postDetail = PostDetail.builder()
                 .post(post)
@@ -51,7 +53,7 @@ public class ResumeService {
                 .imageUrl(resumeDto.getImageUrl())
                 .build();
 
-        postDetail.getPost().setId(resumeDto.getId());
+//        postDetail.getPost().setId(resumeDto.getId());
 
         PostSpec postSpec = PostSpec.builder()
                 .post(post)
@@ -64,18 +66,16 @@ public class ResumeService {
                 .score(resumeDto.getScore())
                 .build();
 
-        postSpec.getPost().setId(resumeDto.getId());
+//        postSpec.getPost().setId(resumeDto.getId());
 
         Post createdPost = postRepository.save(post);
         PostDetail createdPostDetail = postDetailRepository.save(postDetail);
         PostSpec createdPostSpec = postSpecRepository.save(postSpec);
 
-        return ResumeDto.toDto(createdPost, createdPostDetail, createdPostSpec);
-
-
+        return ResumeDto.ResumeResponseDto.toDto(createdPost, createdPostDetail, createdPostSpec);
     }
 
-    public Page<ResumeDto> getAllResumes(int page){
+    public Page<ResumeDto.ResumeResponseDto> getAllResumes(int page){
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createdAt"));
 
@@ -100,12 +100,26 @@ public class ResumeService {
                 .collect(Collectors.toMap(spec -> spec.getPost().getId(), Function.identity()));
 
         // Post, PostDetail, PostSpec을 ResumeDto로 변환
-        List<ResumeDto> resumeDtos = postPage.getContent().stream()
-                .map(post -> ResumeDto.toDto(post, postDetailMap.get(post.getId()), postSpecMap.get(post.getId())))
+        List<ResumeDto.ResumeResponseDto> resumeDtos = postPage.getContent().stream()
+                .map(post -> ResumeDto.ResumeResponseDto.toDto(post, postDetailMap.get(post.getId()), postSpecMap.get(post.getId())))
                 .collect(Collectors.toList());
 
         // 변환된 결과를 Page로
         return new PageImpl<>(resumeDtos, pageable, postPage.getTotalElements());
+    }
+
+    public Optional<ResumeDto.ResumeResponseDto> getResumeById(Long id){
+        Optional<Post> post = postRepository.findById(id);
+
+        if(post.isPresent()){
+                if(post.get().getPostType() != PostType.SUCCESSFUL_RESUME)
+                    return Optional.empty();
+                else {
+            PostDetail postDetail = postDetailRepository.findByPost(post.get()).orElseThrow(() -> new RuntimeException("PostDetail not Found"));
+            PostSpec postSpec = postSpecRepository.findByPost(post.get()).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
+            return Optional.of(ResumeDto.ResumeResponseDto.toDto(post.get(), postDetail, postSpec));
+        }}
+        return Optional.empty();
     }
 
 }

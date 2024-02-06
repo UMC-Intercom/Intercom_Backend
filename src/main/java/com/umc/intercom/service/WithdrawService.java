@@ -22,15 +22,21 @@ public class WithdrawService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void withdraw(UserDto.UserRequestDto requestDto) {
-        User user = userRepository.findByEmail(requestDto.getEmail())
+    public void withdraw(String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
-
-        if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
-            throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
-        }
 
         userRepository.delete(user);
     }
+
+    public void validateBeforeWithdraw(String userEmail, String password) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        if(!passwordEncoder.matches(password, user.getPassword())) {
+            throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
+        }
+    }
+
 }
 

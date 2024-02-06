@@ -16,7 +16,12 @@ public class SwaggerConfig {
     public OpenAPI UMCStudyAPI() {
         Info info = new Info()
                 .title("UMC Intercom API")
-                .description("UMC Intercom API 명세서")
+                .description("UMC Intercom API 명세서\n" +
+                        "\n- Parameters:\n" +
+                        "\n   Query Parameters: 쿼리스트링을 통해 서버로 전달되는 매개변수\n" +
+                        "\n   Path Variables: 경로 변수를 통해 서버로 전달되는 매개변수\n" +
+                        "\n- Request body: 서버로 전달해야 하는 값\n" +
+                        "\n- Response: 서버로부터 오는 응답")
                 .version("1.0.0");
 
         String jwtSchemeName = "JWT TOKEN";

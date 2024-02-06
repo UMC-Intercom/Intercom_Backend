@@ -11,7 +11,8 @@ import com.umc.intercom.repository.SpecRepository;
 import com.umc.intercom.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.webjars.NotFoundException;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +26,8 @@ public class CareerService {
     CareerDetailRepository careerDetailRepository;
     SpecRepository specRepository;
 
-    public CareerDto createCareer(CareerDto careerDto, String userEmail){
+    @Transactional
+    public CareerDto.CareerResponseDto createCareer(CareerDto.CareerRequestDto careerDto, String userEmail){
         Optional<User> user = userRepository.findByEmail(userEmail);
         Career career = Career.builder()
                 .university(careerDto.getUniversity())
@@ -36,7 +38,7 @@ public class CareerService {
                 .user(user.orElseThrow(()-> new RuntimeException("User not Found")))
                 .build();
 
-        career.getUser().setNickname(user.get().getNickname());
+//        career.getUser().setNickname(user.get().getNickname());
 
         CareerDetail careerDetail = CareerDetail.builder()
                 .career(career)
@@ -64,7 +66,7 @@ public class CareerService {
         Spec createdSpec = specRepository.save(spec);
 
 
-        return CareerDto.toDto(createdCareer, createdCareerDetail, createdSpec);
+        return CareerDto.CareerResponseDto.toDto(createdCareer, createdCareerDetail, createdSpec);
     }
 
     public List<CareerDto> getCareerByEmail(String userEmail){

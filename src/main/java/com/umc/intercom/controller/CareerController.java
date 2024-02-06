@@ -3,6 +3,7 @@ package com.umc.intercom.controller;
 import com.umc.intercom.config.security.SecurityUtil;
 import com.umc.intercom.dto.CareerDto;
 import com.umc.intercom.service.CareerService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +18,12 @@ import java.util.Optional;
 public class CareerController {
     private final CareerService careerService;
 
+    @Operation(summary = "내 커리어 작성")
     @PostMapping
-    public ResponseEntity<CareerDto> createCareer(@RequestBody CareerDto careerDto){
+    public ResponseEntity<CareerDto.CareerResponseDto> createCareer(@RequestBody CareerDto.CareerRequestDto careerRequestDto){
         String userEmail = SecurityUtil.getCurrentUsername();
 
-        CareerDto createdCareerDto = careerService.createCareer(careerDto, userEmail);
+        CareerDto.CareerResponseDto createdCareerDto = careerService.createCareer(careerRequestDto, userEmail);
         return new ResponseEntity<>(createdCareerDto, HttpStatus.CREATED);
     }
 
