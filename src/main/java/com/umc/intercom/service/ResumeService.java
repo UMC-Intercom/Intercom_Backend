@@ -15,12 +15,10 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @AllArgsConstructor
 @Service
@@ -46,21 +44,24 @@ public class ResumeService {
 
 //        post.getUser().setNickname(user.get().getNickname());
 
-        PostDetail postDetail = PostDetail.builder()
-                .post(post)
-                .title(resumeDto.getTitle())
-                .content(resumeDto.getContent())
-                .build();
+        List<PostDetail> postDetails = IntStream.range(0, resumeDto.getTitles().size())
+                .mapToObj(i -> PostDetail.builder()
+                        .post(post)
+                        .title(resumeDto.getTitles().get(i))
+                        .content(resumeDto.getContents().get(i))
+                        .build())
+                .collect(Collectors.toList());
 
 //        postDetail.getPost().setId(resumeDto.getId());
 
+        String certifications = String.join(", ", resumeDto.getCertifications());
         PostSpec postSpec = PostSpec.builder()
                 .post(post)
                 .education(resumeDto.getEducation())
                 .major(resumeDto.getMajor())
                 .gpa(resumeDto.getGpa())
                 .activity(resumeDto.getActivity())
-                .certification(resumeDto.getCertification())
+                .certification(certifications)
                 .english(resumeDto.getEnglish())
                 .score(resumeDto.getScore())
                 .build();
@@ -68,10 +69,10 @@ public class ResumeService {
 //        postSpec.getPost().setId(resumeDto.getId());
 
         Post createdPost = postRepository.save(post);
-        PostDetail createdPostDetail = postDetailRepository.save(postDetail);
+        List<PostDetail> createdPostDetails = postDetailRepository.saveAll(postDetails);
         PostSpec createdPostSpec = postSpecRepository.save(postSpec);
 
-        return ResumeDto.ResumeResponseDto.toDto(createdPost, createdPostDetail, createdPostSpec);
+        return ResumeDto.ResumeResponseDto.toDto(createdPost, createdPostDetails, createdPostSpec);
     }
 
     public Page<ResumeDto.ResumeResponseDto> getAllResumes(int page){
@@ -93,8 +94,8 @@ public class ResumeService {
         List<PostSpec> postSpecs = postSpecRepository.findByPostIdIn(postIds);
 
         // PostDetail, PostSpec을 Post의 id를 key로 하는 Map으로 변환
-        Map<Long, PostDetail> postDetailMap = postDetails.stream()
-                .collect(Collectors.toMap(detail -> detail.getPost().getId(), Function.identity()));
+        Map<Long, List<PostDetail>> postDetailMap = postDetails.stream()
+                .collect(Collectors.groupingBy(detail -> detail.getPost().getId()));
         Map<Long, PostSpec> postSpecMap = postSpecs.stream()
                 .collect(Collectors.toMap(spec -> spec.getPost().getId(), Function.identity()));
 
@@ -111,13 +112,14 @@ public class ResumeService {
         Optional<Post> post = postRepository.findById(id);
 
         if(post.isPresent()){
-                if(post.get().getPostType() != PostType.SUCCESSFUL_RESUME)
-                    return Optional.empty();
-                else {
-            PostDetail postDetail = postDetailRepository.findByPost(post.get()).orElseThrow(() -> new RuntimeException("PostDetail not Found"));
-            PostSpec postSpec = postSpecRepository.findByPost(post.get()).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
-            return Optional.of(ResumeDto.ResumeResponseDto.toDto(post.get(), postDetail, postSpec));
-        }}
+            if(post.get().getPostType() != PostType.SUCCESSFUL_RESUME)
+                return Optional.empty();
+            else {
+                List<PostDetail> postDetails = postDetailRepository.findAllByPost(post.get());
+                PostSpec postSpec = postSpecRepository.findByPost(post.get()).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
+                return Optional.of(ResumeDto.ResumeResponseDto.toDto(post.get(), postDetails, postSpec));
+            }
+        }
         return Optional.empty();
     }
 

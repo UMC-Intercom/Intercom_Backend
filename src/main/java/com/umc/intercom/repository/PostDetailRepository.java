@@ -12,4 +12,5 @@ import java.util.List;
 public interface PostDetailRepository extends JpaRepository<PostDetail, Long> {
     List<PostDetail> findByPostIdIn(List<Long> postIds);
     Optional<PostDetail> findByPost(Post post);
+    List<PostDetail> findAllByPost(Post post);
 }
