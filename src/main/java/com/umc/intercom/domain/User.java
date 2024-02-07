@@ -52,6 +52,11 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @ElementCollection
+    @CollectionTable(name = "user_interests", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "interest")
+    private List<String> interests = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(10) DEFAULT 'USER'")
     private Role role;
