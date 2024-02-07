@@ -18,8 +18,7 @@ import java.util.Optional;
 public class CareerController {
     private final CareerService careerService;
 
-    @Operation(summary = "내 커리어 작성", description = "CareerRequestDto 데이터 형식 : \n\n +" +
-            "{")
+    @Operation(summary = "내 커리어 작성")
     @PostMapping
     public ResponseEntity<CareerDto.CareerResponseDto> createCareer(@RequestBody CareerDto.CareerRequestDto careerRequestDto){
         String userEmail = SecurityUtil.getCurrentUsername();
