@@ -34,4 +34,12 @@ public class CareerController {
 
         return ResponseEntity.ok(careerDtos);
     }
+
+    @Operation(summary = "아이디로 커리어 수정")
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateCareer(@PathVariable Long id, @RequestBody CareerDto.CareerRequestDto careerRequestDto){
+        String userEmail = SecurityUtil.getCurrentUsername();
+        careerService.updateCareer(id, userEmail, careerRequestDto);
+        return ResponseEntity.noContent().build();
+    }
 }
