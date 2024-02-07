@@ -134,6 +134,11 @@ public class CommentService {
             throw new IllegalStateException("이미 채택된 답변입니다.");
         }
 
+        Long talkId = comment.getTalk().getId();
+        if (checkAdoptionStatus(talkId)) {
+            throw new IllegalStateException("답변 채택은 게시글 당 하나만 가능합니다.");
+        }
+
         comment.setAdoptionStatus(AdoptionStatus.ADOPTED);
         Comment savedComment = commentRepository.save(comment);
         return CommentDto.CommentResponseDto.toDto(savedComment);

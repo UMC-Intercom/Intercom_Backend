@@ -48,13 +48,6 @@ public class CommentController {
         return commentService.createReplyComment(userEmail, replyRequestDto);
     }
 
-    @Operation(summary = "답변 채택 여부 확인", description = "{talkId} 자리에 톡톡 게시글 id를 전달해주세요.\n\n채택된 댓글이 존재하면 true, 존재하지 않으면 false를 반환")
-    @GetMapping("/adoption-status/{talkId}")
-    public ResponseEntity<Boolean> checkAdoptionStatusInTalk(@PathVariable Long talkId) {
-        boolean isAdopted = commentService.checkAdoptionStatus(talkId);
-        return ResponseEntity.ok(isAdopted);
-    }
-
     @Operation(summary = "답변 채택", description = "{id} 자리에 채택할 댓글 id를 전달해주세요.")
     @PostMapping("/{id}/adopt")
     public ResponseEntity<CommentDto.CommentResponseDto> adoptComment(@PathVariable Long id) {
