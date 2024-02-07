@@ -9,6 +9,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public class ResumeDto {
@@ -33,18 +34,17 @@ public class ResumeDto {
         @Schema(description = "대외활동", example = "대외활동 내용")
         private String activity;
         @Schema(description = "자격증", example = "자격증1, 자격증2, 자격증3,")
-        private String certification;
+        private List<String> certifications;
         @Schema(description = "어학", example = "어학 종류1, 종류2, 종류3,")
         private String english;
         @Schema(description = "취득 점수", example = "취득 점수1, 점수2, 점수3,")
         private String score;
 
         @Schema(description = "step3) 자소서 문항", example = "문항")
-        private String title;
+        private List<String> titles;
         @Schema(description = "자소서 답변", example = "답변")
-        private String content;
-        @Schema(description = "이미지 url", example = "이미지 url")
-        private String imageUrl;
+        private List<String> contents;
+
     }
 
     @Getter
@@ -63,9 +63,8 @@ public class ResumeDto {
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
         //PostDetail 필드
-        private String title;
-        private String content;
-        private List<String> imageUrls;
+        private List<String> titles;
+        private List<String> contents;
         //PostSpec 필드
         private String education;
         private String major;
@@ -75,7 +74,7 @@ public class ResumeDto {
         private String english;
         private String score;
 
-        public static ResumeResponseDto toDto(Post post, PostDetail postDetail, PostSpec postSpec) {
+        public static ResumeResponseDto toDto(Post post, List<PostDetail> postDetails, PostSpec postSpec) {
             return new ResumeResponseDto(
                     post.getId(),
                     post.getCompany(),
@@ -87,9 +86,8 @@ public class ResumeDto {
                     post.getUser().getNickname(),
                     post.getCreatedAt(),
                     post.getUpdatedAt(),
-                    postDetail.getTitle(),
-                    postDetail.getContent(),
-                    postDetail.getImageUrls(),
+                    postDetails.stream().map(PostDetail::getTitle).collect(Collectors.toList()),
+                    postDetails.stream().map(PostDetail::getContent).collect(Collectors.toList()),
                     postSpec.getEducation(),
                     postSpec.getMajor(),
                     postSpec.getGpa(),
