@@ -12,4 +12,6 @@ import com.umc.intercom.domain.common.enums.PostType;
 public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findByPostType(PostType postType, Pageable pageable);
     List<Post> findByPostTypeOrderByCreatedAtDesc(PostType postType);
+
+    List<Post> findByCompanyAndDepartmentAndPostType(String company, String department, PostType postType);
 }
