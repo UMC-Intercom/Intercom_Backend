@@ -46,6 +46,11 @@ public class Talk extends BaseEntity {
     private int likeCount;
 
     @Setter
+    @ColumnDefault("0")
+    @Column(name = "scrap_count")
+    private int scrapCount;
+
+    @Setter
     @Transient  // DB에 저장x
     private int commentCount;
 

@@ -7,6 +7,7 @@ import com.umc.intercom.domain.common.enums.PostType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -58,6 +59,7 @@ public class InterviewDto {
         private String semester; //상반기 , 하반기
         private PostType postType;
         private int viewCount;
+        private int scrapCount;
         private String writer;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
@@ -85,6 +87,7 @@ public class InterviewDto {
                     post.getSemester(),
                     post.getPostType(),
                     post.getViewCount(),
+                    post.getScrapCount(),
                     post.getUser().getNickname(),
                     post.getCreatedAt(),
                     post.getUpdatedAt(),
@@ -112,9 +115,15 @@ public class InterviewDto {
         private String semester;
         private PostType postType;
         private int viewCount;
+        private int scrapCount;
         private String writer;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
+
+        public static Page<InterviewDto.ScrapResponseDto> toDtoPage(Page<Post> postPage) {
+            return postPage.map(post -> new InterviewDto.ScrapResponseDto(post.getId(), post.getCompany(), post.getDepartment(), post.getYear(),post.getSemester(),
+                    post.getPostType(), post.getViewCount(), post.getScrapCount(), post.getUser().getNickname(), post.getCreatedAt(), post.getUpdatedAt()));
+        }
     }
 
     public static ScrapResponseDto toScrapListDto(Post post) {
@@ -126,6 +135,7 @@ public class InterviewDto {
                 .semester(post.getSemester())
                 .postType(post.getPostType())
                 .viewCount(post.getViewCount())
+                .scrapCount(post.getScrapCount())
                 .writer(post.getUser().getNickname())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())

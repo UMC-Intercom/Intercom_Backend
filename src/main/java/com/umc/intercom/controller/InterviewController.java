@@ -5,6 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,5 +47,12 @@ public class InterviewController {
     public ResponseEntity<List<InterviewDto.InterviewResponseDto>> getAllInterviews() {
         List<InterviewDto.InterviewResponseDto> interviewList = interviewService.getAllInterviews();
         return new ResponseEntity<>(interviewList, HttpStatus.OK);
+    }
+
+    @Operation(summary = "스크랩 수 순으로 면접 후기 게시글 목록 조회")
+    @GetMapping("/scrap-counts")
+    public ResponseEntity<Page<InterviewDto.ScrapResponseDto>> getAllInterviewsByScrapCounts(@RequestParam(value = "page", defaultValue = "1") int page) {
+        Page<InterviewDto.ScrapResponseDto> interviewDtoPage = interviewService.getAllInterviewsByScrapCounts(page);
+        return ResponseEntity.ok(interviewDtoPage);
     }
 }

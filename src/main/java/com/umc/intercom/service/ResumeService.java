@@ -1,9 +1,6 @@
 package com.umc.intercom.service;
 
-import com.umc.intercom.domain.Post;
-import com.umc.intercom.domain.PostDetail;
-import com.umc.intercom.domain.PostSpec;
-import com.umc.intercom.domain.User;
+import com.umc.intercom.domain.*;
 import com.umc.intercom.domain.common.enums.PostType;
 import com.umc.intercom.dto.ResumeDto;
 import com.umc.intercom.repository.PostDetailRepository;
@@ -131,6 +128,18 @@ public class ResumeService {
             PostSpec postSpec = postSpecRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
             return ResumeDto.ResumeResponseDto.toDto(post, postDetails, postSpec);
         }).collect(Collectors.toList());
+    }
+
+    public Page<ResumeDto.ScrapResponseDto> getAllResumesByScrapCounts(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("scrapCount"));
+        sorts.add(Sort.Order.desc("createdAt"));
+
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
+
+        Page<Post> postPage = postRepository.findByPostType(PostType.SUCCESSFUL_RESUME, pageable);
+
+        return ResumeDto.ScrapResponseDto.toDtoPage(postPage);
     }
 
 }

@@ -37,6 +37,11 @@ public class Post extends BaseEntity {
     @Column(name = "view_count")
     private int viewCount;
 
+    @Setter
+    @ColumnDefault("0")
+    @Column(name = "scrap_count")
+    private int scrapCount;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     //@OnDelete(action = OnDeleteAction.CASCADE)

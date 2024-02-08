@@ -9,6 +9,10 @@ import java.util.stream.Collectors;
 import com.umc.intercom.aws.AmazonS3Manager;
 import com.umc.intercom.domain.*;
 import com.umc.intercom.repository.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.umc.intercom.domain.common.enums.PostType;
@@ -95,5 +99,17 @@ public class InterviewService {
             PostSpec postSpec = postSpecRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
             return InterviewDto.InterviewResponseDto.toDto(post, postDetail, postSpec);
         }).collect(Collectors.toList());
+    }
+
+    public Page<InterviewDto.ScrapResponseDto> getAllInterviewsByScrapCounts(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("scrapCount"));
+        sorts.add(Sort.Order.desc("createdAt"));
+
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
+
+        Page<Post> postPage = postRepository.findByPostType(PostType.INTERVIEW_REVIEW, pageable);
+
+        return InterviewDto.ScrapResponseDto.toDtoPage(postPage);
     }
 }
