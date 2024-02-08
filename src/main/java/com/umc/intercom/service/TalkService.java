@@ -55,6 +55,15 @@ public class TalkService {
         if (talkRequestDto.getId() != null) { // id가 null이 아닌 경우 - 임시저장된 글을 다시 저장하는 경우
             talk = talkRepository.findById(talkRequestDto.getId())
                     .orElseThrow(() -> new EntityNotFoundException("해당 ID의 게시글을 찾을 수 없습니다."));
+
+            // 기존 이미지 URL 리스트
+            List<String> oldPictureUrls = talk.getImageUrls();
+
+            // 기존 이미지를 S3에서 삭제
+            for (String oldPictureUrl : oldPictureUrls) {
+                s3Manager.deleteFile(oldPictureUrl);
+            }
+
             talk.update(talkRequestDto.getTitle(), talkRequestDto.getContent(), talkRequestDto.getCategory(), pictureUrls, status);
         } else {    // 저장 또는 임시저장
             talk = Talk.builder()

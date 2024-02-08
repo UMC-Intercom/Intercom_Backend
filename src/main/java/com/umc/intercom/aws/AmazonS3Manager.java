@@ -1,6 +1,7 @@
 package com.umc.intercom.aws;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3URI;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.umc.intercom.config.AmazonS3Config;
@@ -44,6 +45,21 @@ public class AmazonS3Manager{
         return amazonS3.getUrl(amazonConfig.getBucket(), keyName + extension).toString();
     }
 
+    // 파일 삭제
+    public void deleteFile(String fileUrl) {
+        try {
+            // 파일 URL에서 버킷 이름과 키를 추출
+            AmazonS3URI uri = new AmazonS3URI(fileUrl);
+            String bucket = uri.getBucket();
+            String key = uri.getKey();
+
+            // 파일 삭제
+            amazonS3.deleteObject(bucket, key);
+        } catch (IllegalArgumentException e) {
+            log.error("error at AmazonS3Manager deleteFile : {}", (Object) e.getStackTrace());
+        }
+    }
+    
     // KeyName을 만들어서 리턴 해주는 메서드 - 파일 이름이 중복되지 않게 경로와 uuid 값 연결
     // talk 디렉토리
     public String generateTalkKeyName(Uuid uuid) {
