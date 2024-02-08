@@ -4,10 +4,12 @@ import com.umc.intercom.aws.AmazonS3Manager;
 import com.umc.intercom.domain.Talk;
 import com.umc.intercom.domain.User;
 import com.umc.intercom.domain.Uuid;
+import com.umc.intercom.domain.common.enums.Status;
 import com.umc.intercom.dto.TalkDto;
 import com.umc.intercom.repository.TalkRepository;
 import com.umc.intercom.repository.UserRepository;
 import com.umc.intercom.repository.UuidRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.*;
@@ -30,8 +32,9 @@ public class TalkService {
     private final UuidRepository uuidRepository;
     private final AmazonS3Manager s3Manager;
 
+    // 저장, 임시저장, 임시저장된 글 저장
     @Transactional
-    public TalkDto.TalkResponseDto createTalk(TalkDto.TalkRequestDto talkRequestDto, List<MultipartFile> files, String userEmail) {
+    public TalkDto.TalkResponseDto createTalk(TalkDto.TalkRequestDto talkRequestDto, List<MultipartFile> files, String userEmail, Status status) {
         Optional<User> user = userRepository.findByEmail(userEmail);
 
         // 이미지 업로드
@@ -48,15 +51,30 @@ public class TalkService {
             }
         }
 
-        Talk talk = Talk.builder()
-                .title(talkRequestDto.getTitle())
-                .content(talkRequestDto.getContent())
-                .category(talkRequestDto.getCategory())
-                .imageUrls(pictureUrls)  // 이미지 URL을 S3 업로드 후의 URL로 설정
-                .viewCount(0)
-                .likeCount(0)
-                .user(user.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다.")))
-                .build();
+        Talk talk;
+        if (talkRequestDto.getId() != null) { // id가 null이 아닌 경우 - 임시저장된 글을 다시 저장하는 경우
+            talk = talkRepository.findById(talkRequestDto.getId())
+                    .orElseThrow(() -> new EntityNotFoundException("해당 ID의 게시글을 찾을 수 없습니다."));
+
+            // 기존 이미지 URL 리스트
+            List<String> oldPictureUrls = talk.getImageUrls();
+
+            // 기존 이미지를 S3에서 삭제
+            for (String oldPictureUrl : oldPictureUrls) {
+                s3Manager.deleteFile(oldPictureUrl);
+            }
+
+            talk.update(talkRequestDto.getTitle(), talkRequestDto.getContent(), talkRequestDto.getCategory(), pictureUrls, status);
+        } else {    // 저장 또는 임시저장
+            talk = Talk.builder()
+                    .title(talkRequestDto.getTitle())
+                    .content(talkRequestDto.getContent())
+                    .category(talkRequestDto.getCategory())
+                    .imageUrls(pictureUrls)  // 이미지 URL을 S3 업로드 후의 URL로 설정
+                    .user(user.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다.")))
+                    .status(status) // 매개변수로 받은 값에 따라 다르게 저장됨
+                    .build();
+        }
 
         Talk createdTalk = talkRepository.save(talk);
         return TalkDto.TalkResponseDto.toDto(createdTalk);
@@ -71,7 +89,7 @@ public class TalkService {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
 
         // jpa에서 기본적으로 제공 -> repo에 적어주지 않아도o
-        Page<Talk> talkPage =  talkRepository.findAll(pageable);
+        Page<Talk> talkPage =  talkRepository.findAllByStatus(Status.SAVED, pageable);
         return TalkDto.toDtoPage(talkPage);
     }
 
@@ -82,7 +100,7 @@ public class TalkService {
         
         Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
 
-        Page<Talk> talkPage = talkRepository.findAll(pageable);
+        Page<Talk> talkPage = talkRepository.findAllByStatus(Status.SAVED, pageable);
         return TalkDto.toDtoPage(talkPage);
     }
 
@@ -93,14 +111,14 @@ public class TalkService {
 
         Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
 
-        Page<Talk> talkPage = talkRepository.findAll(pageable);
+        Page<Talk> talkPage = talkRepository.findAllByStatus(Status.SAVED, pageable);
         return TalkDto.toDtoPage(talkPage);
     }
 
     public Page<TalkDto.TalkResponseDto> getTalksWithCommentCounts(int page) {
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(Sort.Order.desc("createdAt")));
 
-        Page<Object[]> result = talkRepository.findTalksWithCommentCounts(pageable);
+        Page<Object[]> result = talkRepository.findTalksWithCommentCounts(Status.SAVED, pageable);
 
         List<TalkDto.TalkResponseDto> talkDtoList = new ArrayList<>();
         for (Object[] row : result.getContent()) {
@@ -130,7 +148,7 @@ public class TalkService {
         return optionalTalk.map(TalkDto.TalkResponseDto::toDto);
     }
 
-    public Page<TalkDto.TalkResponseDto> searchTalksByTitle(String title, int page) {
+    public Page<TalkDto.TalkResponseDto> searchTalksByTitleAndStatus(String title, int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createdAt"));
 
@@ -141,8 +159,19 @@ public class TalkService {
             return Page.empty(pageable);
         }
 
-        Page<Talk> talkPage = talkRepository.findByTitleContaining(title, pageable);
+        Page<Talk> talkPage = talkRepository.findByTitleContainingAndStatus(title, Status.SAVED, pageable);
         return TalkDto.toDtoPage(talkPage);
+    }
+
+    public TalkDto.TalkResponseDto getTemporarilySavedTalk(String userEmail) {
+        Talk talk = talkRepository.findTalkByUserEmailAndStatus(userEmail, Status.TEMPORARY_SAVED)
+                .orElse(null); // 임시저장된 게시글이 없으면 null 반환
+
+        if (talk == null) {
+            return null;
+        }
+
+        return TalkDto.TalkResponseDto.toDto(talk);
     }
 
 }
