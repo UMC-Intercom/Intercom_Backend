@@ -102,6 +102,7 @@ public class LikeScrapService {
         return likeScrapRepository.findByUserAndTalkAndPostTypeAndLikeScrapType(user, talk, PostType.TALK, LikeScrapType.SCRAP);
     }
 
+    @Transactional
     public LikeScrapDto addTalkScrap(Long talkId, String userEmail) throws Exception {
         User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
         Talk talk = talkRepository.findById(talkId).orElseThrow(() -> new NotFoundException("Talk 게시글을 찾을 수 없습니다."));
@@ -121,9 +122,14 @@ public class LikeScrapService {
 
         likeScrapRepository.save(scrap);
 
+        // 스크랩 수 업데이트
+        talk.setScrapCount(talk.getScrapCount() + 1);
+        talkRepository.save(talk);
+
         return LikeScrapDto.toDtoFromTalk(scrap);
     }
 
+    @Transactional
     public void deleteTalkScrap(Long talkId, String userEmail) {
         User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
         Talk talk = talkRepository.findById(talkId).orElseThrow(() -> new NotFoundException("Talk 게시글을 찾을 수 없습니다."));
@@ -132,6 +138,11 @@ public class LikeScrapService {
         Optional<LikeScrap> scrapOptional = checkIfUserScrapedTalk(user, talk);
         if (scrapOptional.isPresent()) {
             likeScrapRepository.delete(scrapOptional.get());
+
+            // 스크랩 수 업데이트
+            talk.setScrapCount(talk.getScrapCount() - 1);
+            talkRepository.save(talk);
+
         }
     }
 
@@ -141,6 +152,7 @@ public class LikeScrapService {
         return likeScrapRepository.findByUserAndPostAndPostTypeAndLikeScrapType(user, post, post.getPostType(), LikeScrapType.SCRAP);
     }
 
+    @Transactional
     public LikeScrapDto addPostScrap(Long postId, String userEmail) throws Exception {
         User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
         Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post 게시글을 찾을 수 없습니다."));
@@ -160,9 +172,14 @@ public class LikeScrapService {
 
         likeScrapRepository.save(scrap);
 
+        // 스크랩 수 업데이트
+        post.setScrapCount(post.getScrapCount() + 1);
+        postRepository.save(post);
+
         return LikeScrapDto.toDtoFromPost(scrap);
     }
 
+    @Transactional
     public void deletePostScrap(Long postId, String userEmail) {
         User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
         Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post 게시글을 찾을 수 없습니다."));
@@ -171,6 +188,11 @@ public class LikeScrapService {
         Optional<LikeScrap> scrapOptional = checkIfUserScrapedPost(user, post);
         if (scrapOptional.isPresent()) {
             likeScrapRepository.delete(scrapOptional.get());
+
+            // 스크랩 수 업데이트
+            post.setScrapCount(post.getScrapCount() - 1);
+            postRepository.save(post);
+
         }
     }
 

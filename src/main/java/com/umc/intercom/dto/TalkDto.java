@@ -37,6 +37,7 @@ public class TalkDto {
         private List<String> imageUrls;
         private int viewCount;
         private int likeCount;
+        private int scrapCount;
         private int commentCount;
         private String writer;
 
@@ -49,6 +50,7 @@ public class TalkDto {
                     .imageUrls(talk.getImageUrls())
                     .viewCount(talk.getViewCount())
                     .likeCount(talk.getLikeCount())
+                    .scrapCount(talk.getScrapCount())
                     .commentCount(talk.getCommentCount())
                     .writer(talk.getUser().getNickname())
                     .build();
