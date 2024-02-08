@@ -80,7 +80,7 @@ public class TalkService {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
 
         // jpa에서 기본적으로 제공 -> repo에 적어주지 않아도o
-        Page<Talk> talkPage =  talkRepository.findAll(pageable);
+        Page<Talk> talkPage =  talkRepository.findAllByStatus(Status.SAVED, pageable);
         return TalkDto.toDtoPage(talkPage);
     }
 
@@ -91,7 +91,7 @@ public class TalkService {
         
         Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
 
-        Page<Talk> talkPage = talkRepository.findAll(pageable);
+        Page<Talk> talkPage = talkRepository.findAllByStatus(Status.SAVED, pageable);
         return TalkDto.toDtoPage(talkPage);
     }
 
@@ -102,14 +102,14 @@ public class TalkService {
 
         Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
 
-        Page<Talk> talkPage = talkRepository.findAll(pageable);
+        Page<Talk> talkPage = talkRepository.findAllByStatus(Status.SAVED, pageable);
         return TalkDto.toDtoPage(talkPage);
     }
 
     public Page<TalkDto.TalkResponseDto> getTalksWithCommentCounts(int page) {
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(Sort.Order.desc("createdAt")));
 
-        Page<Object[]> result = talkRepository.findTalksWithCommentCounts(pageable);
+        Page<Object[]> result = talkRepository.findTalksWithCommentCounts(Status.SAVED, pageable);
 
         List<TalkDto.TalkResponseDto> talkDtoList = new ArrayList<>();
         for (Object[] row : result.getContent()) {
@@ -139,7 +139,7 @@ public class TalkService {
         return optionalTalk.map(TalkDto.TalkResponseDto::toDto);
     }
 
-    public Page<TalkDto.TalkResponseDto> searchTalksByTitle(String title, int page) {
+    public Page<TalkDto.TalkResponseDto> searchTalksByTitleAndStatus(String title, int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createdAt"));
 
@@ -150,7 +150,7 @@ public class TalkService {
             return Page.empty(pageable);
         }
 
-        Page<Talk> talkPage = talkRepository.findByTitleContaining(title, pageable);
+        Page<Talk> talkPage = talkRepository.findByTitleContainingAndStatus(title, Status.SAVED, pageable);
         return TalkDto.toDtoPage(talkPage);
     }
 

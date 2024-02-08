@@ -119,9 +119,9 @@ public class TalkController {
     // 제목으로 talk 검색
     @Operation(summary = "톡톡 게시글 검색", description = "제목으로 검색")
     @GetMapping("/search")
-    public ResponseEntity<Page<TalkDto.TalkResponseDto>> searchTalksByTitle(@RequestParam("title") String title,
+    public ResponseEntity<Page<TalkDto.TalkResponseDto>> searchTalksByTitleAndStatus(@RequestParam("title") String title,
                                                          @RequestParam(value = "page", defaultValue = "1") int page) {
-        Page<TalkDto.TalkResponseDto> talkPageDto = talkService.searchTalksByTitle(title, page);
+        Page<TalkDto.TalkResponseDto> talkPageDto = talkService.searchTalksByTitleAndStatus(title, page);
         return ResponseEntity.ok(talkPageDto);
     }
 
