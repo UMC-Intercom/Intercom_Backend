@@ -60,6 +60,7 @@ public class ResumeController {
     public ResponseEntity<Page<ResumeDto.ScrapResponseDto>> getAllResumesByScrapCounts(@RequestParam(value = "page", defaultValue = "1") int page) {
         Page<ResumeDto.ScrapResponseDto> resumeDtoPage = resumeService.getAllResumesByScrapCounts(page);
         return ResponseEntity.ok(resumeDtoPage);
+    }
 
     @Operation(summary = "기업명, 직무명으로 자소서 검색")
     @GetMapping("/search")
