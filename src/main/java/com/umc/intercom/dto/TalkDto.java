@@ -16,6 +16,8 @@ public class TalkDto {
     @Getter
     @Builder
     public static class TalkRequestDto {
+        @Schema(description = "게시글 id", example = "필수x. 임시저장된 글을 저장하는 경우에만 필요")
+        private Long id;
         @Schema(description = "제목", example = "제목")
         private String title;
         @Schema(description = "내용", example = "내용")

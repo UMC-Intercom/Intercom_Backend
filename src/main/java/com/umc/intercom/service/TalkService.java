@@ -4,10 +4,12 @@ import com.umc.intercom.aws.AmazonS3Manager;
 import com.umc.intercom.domain.Talk;
 import com.umc.intercom.domain.User;
 import com.umc.intercom.domain.Uuid;
+import com.umc.intercom.domain.common.enums.Status;
 import com.umc.intercom.dto.TalkDto;
 import com.umc.intercom.repository.TalkRepository;
 import com.umc.intercom.repository.UserRepository;
 import com.umc.intercom.repository.UuidRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.*;
@@ -30,8 +32,9 @@ public class TalkService {
     private final UuidRepository uuidRepository;
     private final AmazonS3Manager s3Manager;
 
+    // 저장, 임시저장, 임시저장된 글 저장
     @Transactional
-    public TalkDto.TalkResponseDto createTalk(TalkDto.TalkRequestDto talkRequestDto, List<MultipartFile> files, String userEmail) {
+    public TalkDto.TalkResponseDto createTalk(TalkDto.TalkRequestDto talkRequestDto, List<MultipartFile> files, String userEmail, Status status) {
         Optional<User> user = userRepository.findByEmail(userEmail);
 
         // 이미지 업로드
@@ -48,15 +51,21 @@ public class TalkService {
             }
         }
 
-        Talk talk = Talk.builder()
-                .title(talkRequestDto.getTitle())
-                .content(talkRequestDto.getContent())
-                .category(talkRequestDto.getCategory())
-                .imageUrls(pictureUrls)  // 이미지 URL을 S3 업로드 후의 URL로 설정
-                .viewCount(0)
-                .likeCount(0)
-                .user(user.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다.")))
-                .build();
+        Talk talk;
+        if (talkRequestDto.getId() != null) { // id가 null이 아닌 경우 - 임시저장된 글을 다시 저장하는 경우
+            talk = talkRepository.findById(talkRequestDto.getId())
+                    .orElseThrow(() -> new EntityNotFoundException("해당 ID의 게시글을 찾을 수 없습니다."));
+            talk.update(talkRequestDto.getTitle(), talkRequestDto.getContent(), talkRequestDto.getCategory(), pictureUrls, status);
+        } else {    // 저장 또는 임시저장
+            talk = Talk.builder()
+                    .title(talkRequestDto.getTitle())
+                    .content(talkRequestDto.getContent())
+                    .category(talkRequestDto.getCategory())
+                    .imageUrls(pictureUrls)  // 이미지 URL을 S3 업로드 후의 URL로 설정
+                    .user(user.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다.")))
+                    .status(status) // 매개변수로 받은 값에 따라 다르게 저장됨
+                    .build();
+        }
 
         Talk createdTalk = talkRepository.save(talk);
         return TalkDto.TalkResponseDto.toDto(createdTalk);

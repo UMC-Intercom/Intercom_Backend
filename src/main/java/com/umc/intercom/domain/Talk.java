@@ -1,6 +1,7 @@
 package com.umc.intercom.domain;
 
 import com.umc.intercom.domain.common.BaseEntity;
+import com.umc.intercom.domain.common.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -56,4 +57,15 @@ public class Talk extends BaseEntity {
     @OneToMany(mappedBy = "talk", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;  // 저장 상태
+
+    public void update(String title, String content, String category, List<String> pictureUrls, Status status) {
+        this.title = title;
+        this.content = content;
+        this.category = category;
+        this.imageUrls = pictureUrls;
+        this.status = status;
+    }
 }

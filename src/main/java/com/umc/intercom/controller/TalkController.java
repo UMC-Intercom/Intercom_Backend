@@ -1,6 +1,7 @@
 package com.umc.intercom.controller;
 
 import com.umc.intercom.config.security.SecurityUtil;
+import com.umc.intercom.domain.common.enums.Status;
 import com.umc.intercom.dto.TalkDto;
 import com.umc.intercom.service.TalkService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,9 +24,32 @@ public class TalkController {
     private final TalkService talkService;
 
     // talk 생성
-    @Operation(summary = "톡톡 게시글 작성", description = "Content-Type을 multipart/form-data 형식으로 보내주세요.")
+    @Operation(summary = "톡톡 게시글 작성", description = "Content-Type을 multipart/form-data 형식으로 보내주세요.\n\n" +
+                "id는 임시저장된 글을 저장하는 경우만 보내주세요.")
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<TalkDto.TalkResponseDto> createTalk(@RequestPart(value = "file", required = false) List<MultipartFile> files,
+                                                              @RequestParam(name = "id", required = false) Long id,
+                                                              @RequestParam(name = "title") String title,
+                                                              @RequestParam(name = "content") String content,
+                                                              @RequestParam(name = "category") String category) {
+
+        TalkDto.TalkRequestDto talkRequestDto = TalkDto.TalkRequestDto.builder()
+                .id(id)
+                .title(title)
+                .content(content)
+                .category(category)
+                .build();
+
+        // 현재 로그인한 유저의 이메일
+        String userEmail = SecurityUtil.getCurrentUsername();
+
+        TalkDto.TalkResponseDto createdTalkDto = talkService.createTalk(talkRequestDto, files, userEmail, Status.SAVED);
+        return new ResponseEntity<>(createdTalkDto, HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "톡톡 게시글 임시저장", description = "Content-Type을 multipart/form-data 형식으로 보내주세요.")
+    @PostMapping(value = "/temporary-save", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<TalkDto.TalkResponseDto> temporarySaveTalk(@RequestPart(value = "file", required = false) List<MultipartFile> files,
                                                               @RequestParam(name = "title") String title,
                                                               @RequestParam(name = "content") String content,
                                                               @RequestParam(name = "category") String category) {
@@ -39,7 +63,7 @@ public class TalkController {
         // 현재 로그인한 유저의 이메일
         String userEmail = SecurityUtil.getCurrentUsername();
 
-        TalkDto.TalkResponseDto createdTalkDto = talkService.createTalk(talkRequestDto, files, userEmail);
+        TalkDto.TalkResponseDto createdTalkDto = talkService.createTalk(talkRequestDto, files, userEmail, Status.TEMPORARY_SAVED);
         return new ResponseEntity<>(createdTalkDto, HttpStatus.CREATED);
     }
 
