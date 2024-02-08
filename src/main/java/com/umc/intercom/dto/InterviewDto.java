@@ -7,6 +7,7 @@ import com.umc.intercom.domain.common.enums.PostType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -118,6 +119,11 @@ public class InterviewDto {
         private String writer;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
+
+        public static Page<InterviewDto.ScrapResponseDto> toDtoPage(Page<Post> postPage) {
+            return postPage.map(post -> new InterviewDto.ScrapResponseDto(post.getId(), post.getCompany(), post.getDepartment(), post.getYear(),post.getSemester(),
+                    post.getPostType(), post.getViewCount(), post.getScrapCount(), post.getUser().getNickname(), post.getCreatedAt(), post.getUpdatedAt()));
+        }
     }
 
     public static ScrapResponseDto toScrapListDto(Post post) {
