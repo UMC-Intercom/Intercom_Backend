@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -59,5 +60,11 @@ public class ResumeController {
     public ResponseEntity<Page<ResumeDto.ScrapResponseDto>> getAllResumesByScrapCounts(@RequestParam(value = "page", defaultValue = "1") int page) {
         Page<ResumeDto.ScrapResponseDto> resumeDtoPage = resumeService.getAllResumesByScrapCounts(page);
         return ResponseEntity.ok(resumeDtoPage);
+
+    @Operation(summary = "기업명, 직무명으로 자소서 검색")
+    @GetMapping("/search")
+    public ResponseEntity<List<ResumeDto.ResumeResponseDto>> searchResumes(@RequestParam String company, @RequestParam String department){
+        List<ResumeDto.ResumeResponseDto> resumes = resumeService.searchResume(company, department);
+        return ResponseEntity.ok(resumes);
     }
 }
