@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -52,5 +53,12 @@ public class ResumeController {
         } else{
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @Operation(summary = "기업명, 직무명으로 자소서 검색")
+    @GetMapping("/search")
+    public ResponseEntity<List<ResumeDto.ResumeResponseDto>> searchResumes(@RequestParam String company, @RequestParam String department){
+        List<ResumeDto.ResumeResponseDto> resumes = resumeService.searchResume(company, department);
+        return ResponseEntity.ok(resumes);
     }
 }
