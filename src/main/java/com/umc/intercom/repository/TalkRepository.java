@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface TalkRepository extends JpaRepository<Talk, Long> {
     Page<Talk> findByTitleContainingAndStatus(String title, Status status, Pageable pageable);
 
@@ -15,4 +17,6 @@ public interface TalkRepository extends JpaRepository<Talk, Long> {
     Page<Object[]> findTalksWithCommentCounts(@Param("status") Status status, Pageable pageable);
 
     Page<Talk> findAllByStatus(Status status, Pageable pageable);
+
+    Optional<Talk> findTalkByUserEmailAndStatus(String userEmail, Status status);
 }

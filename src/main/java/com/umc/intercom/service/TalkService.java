@@ -154,4 +154,15 @@ public class TalkService {
         return TalkDto.toDtoPage(talkPage);
     }
 
+    public TalkDto.TalkResponseDto getTemporarilySavedTalk(String userEmail) {
+        Talk talk = talkRepository.findTalkByUserEmailAndStatus(userEmail, Status.TEMPORARY_SAVED)
+                .orElse(null); // 임시저장된 게시글이 없으면 null 반환
+
+        if (talk == null) {
+            return null;
+        }
+
+        return TalkDto.TalkResponseDto.toDto(talk);
+    }
+
 }

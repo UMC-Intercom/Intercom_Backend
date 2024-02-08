@@ -125,4 +125,18 @@ public class TalkController {
         return ResponseEntity.ok(talkPageDto);
     }
 
+    @Operation(summary = "회원이 임시저장한 톡톡 조회", description = "임시 저장은 하나만 가능\n\n" +
+                "임시저장된 톡톡 존재하면 상세 정보 반환, 존재하지 않으면 HTTP 상태 코드 204 (No Content)를 반환")
+    @GetMapping("/temporary-save")
+    public ResponseEntity<TalkDto.TalkResponseDto> getTemporarilySavedTalk() {
+        String userEmail = SecurityUtil.getCurrentUsername();
+
+        TalkDto.TalkResponseDto temporarilySavedTalk = talkService.getTemporarilySavedTalk(userEmail);
+        if (temporarilySavedTalk == null) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(temporarilySavedTalk);
+    }
+
 }
