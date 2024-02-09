@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class JobDto {
@@ -17,10 +18,7 @@ public class JobDto {
         private String title;
         private int viewCount;
         private LocalDate expirationDate;
-
-        public static Page<JobDto.JobListResponseDto> toDtoPage(Page<Job> jobPage) {
-            return jobPage.map(job -> new JobDto.JobListResponseDto(job.getId(), job.getCompany(), job.getTitle(), job.getViewCount(), job.getExpirationDate()));
-        }
+        private boolean isScraped;  // 스크랩 여부
 
         public static JobDto.JobListResponseDto toScrapListDto(Job job) {
             return JobListResponseDto.builder()
@@ -30,6 +28,13 @@ public class JobDto {
                     .viewCount(job.getViewCount())
                     .expirationDate(job.getExpirationDate())
                     .build();
+        }
+
+        public static Page<JobListResponseDto> toDtoPageWithScrap(Page<Job> jobPage, List<Long> userScrapedJobIds) {
+            return jobPage.map(job -> {
+                boolean isScraped = userScrapedJobIds.contains(job.getId());
+                return new JobDto.JobListResponseDto(job.getId(), job.getCompany(), job.getTitle(), job.getViewCount(), job.getExpirationDate(), isScraped);
+            });
         }
     }
 }

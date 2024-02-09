@@ -27,7 +27,7 @@ public class JobController {
     @GetMapping("/by-category")
     public ResponseEntity<Page<JobDto.JobListResponseDto>> getJobsByCategory(@RequestParam String interest, @RequestParam(value = "page", defaultValue = "1") int page) {
         String userEmail = SecurityUtil.getCurrentUsername();   // 이게 토큰으로 로그인된 사용자인지 검증하는 거라서 비회원일 땐 필요x
-        Page<JobDto.JobListResponseDto> jobPages = jobService.getJobsByCategory(interest, page);
+        Page<JobDto.JobListResponseDto> jobPages = jobService.getJobsByCategory(userEmail, interest, page);
         return ResponseEntity.ok(jobPages);
     }
 }

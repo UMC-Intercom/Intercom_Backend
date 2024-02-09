@@ -3,8 +3,10 @@ package com.umc.intercom.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.intercom.domain.Job;
+import com.umc.intercom.domain.common.enums.PostType;
 import com.umc.intercom.dto.JobDto;
 import com.umc.intercom.repository.JobRepository;
+import com.umc.intercom.repository.LikeScrapRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -29,6 +31,7 @@ import java.util.List;
 public class JobService {
 
     private final JobRepository jobRepository;
+    private final LikeScrapRepository likeScrapRepository;
 
     @Value("${api.accessKey}")
     private String ACCESS_KEY;
@@ -125,7 +128,7 @@ public class JobService {
                 .build();
     }
 
-    public Page<JobDto.JobListResponseDto> getJobsByCategory(String interest, int page) {
+    public Page<JobDto.JobListResponseDto> getJobsByCategory(String userEmail, String interest, int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("viewCount"));
         sorts.add(Sort.Order.desc("postingDate"));  // 조회수가 같으면 최근 게시된 순으로
@@ -133,6 +136,10 @@ public class JobService {
         Pageable pageable = PageRequest.of(page-1, 24, Sort.by(sorts));     // 페이지 당 데이터 24개씩 가져옴
 
         Page<Job> jobPage = jobRepository.findAllByJobMidCodeContaining(interest, pageable);
-        return JobDto.JobListResponseDto.toDtoPage(jobPage);
+        // 현재 회원이 스크랩한 공고 목록 가져오기
+        List<Long> userScrapedJobIds = likeScrapRepository.findJobIdsByUserEmailAndPostType(userEmail, PostType.JOB_INFO);
+
+        // 스크랩 여부를 포함하여 DTO로 변환
+        return JobDto.JobListResponseDto.toDtoPageWithScrap(jobPage, userScrapedJobIds);
     }
 }
