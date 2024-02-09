@@ -292,7 +292,7 @@ public class LikeScrapService {
         }
     }
 
-    public Page<JobDto.ScrapResponseDto> getAllJobScraps(String userEmail, int page) {
+    public Page<JobDto.JobListResponseDto> getAllJobScraps(String userEmail, int page) {
         User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         List<Sort.Order> sorts = new ArrayList<>();
@@ -301,6 +301,6 @@ public class LikeScrapService {
 
         Page<LikeScrap> scrapPage = likeScrapRepository.findByUserAndLikeScrapTypeAndPostType(user, LikeScrapType.SCRAP, PostType.JOB_INFO, pageable);
 
-        return scrapPage.map(scrap -> JobDto.ScrapResponseDto.toScrapListDto(scrap.getJob()));
+        return scrapPage.map(scrap -> JobDto.JobListResponseDto.toScrapListDto(scrap.getJob()));
     }
 }

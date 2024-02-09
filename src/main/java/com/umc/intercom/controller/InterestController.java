@@ -17,7 +17,7 @@ public class InterestController {
     private final InterestService interestService;
 
     @Operation(summary = "관심분야 등록", description = "회원가입 직후 로그인 하지 않은 상태에서 api 호출됨. -> 회원가입 시 서버 응답으로 반환된 회원의 닉네임을 함께 전달해주세요." +
-                                        "\n\n관심분야는 리스트로 전달해주세요. (ex. [\"마케팅\", \"경영/사무\", \"IT/인터넷\"] )")
+                                        "\n\n관심분야는 리스트로 전달해주세요. (ex. [\"IT개발·데이터\", \"마케팅·홍보·조사\", \"디자인\"] )")
     @PostMapping
     public ResponseEntity<Void> addInterest(@RequestParam("nickname") String nickname, @RequestBody List<String> interests) {
         interestService.addInterestsByNickname(nickname, interests);
@@ -32,7 +32,7 @@ public class InterestController {
         return ResponseEntity.ok(interests);
     }
 
-    @Operation(summary = "관심분야 수정", description = "관심분야는 리스트로 전달해주세요. (ex. [\"마케팅\", \"경영/사무\", \"IT/인터넷\"] " +
+    @Operation(summary = "관심분야 수정", description = "관심분야는 리스트로 전달해주세요. (ex. [\"IT개발·데이터\", \"마케팅·홍보·조사\", \"디자인\"] " +
                                         "\n\n빈 리스트 전달 시 해당 사용자의 관심분야가 모두 삭제됨.")
     @PutMapping
     public ResponseEntity<Void> updateInterests(@RequestBody List<String> interests) {

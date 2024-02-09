@@ -6,7 +6,9 @@ import com.umc.intercom.domain.common.enums.PostType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface LikeScrapRepository extends JpaRepository<LikeScrap, Long> {
@@ -19,4 +21,7 @@ public interface LikeScrapRepository extends JpaRepository<LikeScrap, Long> {
     long countByUserAndLikeScrapType(User user, LikeScrapType likeScrapType);
 
     Optional<LikeScrap> findByUserAndJobAndPostTypeAndLikeScrapType(User user, Job job, PostType postType, LikeScrapType likeScrapType);
+
+    @Query("SELECT job.id FROM LikeScrap ls JOIN ls.job job WHERE ls.user.email = :userEmail AND ls.postType = :postType")
+    List<Long> findJobIdsByUserEmailAndPostType(String userEmail, PostType postType);
 }

@@ -118,9 +118,9 @@ public class LikeScrapController {
 
     @Operation(summary = "공고 스크랩 내역 조회")
     @GetMapping("/scraps/jobs")
-    public ResponseEntity<Page<JobDto.ScrapResponseDto>> getAllJobScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
+    public ResponseEntity<Page<JobDto.JobListResponseDto>> getAllJobScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
         String userEmail = SecurityUtil.getCurrentUsername();
-        Page<JobDto.ScrapResponseDto> jobDto = likeScrapService.getAllJobScraps(userEmail, page);
+        Page<JobDto.JobListResponseDto> jobDto = likeScrapService.getAllJobScraps(userEmail, page);
 
         return ResponseEntity.ok(jobDto);
     }
