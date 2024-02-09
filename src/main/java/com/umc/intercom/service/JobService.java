@@ -107,7 +107,7 @@ public class JobService {
         return Job.builder()
                 .jobId(jobNode.path("id").asText())
                 .url(jobNode.path("url").asText())
-                .company(jobNode.path("company").path("name").asText())
+                .company(jobNode.path("company").path("detail").path("name").asText())
                 .title(jobNode.path("position").path("title").asText())
                 .industry(jobNode.path("position").path("industry").path("name").asText())
                 .location(jobNode.path("position").path("location").path("name").asText())
