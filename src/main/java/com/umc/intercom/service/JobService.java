@@ -3,9 +3,14 @@ package com.umc.intercom.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.intercom.domain.Job;
+import com.umc.intercom.dto.JobDto;
 import com.umc.intercom.repository.JobRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -16,6 +21,8 @@ import java.net.URLEncoder;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -116,5 +123,16 @@ public class JobService {
                 .expirationDate(LocalDateTime.ofInstant(Instant.ofEpochSecond(jobNode.path("expiration-timestamp").asLong()), ZoneId.systemDefault()).toLocalDate())
                 .closeType(jobNode.path("close-type").path("name").asText())
                 .build();
+    }
+
+    public Page<JobDto.JobListResponseDto> getJobsByCategory(String interest, int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("viewCount"));
+        sorts.add(Sort.Order.desc("postingDate"));  // 조회수가 같으면 최근 게시된 순으로
+
+        Pageable pageable = PageRequest.of(page-1, 24, Sort.by(sorts));     // 페이지 당 데이터 24개씩 가져옴
+
+        Page<Job> jobPage = jobRepository.findAllByJobMidCodeContaining(interest, pageable);
+        return JobDto.JobListResponseDto.toDtoPage(jobPage);
     }
 }

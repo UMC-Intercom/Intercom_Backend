@@ -11,19 +11,19 @@ public class JobDto {
 
     @Getter
     @Builder
-    public static class ScrapResponseDto {
+    public static class JobListResponseDto {
         private Long id;
         private String company;
         private String title;
         private int viewCount;
         private LocalDate expirationDate;
 
-        public static Page<JobDto.ScrapResponseDto> toDtoPage(Page<Job> jobPage) {
-            return jobPage.map(job -> new JobDto.ScrapResponseDto(job.getId(), job.getCompany(), job.getTitle(), job.getViewCount(), job.getExpirationDate()));
+        public static Page<JobDto.JobListResponseDto> toDtoPage(Page<Job> jobPage) {
+            return jobPage.map(job -> new JobDto.JobListResponseDto(job.getId(), job.getCompany(), job.getTitle(), job.getViewCount(), job.getExpirationDate()));
         }
 
-        public static JobDto.ScrapResponseDto toScrapListDto(Job job) {
-            return ScrapResponseDto.builder()
+        public static JobDto.JobListResponseDto toScrapListDto(Job job) {
+            return JobListResponseDto.builder()
                     .id(job.getId())
                     .company(job.getCompany())
                     .title(job.getTitle())
