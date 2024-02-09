@@ -1,10 +1,7 @@
 package com.umc.intercom.controller;
 
 import com.umc.intercom.config.security.SecurityUtil;
-import com.umc.intercom.dto.InterviewDto;
-import com.umc.intercom.dto.LikeScrapDto;
-import com.umc.intercom.dto.ResumeDto;
-import com.umc.intercom.dto.TalkDto;
+import com.umc.intercom.dto.*;
 import com.umc.intercom.service.LikeScrapService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
@@ -101,5 +98,30 @@ public class LikeScrapController {
         Page<ResumeDto.ScrapResponseDto> resumeDto = likeScrapService.getAllResumeScraps(userEmail, page);
 
         return ResponseEntity.ok(resumeDto);
+    }
+
+    @Operation(summary = "공고 스크랩 추가", description = "{id} 자리에 스크랩할 공고 id를 전달해주세요.")
+    @PostMapping("/scraps/jobs/{id}")
+    public ResponseEntity<LikeScrapDto> addJobScrap(@PathVariable Long id) throws Exception {
+        String userEmail = SecurityUtil.getCurrentUsername();
+        LikeScrapDto likeScrapDto = likeScrapService.addJobScrap(id, userEmail);
+        return ResponseEntity.ok(likeScrapDto);
+    }
+
+    @Operation(summary = "공고 스크랩 삭제", description = "{id} 자리에 스크랩 삭제할 공고 id를 전달해주세요.")
+    @DeleteMapping("/scraps/jobs/{id}")
+    public ResponseEntity<Void> deleteJobScrap(@PathVariable Long id) {
+        String userEmail = SecurityUtil.getCurrentUsername();
+        likeScrapService.deleteJobScrap(id, userEmail);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "공고 스크랩 내역 조회")
+    @GetMapping("/scraps/jobs")
+    public ResponseEntity<Page<JobDto.ScrapResponseDto>> getAllJobScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
+        String userEmail = SecurityUtil.getCurrentUsername();
+        Page<JobDto.ScrapResponseDto> jobDto = likeScrapService.getAllJobScraps(userEmail, page);
+
+        return ResponseEntity.ok(jobDto);
     }
 }

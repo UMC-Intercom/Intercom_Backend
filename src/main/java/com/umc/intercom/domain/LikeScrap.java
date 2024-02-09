@@ -36,6 +36,11 @@ public class LikeScrap {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Talk talk;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Job job;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "post_type")
     private PostType postType;

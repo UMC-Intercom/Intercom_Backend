@@ -1,9 +1,6 @@
 package com.umc.intercom.repository;
 
-import com.umc.intercom.domain.LikeScrap;
-import com.umc.intercom.domain.Post;
-import com.umc.intercom.domain.Talk;
-import com.umc.intercom.domain.User;
+import com.umc.intercom.domain.*;
 import com.umc.intercom.domain.common.enums.LikeScrapType;
 import com.umc.intercom.domain.common.enums.PostType;
 import org.springframework.data.domain.Page;
@@ -20,4 +17,6 @@ public interface LikeScrapRepository extends JpaRepository<LikeScrap, Long> {
     Page<LikeScrap> findByUserAndLikeScrapTypeAndPostType(User user, LikeScrapType likeScrapType, PostType postType, Pageable pageable);
 
     long countByUserAndLikeScrapType(User user, LikeScrapType likeScrapType);
+
+    Optional<LikeScrap> findByUserAndJobAndPostTypeAndLikeScrapType(User user, Job job, PostType postType, LikeScrapType likeScrapType);
 }

@@ -3,10 +3,7 @@ package com.umc.intercom.service;
 import com.umc.intercom.domain.*;
 import com.umc.intercom.domain.common.enums.LikeScrapType;
 import com.umc.intercom.domain.common.enums.PostType;
-import com.umc.intercom.dto.InterviewDto;
-import com.umc.intercom.dto.LikeScrapDto;
-import com.umc.intercom.dto.ResumeDto;
-import com.umc.intercom.dto.TalkDto;
+import com.umc.intercom.dto.*;
 import com.umc.intercom.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,6 +28,7 @@ public class LikeScrapService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final NotificationRepository notificationRepository;
+    private final JobRepository jobRepository;
 
     /* talk 좋아요 */
     public Optional<LikeScrap> checkIfUserLiked(User user, Talk talk) {
@@ -244,5 +242,65 @@ public class LikeScrapService {
                 .build();
 
         notificationRepository.save(notification);
+    }
+
+    /* 공고 스크랩 */
+    public Optional<LikeScrap> checkIfUserScrapedJob(User user, Job job) {
+        return likeScrapRepository.findByUserAndJobAndPostTypeAndLikeScrapType(user, job, PostType.JOB_INFO, LikeScrapType.SCRAP);
+    }
+
+    @Transactional
+    public LikeScrapDto addJobScrap(Long id, String userEmail) throws Exception {
+        User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+        Job job = jobRepository.findById(id).orElseThrow(() -> new NotFoundException("Job 게시글을 찾을 수 없습니다."));
+
+        // 스크랩 여부 확인
+        Optional<LikeScrap> scrapOptional = checkIfUserScrapedJob(user, job);
+        if (scrapOptional.isPresent()) {
+            throw new Exception("이미 스크랩한 공고 입니다.");
+        }
+
+        LikeScrap scrap = LikeScrap.builder()
+                .likeScrapType(LikeScrapType.SCRAP)  // 스크랩
+                .user(user)
+                .job(job)
+                .postType(PostType.JOB_INFO) // 공고
+                .build();
+
+        likeScrapRepository.save(scrap);
+
+        // 스크랩 수 업데이트
+        job.setScrapCount(job.getScrapCount() + 1);
+        jobRepository.save(job);
+
+        return LikeScrapDto.toDtoFromJob(scrap);
+    }
+
+    @Transactional
+    public void deleteJobScrap(Long id, String userEmail) {
+        User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+        Job job = jobRepository.findById(id).orElseThrow(() -> new NotFoundException("Job 게시글을 찾을 수 없습니다."));
+
+        // 스크랩 여부 확인
+        Optional<LikeScrap> scrapOptional = checkIfUserScrapedJob(user, job);
+        if (scrapOptional.isPresent()) {
+            likeScrapRepository.delete(scrapOptional.get());
+
+            // 스크랩 수 업데이트
+            job.setScrapCount(job.getScrapCount() - 1);
+            jobRepository.save(job);
+        }
+    }
+
+    public Page<JobDto.ScrapResponseDto> getAllJobScraps(String userEmail, int page) {
+        User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
+
+        Page<LikeScrap> scrapPage = likeScrapRepository.findByUserAndLikeScrapTypeAndPostType(user, LikeScrapType.SCRAP, PostType.JOB_INFO, pageable);
+
+        return scrapPage.map(scrap -> JobDto.ScrapResponseDto.toScrapListDto(scrap.getJob()));
     }
 }
