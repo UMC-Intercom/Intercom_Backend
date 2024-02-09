@@ -27,10 +27,11 @@ public class JobService {
     private String ACCESS_KEY;
 
     public void saveJobs() {
+        int totalDataCount = 1100;  // 가져올 총 데이터 개수(일단 1100개)
         int dataPerRequest = 110;   // 한번에 최대 110개 data 조회 가능
-        int page = 0;
+        int totalPages = totalDataCount / dataPerRequest;   // 총 10페이지 조회
 
-        while (true) {
+        for(int page = 0; page < totalPages; page++) {
             StringBuilder response = new StringBuilder();
 
             try {
@@ -72,11 +73,6 @@ public class JobService {
                 JsonNode rootNode = objectMapper.readTree(jsonResponse);
                 JsonNode jobArrayNode = rootNode.path("jobs").path("job");
 
-                // API 응답에서 데이터가 없을 경우 종료
-                if (!jobArrayNode.iterator().hasNext()) {
-                    break;
-                }
-
                 for (JsonNode jobNode : jobArrayNode) {
                     // "active" 값이 1인 공고만 가져오기(진행중인 공고)
                     int activeStatus = jobNode.path("active").asInt();
@@ -95,7 +91,6 @@ public class JobService {
             } catch (Exception e) {
                 System.out.println(e);
             }
-            page++;
         }
     }
 
