@@ -15,7 +15,7 @@ public class JobController {
 
     private final JobService jobService;
 
-    @Operation(summary = "사람인 api 호출 후 DB에 응답 저장")
+    @Operation(summary = "사람인 api 호출 후 DB에 응답 저장", description = "채용정보 API는 1일 최대 500회 호출 가능합니다.")
     @PostMapping("/save")
     public ResponseEntity<Void> saveJob() {
         jobService.saveJobs();
