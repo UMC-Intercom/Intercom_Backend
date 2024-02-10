@@ -9,7 +9,6 @@ import java.util.List;
 
 @Data
 public class JobDto {
-
     @Getter
     @Builder
     public static class JobListResponseDto {
@@ -36,5 +35,29 @@ public class JobDto {
                 return new JobDto.JobListResponseDto(job.getId(), job.getCompany(), job.getTitle(), job.getViewCount(), job.getExpirationDate(), isScraped);
             });
         }
+    }
+
+    @Getter
+    @Builder
+    public static class JobDetailsResponseDto{
+        private Long id;
+        private String jobId;
+        private String url;
+        private String company;
+        private String title;
+        private String industry;
+        private String location;
+        private String jobMidCode;
+        private String jobCode;
+        private String experienceLevel;
+        private String educationLevel;
+        private String keyword;
+        private String salary;
+        private LocalDate postingDate;
+        private LocalDate modificationDate;
+        private LocalDate openingDate;
+        private LocalDate expirationDate;
+        private String closeType;
+        private int viewCount;
     }
 }
