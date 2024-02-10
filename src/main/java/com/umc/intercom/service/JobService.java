@@ -24,6 +24,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -141,5 +142,16 @@ public class JobService {
 
         // 스크랩 여부를 포함하여 DTO로 변환
         return JobDto.JobListResponseDto.toDtoPageWithScrap(jobPage, userScrapedJobIds);
+    }
+
+    public Page<JobDto.JobListResponseDto> getJobsByCount(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("viewCount"));
+        sorts.add(Sort.Order.desc("postingDate")); // 조회수가 같으면 최신 게시물 우선으로 정렬
+
+        Pageable pageable = PageRequest.of(page - 1, 24, Sort.by(sorts));
+
+        Page<Job> jobPage = jobRepository.findAll(pageable);
+        return JobDto.JobListResponseDto.toDtoPageWithScrap(jobPage, Collections.emptyList());
     }
 }
