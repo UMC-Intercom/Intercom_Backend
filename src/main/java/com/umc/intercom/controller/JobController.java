@@ -30,4 +30,11 @@ public class JobController {
         Page<JobDto.JobListResponseDto> jobPages = jobService.getJobsByCategory(userEmail, interest, page);
         return ResponseEntity.ok(jobPages);
     }
+
+    @Operation(summary = "조회수 순으로 공고 목록 조회(비로그인)", description = "조회수 내림차순, 조회수 동일 시 최신 순")
+    @GetMapping("/by-count")
+    public ResponseEntity<Page<JobDto.JobListResponseDto>> getJobsByCount(@RequestParam(value = "page", defaultValue = "1") int page) {
+        Page<JobDto.JobListResponseDto> jobPages = jobService.getJobsByCount(page);
+        return ResponseEntity.ok(jobPages);
+    }
 }
