@@ -43,6 +43,7 @@ public class LoginService {
         return UserDto.LoginSuccessDto.builder()
                 .name(user.get().getName())
                 .nickname(user.get().getNickname())
+                .defaultProfile(user.get().getDefaultProfile())
                 .token(token)
                 .build();
     }

@@ -79,6 +79,8 @@ public class CareerDto {
         private String volunteer;
         private String gpa;
 
+        private String careerProfile;   // 커리어 프로필 url
+
         public static CareerResponseDto toDto(Career career, CareerDetail careerDetail, Spec spec) {
             return new CareerResponseDto(
                     career.getId(),
@@ -99,7 +101,8 @@ public class CareerDto {
                     spec.getAward(),
                     spec.getGlobalExp(),
                     spec.getVolunteer(),
-                    spec.getGpa()
+                    spec.getGpa(),
+                    career.getUser().getCareerProfile()
             );
         }
     }
