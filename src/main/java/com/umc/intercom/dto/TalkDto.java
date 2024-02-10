@@ -39,6 +39,7 @@ public class TalkDto {
         private int likeCount;
         private int scrapCount;
         private int commentCount;
+        private int replyCount;
         private String writer;
 
         public static TalkResponseDto toDto(Talk talk) {
@@ -52,6 +53,7 @@ public class TalkDto {
                     .likeCount(talk.getLikeCount())
                     .scrapCount(talk.getScrapCount())
                     .commentCount(talk.getCommentCount())
+                    .replyCount(talk.getReplyCount())
                     .writer(talk.getUser().getNickname())
                     .build();
         }

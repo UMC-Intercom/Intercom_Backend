@@ -39,6 +39,10 @@ public class CommentService {
 
         Comment savedComment = commentRepository.save(comment);
 
+        // 댓글 수 업데이트
+        talk.get().setCommentCount(talk.get().getCommentCount() + 1);
+        talkRepository.save(talk.get());
+
         // 코인 부여
         checkAndAddCoins(user.get());
 
@@ -81,6 +85,10 @@ public class CommentService {
                 .build();
 
         Comment savedComment = commentRepository.save(comment);
+
+        // 댓글 수 업데이트
+        talk.get().setReplyCount(talk.get().getReplyCount() + 1);
+        talkRepository.save(talk.get());
 
         // 코인 부여
         checkAndAddCoins(user.get());

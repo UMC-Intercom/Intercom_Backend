@@ -100,8 +100,8 @@ public class TalkController {
 
     @Operation(summary = "댓글 많은 순으로 톡톡 게시글 목록 조회")
     @GetMapping("/comment-counts")
-    public ResponseEntity<Page<TalkDto.TalkResponseDto>> getTalksWithCommentCounts(@RequestParam(defaultValue = "1") int page) {
-        Page<TalkDto.TalkResponseDto> resultPage = talkService.getTalksWithCommentCounts(page);
+    public ResponseEntity<Page<TalkDto.TalkResponseDto>> getTalksByCommentCounts(@RequestParam(defaultValue = "1") int page) {
+        Page<TalkDto.TalkResponseDto> resultPage = talkService.getTalksByCommentCounts(page);
         return ResponseEntity.ok(resultPage);
     }
 

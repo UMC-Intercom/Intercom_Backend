@@ -1,6 +1,7 @@
 package com.umc.intercom.repository;
 
 import com.umc.intercom.domain.Comment;
+import com.umc.intercom.domain.Talk;
 import com.umc.intercom.domain.User;
 import com.umc.intercom.domain.common.enums.AdoptionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,4 +14,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long>{
     long countByUser(User user);
 
     Optional<Comment> findByTalkIdAndAdoptionStatus(Long talkId, AdoptionStatus adoptionStatus);
+
+    List<Comment> findAllByTalk(Talk talk);
+
+    int countByParentIdNotNullAndTalk(Talk talk);
 }
