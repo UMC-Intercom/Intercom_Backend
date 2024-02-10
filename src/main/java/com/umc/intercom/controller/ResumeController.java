@@ -57,8 +57,8 @@ public class ResumeController {
 
     @Operation(summary = "스크랩 수 순으로 합격 자소서 게시글 목록 조회")
     @GetMapping("/scrap-counts")
-    public ResponseEntity<Page<ResumeDto.ScrapResponseDto>> getAllResumesByScrapCounts(@RequestParam(value = "page", defaultValue = "1") int page) {
-        Page<ResumeDto.ScrapResponseDto> resumeDtoPage = resumeService.getAllResumesByScrapCounts(page);
+    public ResponseEntity<Page<ResumeDto.ResumeResponseDto>> getAllResumesByScrapCounts(@RequestParam(value = "page", defaultValue = "1") int page) {
+        Page<ResumeDto.ResumeResponseDto> resumeDtoPage = resumeService.getAllResumesByScrapCounts(page);
         return ResponseEntity.ok(resumeDtoPage);
     }
 

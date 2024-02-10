@@ -131,7 +131,7 @@ public class ResumeService {
         }).collect(Collectors.toList());
     }
 
-    public Page<ResumeDto.ScrapResponseDto> getAllResumesByScrapCounts(int page) {
+    public Page<ResumeDto.ResumeResponseDto> getAllResumesByScrapCounts(int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("scrapCount"));
         sorts.add(Sort.Order.desc("createdAt"));
@@ -140,7 +140,23 @@ public class ResumeService {
 
         Page<Post> postPage = postRepository.findByPostType(PostType.SUCCESSFUL_RESUME, pageable);
 
-        return ResumeDto.ScrapResponseDto.toDtoPage(postPage);
+        List<Long> postIds = postPage.getContent().stream()
+                .map(Post::getId)
+                .collect(Collectors.toList());
+
+        List<PostDetail> postDetails = postDetailRepository.findByPostIdIn(postIds);
+        List<PostSpec> postSpecs = postSpecRepository.findByPostIdIn(postIds);
+
+        Map<Long, List<PostDetail>> postDetailMap = postDetails.stream()
+                .collect(Collectors.groupingBy(detail -> detail.getPost().getId()));
+        Map<Long, PostSpec> postSpecMap = postSpecs.stream()
+                .collect(Collectors.toMap(spec -> spec.getPost().getId(), Function.identity()));
+
+        List<ResumeDto.ResumeResponseDto> resumeDtos = postPage.getContent().stream()
+                .map(post -> ResumeDto.ResumeResponseDto.toDto(post, postDetailMap.get(post.getId()), postSpecMap.get(post.getId())))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(resumeDtos, pageable, postPage.getTotalElements());
     }
 
     public Page<ResumeDto.ResumeResponseDto> getMyResumes(String userEmail, int page) {
@@ -157,27 +173,22 @@ public class ResumeService {
 
         Page<Post> postPage = postRepository.findByUserAndPostType(user.get(), PostType.SUCCESSFUL_RESUME, pageable);
 
-        // Post의 id 리스트를 만듬
         List<Long> postIds = postPage.getContent().stream()
                 .map(Post::getId)
                 .collect(Collectors.toList());
 
-        // id 리스트로 PostDetail, PostSpec 찾기
         List<PostDetail> postDetails = postDetailRepository.findByPostIdIn(postIds);
         List<PostSpec> postSpecs = postSpecRepository.findByPostIdIn(postIds);
 
-        // PostDetail, PostSpec을 Post의 id를 key로 하는 Map으로 변환
         Map<Long, List<PostDetail>> postDetailMap = postDetails.stream()
                 .collect(Collectors.groupingBy(detail -> detail.getPost().getId()));
         Map<Long, PostSpec> postSpecMap = postSpecs.stream()
                 .collect(Collectors.toMap(spec -> spec.getPost().getId(), Function.identity()));
 
-        // Post, PostDetail, PostSpec을 ResumeDto로 변환
         List<ResumeDto.ResumeResponseDto> resumeDtos = postPage.getContent().stream()
                 .map(post -> ResumeDto.ResumeResponseDto.toDto(post, postDetailMap.get(post.getId()), postSpecMap.get(post.getId())))
                 .collect(Collectors.toList());
 
-        // 변환된 결과를 Page로
         return new PageImpl<>(resumeDtos, pageable, postPage.getTotalElements());
     }
 }

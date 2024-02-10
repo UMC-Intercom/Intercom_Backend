@@ -102,16 +102,20 @@ public class InterviewService {
         }).collect(Collectors.toList());
     }
 
-    public Page<InterviewDto.ScrapResponseDto> getAllInterviewsByScrapCounts(int page) {
+    public Page<InterviewDto.InterviewResponseDto> getAllInterviewsByScrapCounts(int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("scrapCount"));
         sorts.add(Sort.Order.desc("createdAt"));
 
         Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
 
-        Page<Post> postPage = postRepository.findByPostType(PostType.INTERVIEW_REVIEW, pageable);
+        Page<Post> posts = postRepository.findByPostType(PostType.INTERVIEW_REVIEW, pageable);
 
-        return InterviewDto.ScrapResponseDto.toDtoPage(postPage);
+        return posts.map(post -> {
+            PostDetail postDetail = postDetailRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostDetail not Found"));
+            PostSpec postSpec = postSpecRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
+            return InterviewDto.InterviewResponseDto.toDto(post, postDetail, postSpec);
+        });
     }
 
     public Page<InterviewDto.InterviewResponseDto> getMyInterviews(String userEmail, int page) {
