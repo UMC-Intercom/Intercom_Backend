@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/jobs")
 @RequiredArgsConstructor
@@ -36,5 +38,14 @@ public class JobController {
     public ResponseEntity<Page<JobDto.JobListResponseDto>> getJobsByCount(@RequestParam(value = "page", defaultValue = "1") int page) {
         Page<JobDto.JobListResponseDto> jobPages = jobService.getJobsByCount(page);
         return ResponseEntity.ok(jobPages);
+    }
+
+    @Operation(summary = "공고 게시글 상세 조회", description = "{id} 자리에 상세 조회할 공고 게시글 id를 전달해주세요.")
+    @GetMapping("/{id}")
+    public ResponseEntity<JobDto.JobDetailsResponseDto> getJobById(@PathVariable Long id) {
+        Optional<JobDto.JobDetailsResponseDto> optionalJobDto = jobService.getJobById(id);
+
+        return optionalJobDto.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

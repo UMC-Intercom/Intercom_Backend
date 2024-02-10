@@ -1,8 +1,11 @@
 package com.umc.intercom.service;
 
+import com.amazonaws.services.kms.model.NotFoundException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.umc.intercom.config.security.SecurityUtil;
 import com.umc.intercom.domain.Job;
+import com.umc.intercom.domain.common.enums.LikeScrapType;
 import com.umc.intercom.domain.common.enums.PostType;
 import com.umc.intercom.dto.JobDto;
 import com.umc.intercom.repository.JobRepository;
@@ -26,6 +29,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -153,5 +157,34 @@ public class JobService {
 
         Page<Job> jobPage = jobRepository.findAll(pageable);
         return JobDto.JobListResponseDto.toDtoPageWithScrap(jobPage, Collections.emptyList());
+    }
+
+    public Optional<JobDto.JobDetailsResponseDto> getJobById(Long id) {
+        Optional<Job> optionalJob = jobRepository.findById(id);
+
+        return optionalJob.map(job -> {
+            String userEmail = SecurityUtil.getCurrentUsername();
+            return JobDto.JobDetailsResponseDto.builder()
+                    .id(job.getId())
+                    .jobId(job.getJobId())
+                    .url(job.getUrl())
+                    .company(job.getCompany())
+                    .title(job.getTitle())
+                    .industry(job.getIndustry())
+                    .location(job.getLocation())
+                    .jobMidCode(job.getJobMidCode())
+                    .jobCode(job.getJobCode())
+                    .experienceLevel(job.getExperienceLevel())
+                    .educationLevel(job.getEducationLevel())
+                    .keyword(job.getKeyword())
+                    .salary(job.getSalary())
+                    .postingDate(job.getPostingDate())
+                    .modificationDate(job.getModificationDate())
+                    .openingDate(job.getOpeningDate())
+                    .expirationDate(job.getExpirationDate())
+                    .closeType(job.getCloseType())
+                    .viewCount(job.getViewCount())
+                    .build();
+        });
     }
 }
