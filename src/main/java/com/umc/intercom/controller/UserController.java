@@ -6,8 +6,11 @@ import com.umc.intercom.dto.UserDto;
 import com.umc.intercom.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -53,6 +56,35 @@ public class UserController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    // 설정 > 프로필
+    @Operation(summary = "설정 > 프로필 등록")
+    @PostMapping(value = "/default-profile", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<String> saveProfile(@RequestPart(value = "file", required = false) MultipartFile file) {
+        String userEmail = SecurityUtil.getCurrentUsername();
+
+        String userProfile = userService.saveProfile(file, userEmail, "defaultProfile");
+        return new ResponseEntity<>(userProfile, HttpStatus.OK);
+    }
+
+    // 내 커리어 > 프로필
+    @Operation(summary = "내 커리어 > 프로필 등록")
+    @PostMapping(value = "/career-profile", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<String> saveCareerProfile(@RequestPart(value = "file", required = false) MultipartFile file) {
+        String userEmail = SecurityUtil.getCurrentUsername();
+
+        String userProfile = userService.saveProfile(file, userEmail, "careerProfile");
+        return new ResponseEntity<>(userProfile, HttpStatus.OK);
+    }
+
+    @Operation(summary = "설정 > 프로필 조회")
+    @GetMapping(value = "/default-profile")
+    public ResponseEntity<String> getProfile() {
+        String userEmail = SecurityUtil.getCurrentUsername();
+
+        String userProfile = userService.getProfile(userEmail);
+        return new ResponseEntity<>(userProfile, HttpStatus.OK);
     }
 
 }

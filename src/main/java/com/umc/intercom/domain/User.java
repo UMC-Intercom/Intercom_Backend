@@ -57,6 +57,12 @@ public class User {
     @Column(name = "interest")
     private List<String> interests = new ArrayList<>();
 
+    @Column(name = "default_profile")
+    private String defaultProfile;
+
+    @Column(name = "career_profile")
+    private String careerProfile;
+
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(10) DEFAULT 'USER'")
     private Role role;

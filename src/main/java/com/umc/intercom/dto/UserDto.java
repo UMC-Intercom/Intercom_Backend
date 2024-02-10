@@ -77,6 +77,7 @@ public class UserDto {
     public static class LoginSuccessDto {
         private String name;
         private String nickname;
+        private String defaultProfile;
         String token;
     }
 

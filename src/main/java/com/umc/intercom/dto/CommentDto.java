@@ -41,6 +41,7 @@ public class CommentDto {
         private AdoptionStatus adoptionStatus;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
+        private String defaultProfile;  // 댓글 작성자의 프로필
 
         public static CommentResponseDto toDto(Comment comment) {
             return new CommentResponseDto(
@@ -52,7 +53,8 @@ public class CommentDto {
                     comment.getUser().getNickname(),
                     comment.getAdoptionStatus(),
                     comment.getCreatedAt(),
-                    comment.getCreatedAt()
+                    comment.getCreatedAt(),
+                    comment.getUser().getDefaultProfile()
             );
         }
     }

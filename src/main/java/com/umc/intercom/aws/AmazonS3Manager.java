@@ -70,4 +70,9 @@ public class AmazonS3Manager{
     public String generatePostKeyName(Uuid uuid) {
         return amazonConfig.getPostPath() + '/' + uuid.getUuid();
     }
+
+    // profile 디렉토리
+    public String generateProfileKeyName(Uuid uuid) {
+        return amazonConfig.getProfilePath() + '/' + uuid.getUuid();
+    }
 }
