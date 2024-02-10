@@ -1,6 +1,7 @@
 package com.umc.intercom.repository;
 
 import com.umc.intercom.domain.Post;
+import com.umc.intercom.domain.User;
 import com.umc.intercom.domain.common.enums.PostType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,4 +15,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByPostTypeOrderByCreatedAtDesc(PostType postType);
 
     List<Post> findByCompanyAndDepartmentAndPostType(String company, String department, PostType postType);
+
+    Page<Post> findByUserAndPostType(User user, PostType postType, Pageable pageable);
 }

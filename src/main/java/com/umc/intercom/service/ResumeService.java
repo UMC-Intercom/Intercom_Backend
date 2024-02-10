@@ -9,6 +9,7 @@ import com.umc.intercom.repository.PostSpecRepository;
 import com.umc.intercom.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -142,4 +143,41 @@ public class ResumeService {
         return ResumeDto.ScrapResponseDto.toDtoPage(postPage);
     }
 
+    public Page<ResumeDto.ResumeResponseDto> getMyResumes(String userEmail, int page) {
+        Optional<User> user = userRepository.findByEmail(userEmail);
+
+        if (!user.isPresent()) {
+            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
+        }
+
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createdAt"));
+
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
+
+        Page<Post> postPage = postRepository.findByUserAndPostType(user.get(), PostType.SUCCESSFUL_RESUME, pageable);
+
+        // Post의 id 리스트를 만듬
+        List<Long> postIds = postPage.getContent().stream()
+                .map(Post::getId)
+                .collect(Collectors.toList());
+
+        // id 리스트로 PostDetail, PostSpec 찾기
+        List<PostDetail> postDetails = postDetailRepository.findByPostIdIn(postIds);
+        List<PostSpec> postSpecs = postSpecRepository.findByPostIdIn(postIds);
+
+        // PostDetail, PostSpec을 Post의 id를 key로 하는 Map으로 변환
+        Map<Long, List<PostDetail>> postDetailMap = postDetails.stream()
+                .collect(Collectors.groupingBy(detail -> detail.getPost().getId()));
+        Map<Long, PostSpec> postSpecMap = postSpecs.stream()
+                .collect(Collectors.toMap(spec -> spec.getPost().getId(), Function.identity()));
+
+        // Post, PostDetail, PostSpec을 ResumeDto로 변환
+        List<ResumeDto.ResumeResponseDto> resumeDtos = postPage.getContent().stream()
+                .map(post -> ResumeDto.ResumeResponseDto.toDto(post, postDetailMap.get(post.getId()), postSpecMap.get(post.getId())))
+                .collect(Collectors.toList());
+
+        // 변환된 결과를 Page로
+        return new PageImpl<>(resumeDtos, pageable, postPage.getTotalElements());
+    }
 }
