@@ -13,4 +13,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long>{
     long countByUser(User user);
 
     Optional<Comment> findByTalkIdAndAdoptionStatus(Long talkId, AdoptionStatus adoptionStatus);
+
+    int countByParentId_Id(Long id);
 }

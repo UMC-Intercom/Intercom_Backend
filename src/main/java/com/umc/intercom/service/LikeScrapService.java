@@ -65,7 +65,7 @@ public class LikeScrapService {
         checkAndAddCoins(user);
 
         // 알림 전송
-        sendNotification(like.getUser(), like);
+        sendNotification(like.getTalk().getUser(), like);
 
         return LikeScrapDto.toDtoFromTalk(like);
     }
@@ -96,6 +96,13 @@ public class LikeScrapService {
         }
     }
 
+    public Boolean validateIfUserLikedTalk(String userEmail, Long id) {
+        User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+        Talk talk = talkRepository.findById(id).orElseThrow(() -> new NotFoundException("Talk 게시글을 찾을 수 없습니다."));
+
+        Optional<LikeScrap> likeOptional = checkIfUserLiked(user, talk);
+        return likeOptional.isPresent();
+    }
 
     /* talk 스크랩 */
     public Optional<LikeScrap> checkIfUserScrapedTalk(User user, Talk talk) {
@@ -146,6 +153,13 @@ public class LikeScrapService {
         }
     }
 
+    public Boolean validateIfUserScrapedTalk(String userEmail, Long id) {
+        User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+        Talk talk = talkRepository.findById(id).orElseThrow(() -> new NotFoundException("Talk 게시글을 찾을 수 없습니다."));
+
+        Optional<LikeScrap> scrapOptional = checkIfUserScrapedTalk(user, talk);
+        return scrapOptional.isPresent();
+    }
 
     /* post 스크랩 */
     public Optional<LikeScrap> checkIfUserScrapedPost(User user, Post post) {
@@ -246,6 +260,14 @@ public class LikeScrapService {
         });
     }
 
+    public Boolean validateIfUserScrapedPost(String userEmail, Long id) {
+        User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+        Post post = postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post 게시글을 찾을 수 없습니다."));
+
+        Optional<LikeScrap> scrapOptional = checkIfUserScrapedPost(user, post);
+        return scrapOptional.isPresent();
+    }
+
     private void sendNotification(User user, LikeScrap likeScrap) {
         Notification notification = Notification.builder()
                 .user(user)
@@ -315,4 +337,13 @@ public class LikeScrapService {
 
         return scrapPage.map(scrap -> JobDto.JobListResponseDto.toScrapListDto(scrap.getJob()));
     }
+
+    public Boolean validateIfUserScrapedJob(String userEmail, Long id) {
+        User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+        Job job = jobRepository.findById(id).orElseThrow(() -> new NotFoundException("Job 게시글을 찾을 수 없습니다."));
+
+        Optional<LikeScrap> scrapOptional = checkIfUserScrapedJob(user, job);
+        return scrapOptional.isPresent();
+    }
+
 }

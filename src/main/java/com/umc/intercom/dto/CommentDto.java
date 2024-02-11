@@ -32,7 +32,6 @@ public class CommentDto {
     @Setter
     @Builder
     public static class CommentResponseDto {
-        private Long userId;
         private Long talkId;
         private Long id;
         private Long parentId; // 부모 댓글 ID
@@ -41,21 +40,36 @@ public class CommentDto {
         private AdoptionStatus adoptionStatus;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
+        private int replyCount;
         private String defaultProfile;  // 댓글 작성자의 프로필
 
         public static CommentResponseDto toDto(Comment comment) {
-            return new CommentResponseDto(
-                    comment.getUser().getId(),
-                    comment.getTalk().getId(),
-                    comment.getId(),
-                    comment.getParentId() != null ? comment.getParentId().getId() : null, // 부모 댓글 ID
-                    comment.getContent(),
-                    comment.getUser().getNickname(),
-                    comment.getAdoptionStatus(),
-                    comment.getCreatedAt(),
-                    comment.getCreatedAt(),
-                    comment.getUser().getDefaultProfile()
-            );
+            return CommentResponseDto.builder()
+                    .talkId(comment.getTalk().getId())
+                    .id(comment.getId())
+                    .parentId(comment.getParentId() != null ? comment.getParentId().getId() : null)
+                    .content(comment.getContent())
+                    .writer(comment.getUser().getNickname())
+                    .adoptionStatus(comment.getAdoptionStatus())
+                    .createdAt(comment.getCreatedAt())
+                    .updatedAt(comment.getUpdatedAt())
+                    .defaultProfile(comment.getUser().getDefaultProfile())
+                    .build();
+        }
+
+        public static CommentResponseDto toDto(Comment comment, int replyCount) {
+            return CommentResponseDto.builder()
+                    .talkId(comment.getTalk().getId())
+                    .id(comment.getId())
+                    .parentId(comment.getParentId() != null ? comment.getParentId().getId() : null)
+                    .content(comment.getContent())
+                    .writer(comment.getUser().getNickname())
+                    .adoptionStatus(comment.getAdoptionStatus())
+                    .createdAt(comment.getCreatedAt())
+                    .updatedAt(comment.getUpdatedAt())
+                    .replyCount(replyCount)
+                    .defaultProfile(comment.getUser().getDefaultProfile())
+                    .build();
         }
     }
 }

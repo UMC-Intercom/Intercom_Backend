@@ -51,8 +51,12 @@ public class Talk extends BaseEntity {
     private int scrapCount;
 
     @Setter
-    @Transient  // DB에 저장x
-    private int commentCount;
+    @ColumnDefault("0")
+    private int commentCount;   // 댓글 수
+
+    @Setter
+    @ColumnDefault("0")
+    private int replyCount;     // 대댓글 수
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

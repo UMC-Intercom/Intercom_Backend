@@ -6,6 +6,7 @@ import com.umc.intercom.domain.User;
 import com.umc.intercom.domain.Uuid;
 import com.umc.intercom.domain.common.enums.Status;
 import com.umc.intercom.dto.TalkDto;
+import com.umc.intercom.repository.CommentRepository;
 import com.umc.intercom.repository.TalkRepository;
 import com.umc.intercom.repository.UserRepository;
 import com.umc.intercom.repository.UuidRepository;
@@ -31,6 +32,7 @@ public class TalkService {
     private final UserRepository userRepository;
     private final UuidRepository uuidRepository;
     private final AmazonS3Manager s3Manager;
+    private final CommentRepository commentRepository;
 
     // 저장, 임시저장, 임시저장된 글 저장
     @Transactional
@@ -115,21 +117,15 @@ public class TalkService {
         return TalkDto.toDtoPage(talkPage);
     }
 
-    public Page<TalkDto.TalkResponseDto> getTalksWithCommentCounts(int page) {
-        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(Sort.Order.desc("createdAt")));
+    public Page<TalkDto.TalkResponseDto> getTalksByCommentCounts(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("commentCount"));
+        sorts.add(Sort.Order.desc("createdAt"));
 
-        Page<Object[]> result = talkRepository.findTalksWithCommentCounts(Status.SAVED, pageable);
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
 
-        List<TalkDto.TalkResponseDto> talkDtoList = new ArrayList<>();
-        for (Object[] row : result.getContent()) {
-            Talk talk = (Talk) row[0];
-            int commentCount = ((Number) row[1]).intValue(); // Long에서 int로 변환
-            TalkDto.TalkResponseDto talkDto = TalkDto.TalkResponseDto.toDto(talk);
-            talkDto.setCommentCount(commentCount);
-            talkDtoList.add(talkDto);
-        }
-
-        return new PageImpl<>(talkDtoList, pageable, result.getTotalElements());
+        Page<Talk> talkPage = talkRepository.findAllByStatus(Status.SAVED, pageable);
+        return TalkDto.toDtoPage(talkPage);
     }
 
     public Optional<TalkDto.TalkResponseDto> getTalkById(String userEmail, Long id) {

@@ -39,11 +39,15 @@ public class CommentService {
 
         Comment savedComment = commentRepository.save(comment);
 
+        // 댓글 수 업데이트
+        talk.get().setCommentCount(talk.get().getCommentCount() + 1);
+        talkRepository.save(talk.get());
+
         // 코인 부여
         checkAndAddCoins(user.get());
 
         // 알림 전송
-        sendNotification(savedComment.getUser(), savedComment);
+        sendNotification(savedComment.getTalk().getUser(), savedComment);
 
         return CommentDto.CommentResponseDto.toDto(savedComment);
     }
@@ -63,8 +67,11 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public List<CommentDto.CommentResponseDto> getComments(Long talkId) {
-        List<Comment> comments = commentRepository.findAllByTalkId(talkId); // talk은 finaAllByTalkId, post는 findAllByPostId로
-        return comments.stream().map(CommentDto.CommentResponseDto::toDto).collect(Collectors.toList());
+        List<Comment> comments = commentRepository.findAllByTalkId(talkId);
+        return comments.stream().map(comment -> {
+            int replyCount = commentRepository.countByParentId_Id(comment.getId()); // commentId와 일치하는 parentId 개수 반환
+            return CommentDto.CommentResponseDto.toDto(comment, replyCount);
+        }).collect(Collectors.toList());
     }
 
     @Transactional
@@ -82,11 +89,15 @@ public class CommentService {
 
         Comment savedComment = commentRepository.save(comment);
 
+        // 댓글 수 업데이트
+        talk.get().setReplyCount(talk.get().getReplyCount() + 1);
+        talkRepository.save(talk.get());
+
         // 코인 부여
         checkAndAddCoins(user.get());
 
         // 알림 전송
-        sendNotification(savedComment.getUser(), savedComment);
+        sendNotification(savedComment.getTalk().getUser(), savedComment);
 
         return CommentDto.CommentResponseDto.toDto(savedComment);
     }
