@@ -15,7 +15,7 @@ public class LikeScrapController {
 
     private final LikeScrapService likeScrapService;
 
-    // talk 좋아요 추가
+    // 좋아요
     @Operation(summary = "톡톡 게시글에 좋아요 추가", description = "{talkId} 자리에 좋아요할 톡톡 게시글 id를 전달해주세요.")
     @PostMapping("/likes/{talkId}")
     public ResponseEntity<LikeScrapDto> addLike(@PathVariable Long talkId) throws Exception {
@@ -24,7 +24,6 @@ public class LikeScrapController {
         return ResponseEntity.ok(likeScrapDto);
     }
 
-    // talk 좋아요 삭제
     @Operation(summary = "톡톡 게시글에 좋아요 삭제", description = "{talkId} 자리에 좋아요 삭제할 톡톡 게시글 id를 전달해주세요.")
     @DeleteMapping("/likes/{talkId}")
     public ResponseEntity<Void> deleteLike(@PathVariable Long talkId) {
@@ -33,8 +32,15 @@ public class LikeScrapController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "톡톡 좋아요 여부 확인", description = "{id} 자리에 톡톡 id를 전달해주세요. 좋아요한 경우 true, 좋아요 안 한 경우 false 반환")
+    @GetMapping("/likes/talks/{id}")
+    public ResponseEntity<Boolean> validateIfUserLikedTalk(@PathVariable Long id) {
+        String userEmail = SecurityUtil.getCurrentUsername();
+        Boolean isLiked = likeScrapService.validateIfUserLikedTalk(userEmail, id);
+        return ResponseEntity.ok(isLiked);
+    }
 
-    // talk 스크랩 추가
+    // 스크랩
     @Operation(summary = "톡톡 게시글에 스크랩 추가", description = "{talkId} 자리에 스크랩할 톡톡 게시글 id를 전달해주세요.")
     @PostMapping("/scraps/talks/{talkId}")
     public ResponseEntity<LikeScrapDto> addTalkScrap(@PathVariable Long talkId) throws Exception {
@@ -43,7 +49,6 @@ public class LikeScrapController {
         return ResponseEntity.ok(likeScrapDto);
     }
 
-    // talk 스크랩 삭제
     @Operation(summary = "톡톡 게시글에 스크랩 삭제", description = "{talkId} 자리에 스크랩 삭제할 톡톡 게시글 id를 전달해주세요.")
     @DeleteMapping("/scraps/talks/{talkId}")
     public ResponseEntity<Void> deleteTalkScrap(@PathVariable Long talkId) {
@@ -52,7 +57,6 @@ public class LikeScrapController {
         return ResponseEntity.ok().build();
     }
 
-    // post 스크랩 추가
     @Operation(summary = "면접 후기 or 합격 자소서 게시글에 스크랩 추가", description = "{postId} 자리에 스크랩할 게시글 id를 전달해주세요.")
     @PostMapping("/scraps/posts/{postId}")
     public ResponseEntity<LikeScrapDto> addPostScrap(@PathVariable Long postId) throws Exception {
@@ -61,7 +65,6 @@ public class LikeScrapController {
         return ResponseEntity.ok(likeScrapDto);
     }
 
-    // post 스크랩 삭제
     @Operation(summary = "면접 후기 or 합격 자소서 게시글에 스크랩 삭제", description = "{postId} 자리에 스크랩 삭제할 게시글 id를 전달해주세요.")
     @DeleteMapping("/scraps/posts/{postId}")
     public ResponseEntity<Void> deletePostScrap(@PathVariable Long postId) {
@@ -70,34 +73,44 @@ public class LikeScrapController {
         return ResponseEntity.ok().build();
     }
 
-    // talk 스크랩 내역 조회
     @Operation(summary = "톡톡 게시글 스크랩 내역 조회")
     @GetMapping("/scraps/talks")
     public ResponseEntity<Page<TalkDto.TalkResponseDto>> getAllTalkScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
         String userEmail = SecurityUtil.getCurrentUsername();
         Page<TalkDto.TalkResponseDto> talkDtoPage = likeScrapService.getAllTalkScraps(userEmail, page);
-
         return ResponseEntity.ok(talkDtoPage);
     }
 
-    // 면접 후기 스크랩 내역 조회
+    @Operation(summary = "톡톡 스크랩 여부 확인", description = "{id} 자리에 톡톡 id를 전달해주세요. 스크랩한 경우 true, 스크랩 안 한 경우 false 반환")
+    @GetMapping("/scraps/talks/{id}")
+    public ResponseEntity<Boolean> validateIfUserScrapedTalk(@PathVariable Long id) {
+        String userEmail = SecurityUtil.getCurrentUsername();
+        Boolean isScraped = likeScrapService.validateIfUserScrapedTalk(userEmail, id);
+        return ResponseEntity.ok(isScraped);
+    }
+
     @GetMapping("/scraps/interviews")
     @Operation(summary = "면접 후기 게시글 스크랩 내역 조회")
     public ResponseEntity<Page<InterviewDto.InterviewResponseDto>> getAllInterviewScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
         String userEmail = SecurityUtil.getCurrentUsername();
         Page<InterviewDto.InterviewResponseDto> interviewDto = likeScrapService.getAllInterviewScraps(userEmail, page);
-
         return ResponseEntity.ok(interviewDto);
     }
 
-    // 합격 자소서 스크랩 내역 조회
     @Operation(summary = "합격 자소서 스크랩 내역 조회")
     @GetMapping("/scraps/resumes")
     public ResponseEntity<Page<ResumeDto.ResumeResponseDto>> getAllResumeScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
         String userEmail = SecurityUtil.getCurrentUsername();
         Page<ResumeDto.ResumeResponseDto> resumeDto = likeScrapService.getAllResumeScraps(userEmail, page);
-
         return ResponseEntity.ok(resumeDto);
+    }
+
+    @Operation(summary = "면접 후기 or 합격 자소서 스크랩 여부 확인", description = "{id} 자리에 게시글 id를 전달해주세요. 스크랩한 경우 true, 스크랩 안 한 경우 false 반환")
+    @GetMapping("/scraps/posts/{id}")
+    public ResponseEntity<Boolean> validateIfUserScrapedPost(@PathVariable Long id) {
+        String userEmail = SecurityUtil.getCurrentUsername();
+        Boolean isScraped = likeScrapService.validateIfUserScrapedPost(userEmail, id);
+        return ResponseEntity.ok(isScraped);
     }
 
     @Operation(summary = "공고 스크랩 추가", description = "{id} 자리에 스크랩할 공고 id를 전달해주세요.")
@@ -121,7 +134,15 @@ public class LikeScrapController {
     public ResponseEntity<Page<JobDto.JobListResponseDto>> getAllJobScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
         String userEmail = SecurityUtil.getCurrentUsername();
         Page<JobDto.JobListResponseDto> jobDto = likeScrapService.getAllJobScraps(userEmail, page);
-
         return ResponseEntity.ok(jobDto);
     }
+
+    @Operation(summary = "공고 스크랩 여부 확인", description = "{id} 자리에 공고 id를 전달해주세요. 스크랩한 경우 true, 스크랩 안 한 경우 false 반환")
+    @GetMapping("/scraps/jobs/{id}")
+    public ResponseEntity<Boolean> validateIfUserScrapedJob(@PathVariable Long id) {
+        String userEmail = SecurityUtil.getCurrentUsername();
+        Boolean isScraped = likeScrapService.validateIfUserScrapedJob(userEmail, id);
+        return ResponseEntity.ok(isScraped);
+    }
+
 }
