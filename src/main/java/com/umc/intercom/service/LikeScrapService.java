@@ -29,6 +29,8 @@ public class LikeScrapService {
     private final PostRepository postRepository;
     private final NotificationRepository notificationRepository;
     private final JobRepository jobRepository;
+    private final PostDetailRepository postDetailRepository;
+    private final PostSpecRepository postSpecRepository;
 
     /* talk 좋아요 */
     public Optional<LikeScrap> checkIfUserLiked(User user, Talk talk) {
@@ -208,7 +210,7 @@ public class LikeScrapService {
         return scrapPage.map(scrap -> TalkDto.TalkResponseDto.toDto(scrap.getTalk()));
     }
 
-    public Page<InterviewDto.ScrapResponseDto> getAllInterviewScraps(String userEmail, int page) {
+    public Page<InterviewDto.InterviewResponseDto> getAllInterviewScraps(String userEmail, int page) {
         User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
         
         List<Sort.Order> sorts = new ArrayList<>();
@@ -218,10 +220,15 @@ public class LikeScrapService {
         Page<LikeScrap> scrapPage = likeScrapRepository.findByUserAndLikeScrapTypeAndPostType(user, LikeScrapType.SCRAP, PostType.INTERVIEW_REVIEW, pageable);
 
         // LikeScrap을 InterviewDto로 변환해서 반환
-        return scrapPage.map(scrap -> InterviewDto.toScrapListDto(scrap.getPost()));
+        return scrapPage.map(scrap -> {
+            Post post = scrap.getPost();
+            PostDetail postDetail = postDetailRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostDetail not Found"));
+            PostSpec postSpec = postSpecRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
+            return InterviewDto.InterviewResponseDto.toDto(post, postDetail, postSpec);
+        });
     }
 
-    public Page<ResumeDto.ScrapResponseDto> getAllResumeScraps(String userEmail, int page) {
+    public Page<ResumeDto.ResumeResponseDto> getAllResumeScraps(String userEmail, int page) {
         User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
         
         List<Sort.Order> sorts = new ArrayList<>();
@@ -231,7 +238,12 @@ public class LikeScrapService {
         Page<LikeScrap> scrapPage = likeScrapRepository.findByUserAndLikeScrapTypeAndPostType(user, LikeScrapType.SCRAP, PostType.SUCCESSFUL_RESUME, pageable);
 
         // LikeScrap을 ResumeDto로 변환해서 반환
-        return scrapPage.map(scrap -> ResumeDto.toScrapListDto(scrap.getPost()));
+        return scrapPage.map(scrap -> {
+            Post post = scrap.getPost();
+            List<PostDetail> postDetails = postDetailRepository.findAllByPost(post);
+            PostSpec postSpec = postSpecRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
+            return ResumeDto.ResumeResponseDto.toDto(post, postDetails, postSpec);
+        });
     }
 
     private void sendNotification(User user, LikeScrap likeScrap) {

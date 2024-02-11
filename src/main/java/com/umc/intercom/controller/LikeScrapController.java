@@ -83,9 +83,9 @@ public class LikeScrapController {
     // 면접 후기 스크랩 내역 조회
     @GetMapping("/scraps/interviews")
     @Operation(summary = "면접 후기 게시글 스크랩 내역 조회")
-    public ResponseEntity<Page<InterviewDto.ScrapResponseDto>> getAllInterviewScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
+    public ResponseEntity<Page<InterviewDto.InterviewResponseDto>> getAllInterviewScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
         String userEmail = SecurityUtil.getCurrentUsername();
-        Page<InterviewDto.ScrapResponseDto> interviewDto = likeScrapService.getAllInterviewScraps(userEmail, page);
+        Page<InterviewDto.InterviewResponseDto> interviewDto = likeScrapService.getAllInterviewScraps(userEmail, page);
 
         return ResponseEntity.ok(interviewDto);
     }
@@ -93,9 +93,9 @@ public class LikeScrapController {
     // 합격 자소서 스크랩 내역 조회
     @Operation(summary = "합격 자소서 스크랩 내역 조회")
     @GetMapping("/scraps/resumes")
-    public ResponseEntity<Page<ResumeDto.ScrapResponseDto>> getAllResumeScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
+    public ResponseEntity<Page<ResumeDto.ResumeResponseDto>> getAllResumeScraps(@RequestParam(value = "page", defaultValue = "1") int page) {
         String userEmail = SecurityUtil.getCurrentUsername();
-        Page<ResumeDto.ScrapResponseDto> resumeDto = likeScrapService.getAllResumeScraps(userEmail, page);
+        Page<ResumeDto.ResumeResponseDto> resumeDto = likeScrapService.getAllResumeScraps(userEmail, page);
 
         return ResponseEntity.ok(resumeDto);
     }

@@ -1,6 +1,7 @@
 package com.umc.intercom.repository;
 
 import com.umc.intercom.domain.Talk;
+import com.umc.intercom.domain.User;
 import com.umc.intercom.domain.common.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,4 +20,6 @@ public interface TalkRepository extends JpaRepository<Talk, Long> {
     Page<Talk> findAllByStatus(Status status, Pageable pageable);
 
     Optional<Talk> findTalkByUserEmailAndStatus(String userEmail, Status status);
+
+    Page<Talk> findByUserAndStatus(User user, Status status, Pageable pageable);
 }

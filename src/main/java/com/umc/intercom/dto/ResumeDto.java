@@ -103,41 +103,4 @@ public class ResumeDto {
 
     }
 
-    @Getter
-    @Builder
-    public static class ScrapResponseDto {
-        private Long id;
-        private String company;
-        private String department;
-        private String year;
-        private String semester;
-        private PostType postType;
-        private int viewCount;
-        private int scrapCount;
-        private String writer;
-        private LocalDateTime createdAt;
-        private LocalDateTime updatedAt;
-
-        public static Page<ScrapResponseDto> toDtoPage(Page<Post> postPage) {
-            return postPage.map(post -> new ScrapResponseDto(post.getId(), post.getCompany(), post.getDepartment(), post.getYear(),post.getSemester(),
-                    post.getPostType(), post.getViewCount(), post.getScrapCount(), post.getUser().getNickname(), post.getCreatedAt(), post.getUpdatedAt()));
-        }
-    }
-
-    public static ScrapResponseDto toScrapListDto(Post post) {
-        return ScrapResponseDto.builder()
-                .id(post.getId())
-                .company(post.getCompany())
-                .department(post.getDepartment())
-                .year(post.getYear())
-                .semester(post.getSemester())
-                .postType(post.getPostType())
-                .viewCount(post.getViewCount())
-                .scrapCount(post.getScrapCount())
-                .writer(post.getUser().getNickname())
-                .createdAt(post.getCreatedAt())
-                .updatedAt(post.getUpdatedAt())
-                .build();
-    }
-
 }

@@ -9,6 +9,7 @@ import com.umc.intercom.repository.PostSpecRepository;
 import com.umc.intercom.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -130,7 +131,7 @@ public class ResumeService {
         }).collect(Collectors.toList());
     }
 
-    public Page<ResumeDto.ScrapResponseDto> getAllResumesByScrapCounts(int page) {
+    public Page<ResumeDto.ResumeResponseDto> getAllResumesByScrapCounts(int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("scrapCount"));
         sorts.add(Sort.Order.desc("createdAt"));
@@ -139,7 +140,55 @@ public class ResumeService {
 
         Page<Post> postPage = postRepository.findByPostType(PostType.SUCCESSFUL_RESUME, pageable);
 
-        return ResumeDto.ScrapResponseDto.toDtoPage(postPage);
+        List<Long> postIds = postPage.getContent().stream()
+                .map(Post::getId)
+                .collect(Collectors.toList());
+
+        List<PostDetail> postDetails = postDetailRepository.findByPostIdIn(postIds);
+        List<PostSpec> postSpecs = postSpecRepository.findByPostIdIn(postIds);
+
+        Map<Long, List<PostDetail>> postDetailMap = postDetails.stream()
+                .collect(Collectors.groupingBy(detail -> detail.getPost().getId()));
+        Map<Long, PostSpec> postSpecMap = postSpecs.stream()
+                .collect(Collectors.toMap(spec -> spec.getPost().getId(), Function.identity()));
+
+        List<ResumeDto.ResumeResponseDto> resumeDtos = postPage.getContent().stream()
+                .map(post -> ResumeDto.ResumeResponseDto.toDto(post, postDetailMap.get(post.getId()), postSpecMap.get(post.getId())))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(resumeDtos, pageable, postPage.getTotalElements());
     }
 
+    public Page<ResumeDto.ResumeResponseDto> getMyResumes(String userEmail, int page) {
+        Optional<User> user = userRepository.findByEmail(userEmail);
+
+        if (!user.isPresent()) {
+            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
+        }
+
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createdAt"));
+
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
+
+        Page<Post> postPage = postRepository.findByUserAndPostType(user.get(), PostType.SUCCESSFUL_RESUME, pageable);
+
+        List<Long> postIds = postPage.getContent().stream()
+                .map(Post::getId)
+                .collect(Collectors.toList());
+
+        List<PostDetail> postDetails = postDetailRepository.findByPostIdIn(postIds);
+        List<PostSpec> postSpecs = postSpecRepository.findByPostIdIn(postIds);
+
+        Map<Long, List<PostDetail>> postDetailMap = postDetails.stream()
+                .collect(Collectors.groupingBy(detail -> detail.getPost().getId()));
+        Map<Long, PostSpec> postSpecMap = postSpecs.stream()
+                .collect(Collectors.toMap(spec -> spec.getPost().getId(), Function.identity()));
+
+        List<ResumeDto.ResumeResponseDto> resumeDtos = postPage.getContent().stream()
+                .map(post -> ResumeDto.ResumeResponseDto.toDto(post, postDetailMap.get(post.getId()), postSpecMap.get(post.getId())))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(resumeDtos, pageable, postPage.getTotalElements());
+    }
 }

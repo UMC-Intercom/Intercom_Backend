@@ -174,4 +174,19 @@ public class TalkService {
         return TalkDto.TalkResponseDto.toDto(talk);
     }
 
+    public Page<TalkDto.TalkResponseDto> getMyTalks(String userEmail, int page) {
+        Optional<User> user = userRepository.findByEmail(userEmail);
+
+        if (!user.isPresent()) {
+            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
+        }
+
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createdAt"));
+
+        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(sorts));
+
+        Page<Talk> talkPage = talkRepository.findByUserAndStatus(user.get(), Status.SAVED, pageable);
+        return TalkDto.toDtoPage(talkPage);
+    }
 }

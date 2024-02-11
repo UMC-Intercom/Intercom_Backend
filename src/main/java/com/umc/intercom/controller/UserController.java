@@ -2,16 +2,21 @@ package com.umc.intercom.controller;
 
 import com.umc.intercom.config.security.SecurityUtil;
 import com.umc.intercom.domain.User;
+import com.umc.intercom.dto.InterviewDto;
+import com.umc.intercom.dto.ResumeDto;
+import com.umc.intercom.dto.TalkDto;
 import com.umc.intercom.dto.UserDto;
-import com.umc.intercom.service.UserService;
+import com.umc.intercom.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -20,6 +25,9 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
+    private final TalkService talkService;
+    private final ResumeService resumeService;
+    private final InterviewService interviewService;
 
     // 이메일
     @Operation(summary = "이메일 찾기", description = "가입 시 등록한 휴대폰 번호로 이름, 이메일 찾기")
@@ -87,4 +95,27 @@ public class UserController {
         return new ResponseEntity<>(userProfile, HttpStatus.OK);
     }
 
+    @Operation(summary = "내가 작성한 톡톡 목록 조회")
+    @GetMapping("/talk")
+    public ResponseEntity<Page<TalkDto.TalkResponseDto>> getMyTalks(@RequestParam(value = "page", defaultValue = "1") int page) {
+        String userEmail = SecurityUtil.getCurrentUsername();
+        Page<TalkDto.TalkResponseDto> talkDtoPage = talkService.getMyTalks(userEmail, page);
+        return ResponseEntity.ok(talkDtoPage);
+    }
+
+    @Operation(summary = "내가 작성한 면접 후기 목록 조회")
+    @GetMapping("/interview")
+    public ResponseEntity<Page<InterviewDto.InterviewResponseDto>> getMyInterviews(@RequestParam(value = "page", defaultValue = "1") int page) {
+        String userEmail = SecurityUtil.getCurrentUsername();
+        Page<InterviewDto.InterviewResponseDto> interviewList = interviewService.getMyInterviews(userEmail, page);
+        return new ResponseEntity<>(interviewList, HttpStatus.OK);
+    }
+
+    @Operation(summary = "내가 작성한 합격 자소서 목록 조회")
+    @GetMapping("/resume")
+    public ResponseEntity<Page<ResumeDto.ResumeResponseDto>> getMyResumes(@RequestParam(value = "page", defaultValue = "1") int page){
+        String userEmail = SecurityUtil.getCurrentUsername();
+        Page<ResumeDto.ResumeResponseDto> resumeDtoPage = resumeService.getMyResumes(userEmail, page);
+        return ResponseEntity.ok(resumeDtoPage);
+    }
 }

@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.umc.intercom.domain.common.enums.PostType;
@@ -101,15 +102,42 @@ public class InterviewService {
         }).collect(Collectors.toList());
     }
 
-    public Page<InterviewDto.ScrapResponseDto> getAllInterviewsByScrapCounts(int page) {
+    public Page<InterviewDto.InterviewResponseDto> getAllInterviewsByScrapCounts(int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("scrapCount"));
         sorts.add(Sort.Order.desc("createdAt"));
 
         Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
 
-        Page<Post> postPage = postRepository.findByPostType(PostType.INTERVIEW_REVIEW, pageable);
+        Page<Post> posts = postRepository.findByPostType(PostType.INTERVIEW_REVIEW, pageable);
 
-        return InterviewDto.ScrapResponseDto.toDtoPage(postPage);
+        return posts.map(post -> {
+            PostDetail postDetail = postDetailRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostDetail not Found"));
+            PostSpec postSpec = postSpecRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
+            return InterviewDto.InterviewResponseDto.toDto(post, postDetail, postSpec);
+        });
+    }
+
+    public Page<InterviewDto.InterviewResponseDto> getMyInterviews(String userEmail, int page) {
+        Optional<User> user = userRepository.findByEmail(userEmail);
+
+        if (!user.isPresent()) {
+            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
+        }
+
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("scrapCount"));
+        sorts.add(Sort.Order.desc("createdAt"));
+
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
+
+        Page<Post> posts = postRepository.findByUserAndPostType(user.get(), PostType.INTERVIEW_REVIEW, pageable);
+
+        return posts.map(post -> {
+            PostDetail postDetail = postDetailRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostDetail not Found"));
+            PostSpec postSpec = postSpecRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
+            return InterviewDto.InterviewResponseDto.toDto(post, postDetail, postSpec);
+        });
+
     }
 }

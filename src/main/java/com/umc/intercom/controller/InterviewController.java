@@ -51,8 +51,8 @@ public class InterviewController {
 
     @Operation(summary = "스크랩 수 순으로 면접 후기 게시글 목록 조회")
     @GetMapping("/scrap-counts")
-    public ResponseEntity<Page<InterviewDto.ScrapResponseDto>> getAllInterviewsByScrapCounts(@RequestParam(value = "page", defaultValue = "1") int page) {
-        Page<InterviewDto.ScrapResponseDto> interviewDtoPage = interviewService.getAllInterviewsByScrapCounts(page);
+    public ResponseEntity<Page<InterviewDto.InterviewResponseDto>> getAllInterviewsByScrapCounts(@RequestParam(value = "page", defaultValue = "1") int page) {
+        Page<InterviewDto.InterviewResponseDto> interviewDtoPage = interviewService.getAllInterviewsByScrapCounts(page);
         return ResponseEntity.ok(interviewDtoPage);
     }
 }
