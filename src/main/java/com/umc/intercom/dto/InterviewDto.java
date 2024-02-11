@@ -7,7 +7,6 @@ import com.umc.intercom.domain.common.enums.PostType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -104,5 +103,4 @@ public class InterviewDto {
             );
         }
     }
-
 }
