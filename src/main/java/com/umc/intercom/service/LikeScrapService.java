@@ -65,7 +65,7 @@ public class LikeScrapService {
         checkAndAddCoins(user);
 
         // 알림 전송
-        sendNotification(like.getUser(), like);
+        sendNotification(like.getTalk().getUser(), like);
 
         return LikeScrapDto.toDtoFromTalk(like);
     }

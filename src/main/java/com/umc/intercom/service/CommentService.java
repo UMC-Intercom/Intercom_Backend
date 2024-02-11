@@ -47,7 +47,7 @@ public class CommentService {
         checkAndAddCoins(user.get());
 
         // 알림 전송
-        sendNotification(savedComment.getUser(), savedComment);
+        sendNotification(savedComment.getTalk().getUser(), savedComment);
 
         return CommentDto.CommentResponseDto.toDto(savedComment);
     }
@@ -94,7 +94,7 @@ public class CommentService {
         checkAndAddCoins(user.get());
 
         // 알림 전송
-        sendNotification(savedComment.getUser(), savedComment);
+        sendNotification(savedComment.getTalk().getUser(), savedComment);
 
         return CommentDto.CommentResponseDto.toDto(savedComment);
     }
