@@ -67,8 +67,11 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public List<CommentDto.CommentResponseDto> getComments(Long talkId) {
-        List<Comment> comments = commentRepository.findAllByTalkId(talkId); // talk은 finaAllByTalkId, post는 findAllByPostId로
-        return comments.stream().map(CommentDto.CommentResponseDto::toDto).collect(Collectors.toList());
+        List<Comment> comments = commentRepository.findAllByTalkId(talkId);
+        return comments.stream().map(comment -> {
+            int replyCount = commentRepository.countByParentId_Id(comment.getId()); // commentId와 일치하는 parentId 개수 반환
+            return CommentDto.CommentResponseDto.toDto(comment, replyCount);
+        }).collect(Collectors.toList());
     }
 
     @Transactional
