@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -35,6 +36,7 @@ public class InterviewController {
                                                                              @RequestPart("interviewRequestDto") String interviewRequestDtoString) throws JsonProcessingException {
 
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
         InterviewDto.InterviewRequestDto interviewRequestDto = objectMapper.readValue(interviewRequestDtoString, InterviewDto.InterviewRequestDto.class);
 
         String userEmail = SecurityUtil.getCurrentUsername();
