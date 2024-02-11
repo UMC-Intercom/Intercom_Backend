@@ -216,7 +216,7 @@ public class LikeScrapService {
         // 페이징
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("id"));   // 최근에 스크랩한 순서대로
-        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
+        Pageable pageable = PageRequest.of(page-1, 4, Sort.by(sorts));
 
         Page<LikeScrap> scrapPage = likeScrapRepository.findByUserAndLikeScrapTypeAndPostType(user, LikeScrapType.SCRAP, PostType.TALK, pageable);
 
@@ -229,7 +229,7 @@ public class LikeScrapService {
         
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("id"));
-        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
+        Pageable pageable = PageRequest.of(page-1, 4, Sort.by(sorts));
 
         Page<LikeScrap> scrapPage = likeScrapRepository.findByUserAndLikeScrapTypeAndPostType(user, LikeScrapType.SCRAP, PostType.INTERVIEW_REVIEW, pageable);
 
@@ -247,7 +247,7 @@ public class LikeScrapService {
         
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("id"));
-        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
+        Pageable pageable = PageRequest.of(page-1, 4, Sort.by(sorts));
 
         Page<LikeScrap> scrapPage = likeScrapRepository.findByUserAndLikeScrapTypeAndPostType(user, LikeScrapType.SCRAP, PostType.SUCCESSFUL_RESUME, pageable);
 
@@ -331,7 +331,7 @@ public class LikeScrapService {
 
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("id"));
-        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
+        Pageable pageable = PageRequest.of(page-1, 6, Sort.by(sorts));
 
         Page<LikeScrap> scrapPage = likeScrapRepository.findByUserAndLikeScrapTypeAndPostType(user, LikeScrapType.SCRAP, PostType.JOB_INFO, pageable);
 
