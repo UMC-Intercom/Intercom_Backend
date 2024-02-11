@@ -26,4 +26,6 @@ public interface LikeScrapRepository extends JpaRepository<LikeScrap, Long> {
     List<Long> findJobIdsByUserEmailAndPostType(String userEmail, PostType postType);
 
     Optional<LikeScrap> findByUserAndCommentAndPostTypeAndLikeScrapType(User user, Comment comment, PostType postType, LikeScrapType likeScrapType);
+
+    boolean existsByUserAndCommentAndPostType(User user, Comment comment, PostType postType);
 }

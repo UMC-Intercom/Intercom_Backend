@@ -38,7 +38,8 @@ public class CommentController {
     @Operation(summary = "톡톡 게시글의 댓글 조회", description = "{talkId} 자리에 톡톡 게시글 id를 전달해주세요.")
     @GetMapping("/talk/{talkId}") //댓글 조회
     public List<CommentDto.CommentResponseDto> getComments(@PathVariable Long talkId) {
-        return commentService.getComments(talkId);
+        String userEmail = SecurityUtil.getCurrentUsername();
+        return commentService.getComments(userEmail, talkId);
     }
 
     @Operation(summary = "대댓글 작성")
