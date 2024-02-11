@@ -92,10 +92,15 @@ public class InterviewService {
     }
     
     
-    public List<InterviewDto.InterviewResponseDto> getAllInterviews() {
-        List<Post> posts = postRepository.findByPostTypeOrderByCreatedAtDesc(PostType.INTERVIEW_REVIEW);
+    public List<InterviewDto.InterviewResponseDto> getAllInterviews(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createdAt"));
         
-        return posts.stream().map(post -> {
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
+        
+        Page<Post> interviewPage = postRepository.findByPostType(PostType.INTERVIEW_REVIEW, pageable);
+        
+        return interviewPage.getContent().stream().map(post -> {
             PostDetail postDetail = postDetailRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostDetail not Found"));
             PostSpec postSpec = postSpecRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
             return InterviewDto.InterviewResponseDto.toDto(post, postDetail, postSpec);
