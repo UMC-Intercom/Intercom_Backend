@@ -1,21 +1,17 @@
 package com.umc.intercom.service;
 
-import com.amazonaws.services.kms.model.NotFoundException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.intercom.config.security.SecurityUtil;
 import com.umc.intercom.domain.Job;
-import com.umc.intercom.domain.common.enums.LikeScrapType;
 import com.umc.intercom.domain.common.enums.PostType;
 import com.umc.intercom.dto.JobDto;
 import com.umc.intercom.repository.JobRepository;
 import com.umc.intercom.repository.LikeScrapRepository;
+import com.umc.intercom.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -26,10 +22,7 @@ import java.net.URLEncoder;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +30,7 @@ public class JobService {
 
     private final JobRepository jobRepository;
     private final LikeScrapRepository likeScrapRepository;
+    private final UserRepository userRepository;
 
     @Value("${api.accessKey}")
     private String ACCESS_KEY;
@@ -187,4 +181,32 @@ public class JobService {
                     .build();
         });
     }
+
+    public Page<JobDto.JobListResponseDto> searchJob(String userEmail, String jobMidCode, String location, String keyword, int page)  {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("postingDate"));
+        Pageable pageable = PageRequest.of(page - 1, 24, Sort.by(sorts));
+
+        Page<Job> jobPage;
+
+        if (location.equals("all")) {
+            if (keyword == null) {
+                jobPage = jobRepository.findByJobMidCodeContaining(jobMidCode, pageable);
+            } else {
+                jobPage = jobRepository.findByJobMidCodeContainingAndTitleContaining(jobMidCode, keyword, pageable);
+            }
+        } else {
+            if (keyword == null) {
+                jobPage = jobRepository.findByJobMidCodeContainingAndLocationContaining(jobMidCode, location, pageable);
+            } else {
+                jobPage = jobRepository.findByJobMidCodeContainingAndLocationContainingAndTitleContaining(jobMidCode, location, keyword, pageable);
+            }
+        }
+
+        List<Long> userScrapedJobIds = likeScrapRepository.findJobIdsByUserEmailAndPostType(userEmail, PostType.JOB_INFO);
+
+        // 스크랩 여부를 포함하여 DTO로 변환
+        return JobDto.JobListResponseDto.toDtoPageWithScrap(jobPage, userScrapedJobIds);
+    }
+
 }
