@@ -48,4 +48,17 @@ public class JobController {
         return optionalJobDto.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @Operation(summary = "공고 검색", description = "jobMidCode 예시: IT개발·데이터, 총무·법무·사무, 인사·노무·HRD" +
+                "지역으로 '지역 제한 없음'을 선택하는 경우 location 값으로 'all'을 전달해주세요.")
+    @GetMapping("/search")
+    public ResponseEntity<Page<JobDto.JobListResponseDto>> searchJob(@RequestParam(value = "jobMidCode") String jobMidCode,
+                                                                     @RequestParam(value = "location") String location,
+                                                                     @RequestParam(value = "keyword", required = false) String keyword,
+                                                                     @RequestParam(value = "page", defaultValue = "1") int page) {
+        String userEmail = SecurityUtil.getCurrentUsername();
+        Page<JobDto.JobListResponseDto> jobPages = jobService.searchJob(userEmail, jobMidCode, location, keyword, page);
+        return ResponseEntity.ok(jobPages);
+    }
+
 }
