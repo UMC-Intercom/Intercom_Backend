@@ -8,6 +8,7 @@ import com.umc.intercom.domain.common.enums.PostType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,6 +25,10 @@ public class InterviewDto {
         private String year;
         @Schema(description = "상반기 or 하반기", example = "상반기")
         private String semester;
+        @Schema(description = "성별", example = "male/female/no-selected")
+        private String gender;
+        @Schema(description = "생일", example = "2024-02-12")
+        private LocalDate birthday;
 
         @Schema(description = "step2) 학력", example = "학교명")
         private String education;
@@ -56,6 +61,8 @@ public class InterviewDto {
         private String department;
         private String year; //합격 년도
         private String semester; //상반기 , 하반기
+        private String gender;
+        private LocalDate birthday;
         private PostType postType;
         private int viewCount;
         private int scrapCount;
@@ -84,6 +91,8 @@ public class InterviewDto {
                     post.getDepartment(),
                     post.getYear(),
                     post.getSemester(),
+                    post.getGender().toString(),
+                    post.getBirthday(),
                     post.getPostType(),
                     post.getViewCount(),
                     post.getScrapCount(),

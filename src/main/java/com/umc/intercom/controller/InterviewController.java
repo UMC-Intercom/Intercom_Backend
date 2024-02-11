@@ -27,7 +27,7 @@ public class InterviewController {
     private final InterviewService interviewService;
 
     @Operation(summary = "면접 후기 게시글 작성", description = "interviewRequestDto 데이터 형식: \n\n" +
-            "{ \"company\": \"회사명\", \"department\": \"부서 및 직무명\", \"year\": \"2024\", \"semester\": \"상반기\", " +
+            "{ \"company\": \"회사명\", \"department\": \"부서 및 직무명\", \"year\": \"2024\", \"semester\": \"상반기\", \"gender\": \"no-selected\", \"birthday\": \"2024-02-12\", " +
             "\"education\": \"학교명\", \"major\": \"학과명\", \"gpa\": \"4.0/4.5\", \"activity\": \"대외활동 내용\", \"certification\": \"자격증1, 자격증2, 자격증3,\", \"english\": \"어학 종류1, 종류2, 종류3,\", \"score\": \"취득 점수1, 점수2, 점수3,\", " +
             "\"title\": \"문항\", \"content\": \"답변\" }")
     @PostMapping(value = "", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})

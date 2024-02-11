@@ -1,6 +1,7 @@
 package com.umc.intercom.service;
 
 import com.umc.intercom.domain.*;
+import com.umc.intercom.domain.common.enums.Gender;
 import com.umc.intercom.domain.common.enums.PostType;
 import com.umc.intercom.dto.ResumeDto;
 import com.umc.intercom.repository.PostDetailRepository;
@@ -30,11 +31,25 @@ public class ResumeService {
     public ResumeDto.ResumeResponseDto  createResume(ResumeDto.ResumeRequestDto  resumeDto, String userEmail){
         Optional<User> user = userRepository.findByEmail(userEmail);
 
+        // 성별
+        Gender gender;
+        if (resumeDto.getGender().equals("male")) {
+            gender = Gender.MALE;
+        }
+        else if (resumeDto.getGender().equals("female")) {
+            gender = Gender.FEMALE;
+        }
+        else {  // (requestDto.getGender().equals("no-selected")
+            gender = Gender.NONE;
+        }
+
         Post post = Post.builder()
                 .company(resumeDto.getCompany())
                 .department(resumeDto.getDepartment())
                 .year(resumeDto.getYear())
                 .semester(resumeDto.getSemester())
+                .gender(gender)
+                .birthday(resumeDto.getBirthday())
                 .postType(PostType.SUCCESSFUL_RESUME)   // 저장할 때 postType 타입 지정
                 .viewCount(0)
                 .user(user.orElseThrow(() -> new RuntimeException("User not Found")))
@@ -69,6 +84,10 @@ public class ResumeService {
         Post createdPost = postRepository.save(post);
         List<PostDetail> createdPostDetails = postDetailRepository.saveAll(postDetails);
         PostSpec createdPostSpec = postSpecRepository.save(postSpec);
+
+        // 코인 부여
+        user.get().setCoin(user.get().getCoin() + 30);
+        userRepository.save(user.get());
 
         return ResumeDto.ResumeResponseDto.toDto(createdPost, createdPostDetails, createdPostSpec);
     }
