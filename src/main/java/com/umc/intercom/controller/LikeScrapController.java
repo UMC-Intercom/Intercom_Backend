@@ -17,15 +17,15 @@ public class LikeScrapController {
 
     // 좋아요
     @Operation(summary = "톡톡 게시글에 좋아요 추가", description = "{talkId} 자리에 좋아요할 톡톡 게시글 id를 전달해주세요.")
-    @PostMapping("/likes/{talkId}")
-    public ResponseEntity<LikeScrapDto> addLike(@PathVariable Long talkId) throws Exception {
+    @PostMapping("/likes/talks/{talkId}")
+    public ResponseEntity<LikeScrapDto.LikeScrapResponseDto> addLike(@PathVariable Long talkId) throws Exception {
         String userEmail = SecurityUtil.getCurrentUsername();
-        LikeScrapDto likeScrapDto = likeScrapService.addLike(talkId, userEmail);
+        LikeScrapDto.LikeScrapResponseDto likeScrapDto = likeScrapService.addLike(talkId, userEmail);
         return ResponseEntity.ok(likeScrapDto);
     }
 
     @Operation(summary = "톡톡 게시글에 좋아요 삭제", description = "{talkId} 자리에 좋아요 삭제할 톡톡 게시글 id를 전달해주세요.")
-    @DeleteMapping("/likes/{talkId}")
+    @DeleteMapping("/likes/talks/{talkId}")
     public ResponseEntity<Void> deleteLike(@PathVariable Long talkId) {
         String userEmail = SecurityUtil.getCurrentUsername();
         likeScrapService.deleteLike(talkId, userEmail);
@@ -40,12 +40,28 @@ public class LikeScrapController {
         return ResponseEntity.ok(isLiked);
     }
 
+    @Operation(summary = "댓글에 좋아요 추가", description = "{id} 자리에 좋아요할 댓글(답글) id를 전달해주세요.")
+    @PostMapping("/likes/comments/{id}")
+    public ResponseEntity<LikeScrapDto.CommentLikeScrapResponseDto> addLikeComment(@PathVariable Long id) throws Exception {
+        String userEmail = SecurityUtil.getCurrentUsername();
+        LikeScrapDto.CommentLikeScrapResponseDto likeScrapDto = likeScrapService.addCommentLike(id, userEmail);
+        return ResponseEntity.ok(likeScrapDto);
+    }
+
+    @Operation(summary = "댓글에 좋아요 삭제", description = "{talkId} 자리에 좋아요 삭제할 톡톡 게시글 id를 전달해주세요.")
+    @DeleteMapping("/likes/comments/{id}")
+    public ResponseEntity<Void> deleteLikeComment(@PathVariable Long id) {
+        String userEmail = SecurityUtil.getCurrentUsername();
+        likeScrapService.deleteLikeComment(id, userEmail);
+        return ResponseEntity.ok().build();
+    }
+    
     // 스크랩
     @Operation(summary = "톡톡 게시글에 스크랩 추가", description = "{talkId} 자리에 스크랩할 톡톡 게시글 id를 전달해주세요.")
     @PostMapping("/scraps/talks/{talkId}")
-    public ResponseEntity<LikeScrapDto> addTalkScrap(@PathVariable Long talkId) throws Exception {
+    public ResponseEntity<LikeScrapDto.LikeScrapResponseDto> addTalkScrap(@PathVariable Long talkId) throws Exception {
         String userEmail = SecurityUtil.getCurrentUsername();
-        LikeScrapDto likeScrapDto = likeScrapService.addTalkScrap(talkId, userEmail);
+        LikeScrapDto.LikeScrapResponseDto likeScrapDto = likeScrapService.addTalkScrap(talkId, userEmail);
         return ResponseEntity.ok(likeScrapDto);
     }
 
@@ -59,9 +75,9 @@ public class LikeScrapController {
 
     @Operation(summary = "면접 후기 or 합격 자소서 게시글에 스크랩 추가", description = "{postId} 자리에 스크랩할 게시글 id를 전달해주세요.")
     @PostMapping("/scraps/posts/{postId}")
-    public ResponseEntity<LikeScrapDto> addPostScrap(@PathVariable Long postId) throws Exception {
+    public ResponseEntity<LikeScrapDto.LikeScrapResponseDto> addPostScrap(@PathVariable Long postId) throws Exception {
         String userEmail = SecurityUtil.getCurrentUsername();
-        LikeScrapDto likeScrapDto = likeScrapService.addPostScrap(postId, userEmail);
+        LikeScrapDto.LikeScrapResponseDto likeScrapDto = likeScrapService.addPostScrap(postId, userEmail);
         return ResponseEntity.ok(likeScrapDto);
     }
 
@@ -115,9 +131,9 @@ public class LikeScrapController {
 
     @Operation(summary = "공고 스크랩 추가", description = "{id} 자리에 스크랩할 공고 id를 전달해주세요.")
     @PostMapping("/scraps/jobs/{id}")
-    public ResponseEntity<LikeScrapDto> addJobScrap(@PathVariable Long id) throws Exception {
+    public ResponseEntity<LikeScrapDto.LikeScrapResponseDto> addJobScrap(@PathVariable Long id) throws Exception {
         String userEmail = SecurityUtil.getCurrentUsername();
-        LikeScrapDto likeScrapDto = likeScrapService.addJobScrap(id, userEmail);
+        LikeScrapDto.LikeScrapResponseDto likeScrapDto = likeScrapService.addJobScrap(id, userEmail);
         return ResponseEntity.ok(likeScrapDto);
     }
 

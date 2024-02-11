@@ -5,12 +5,11 @@ import com.umc.intercom.domain.Notification;
 import com.umc.intercom.domain.Talk;
 import com.umc.intercom.domain.User;
 import com.umc.intercom.domain.common.enums.AdoptionStatus;
+import com.umc.intercom.domain.common.enums.PostType;
 import com.umc.intercom.dto.CommentDto;
-import com.umc.intercom.repository.CommentRepository;
-import com.umc.intercom.repository.NotificationRepository;
-import com.umc.intercom.repository.TalkRepository;
-import com.umc.intercom.repository.UserRepository;
+import com.umc.intercom.repository.*;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +24,7 @@ public class CommentService {
     private UserRepository userRepository;
     private TalkRepository talkRepository;
     private NotificationRepository notificationRepository;
+    private LikeScrapRepository likeScrapRepository;
 
     @Transactional
     public CommentDto.CommentResponseDto  createComment(String userEmail, CommentDto.CommentRequestDto commentDto) {
@@ -66,11 +66,18 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentDto.CommentResponseDto> getComments(Long talkId) {
+    public List<CommentDto.CommentResponseDto> getComments(String userEmail, Long talkId) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
         List<Comment> comments = commentRepository.findAllByTalkId(talkId);
+
         return comments.stream().map(comment -> {
             int replyCount = commentRepository.countByParentId_Id(comment.getId()); // commentId와 일치하는 parentId 개수 반환
-            return CommentDto.CommentResponseDto.toDto(comment, replyCount);
+            // 좋아요 여부 확인
+            boolean likedByCurrentUser = likeScrapRepository.existsByUserAndCommentAndPostType(user, comment, PostType.COMMENT);
+
+            return CommentDto.CommentResponseDto.toDto(comment, replyCount, likedByCurrentUser);
         }).collect(Collectors.toList());
     }
 

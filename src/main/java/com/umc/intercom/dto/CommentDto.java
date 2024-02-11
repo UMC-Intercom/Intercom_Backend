@@ -41,6 +41,8 @@ public class CommentDto {
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
         private int replyCount;
+        private int likeCount;
+        private boolean userLiked;  // 좋아요 했는지 여부
         private String defaultProfile;  // 댓글 작성자의 프로필
 
         public static CommentResponseDto toDto(Comment comment) {
@@ -53,11 +55,12 @@ public class CommentDto {
                     .adoptionStatus(comment.getAdoptionStatus())
                     .createdAt(comment.getCreatedAt())
                     .updatedAt(comment.getUpdatedAt())
+                    .likeCount(comment.getLikeCount())
                     .defaultProfile(comment.getUser().getDefaultProfile())
                     .build();
         }
 
-        public static CommentResponseDto toDto(Comment comment, int replyCount) {
+        public static CommentResponseDto toDto(Comment comment, int replyCount, boolean isLiked) {
             return CommentResponseDto.builder()
                     .talkId(comment.getTalk().getId())
                     .id(comment.getId())
@@ -68,6 +71,8 @@ public class CommentDto {
                     .createdAt(comment.getCreatedAt())
                     .updatedAt(comment.getUpdatedAt())
                     .replyCount(replyCount)
+                    .likeCount(comment.getLikeCount())
+                    .userLiked(isLiked)
                     .defaultProfile(comment.getUser().getDefaultProfile())
                     .build();
         }
