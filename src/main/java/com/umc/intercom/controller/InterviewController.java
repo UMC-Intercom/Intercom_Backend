@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.umc.intercom.config.security.SecurityUtil;
 import com.umc.intercom.dto.InterviewDto;
+import com.umc.intercom.dto.ResumeDto;
 import com.umc.intercom.service.InterviewService;
 
 import lombok.RequiredArgsConstructor;
@@ -54,5 +55,15 @@ public class InterviewController {
     public ResponseEntity<Page<InterviewDto.InterviewResponseDto>> getAllInterviewsByScrapCounts(@RequestParam(value = "page", defaultValue = "1") int page) {
         Page<InterviewDto.InterviewResponseDto> interviewDtoPage = interviewService.getAllInterviewsByScrapCounts(page);
         return ResponseEntity.ok(interviewDtoPage);
+    }
+    
+    @Operation(summary = "기업명, 직무명으로 면접 후기 검색")
+    @GetMapping("/search")
+    public ResponseEntity<List<InterviewDto.InterviewResponseDto>> getAllInterviewsByCompanyAndDepartment(
+            @RequestParam("company") String company,
+            @RequestParam("department") String department
+    ){
+        List<InterviewDto.InterviewResponseDto> interviewList = interviewService.getAllInterviewsByCompanyAndDepartment(company, department);
+        return new ResponseEntity<>(interviewList, HttpStatus.OK);
     }
 }
