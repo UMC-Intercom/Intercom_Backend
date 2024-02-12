@@ -23,18 +23,6 @@ public class CareerDto {
         private String major;
         @Schema(description = "전공학점", example = "4.0/4.5")
         private String gpa;
-        @Schema(description = "회사", example = "회사명")
-        private String company;
-        @Schema(description = "직급", example = "직급명")
-        private String position;
-        @Schema(description = "주요직무", example = "직무명, 모바일 디자인, UX UI 기획,")
-        private String job;
-        @Schema(description = "연봉", example = "3000")
-        private String salary;
-        @Schema(description = "입사 날짜", example = "2024-01-01")
-        private LocalDate startDate;
-        @Schema(description = "퇴사 날짜", example = "2024-02-04")
-        private LocalDate endDate;
         @Schema(description = "대외 활동", example = "대외활동1, 대외활동2,")
         private String activity;
         @Schema(description = "보유 스킬", example = "Figma, Photoshop,")
@@ -55,8 +43,8 @@ public class CareerDto {
         private String university;
         private String major;
         private String gpa;
-        private String skill;
         private String activity;
+        private String skill;
         private String link;
 
         public static CareerResponseDto toDto(Career career) {
@@ -68,8 +56,8 @@ public class CareerDto {
                     career.getUniversity(),
                     career.getMajor(),
                     career.getGpa(),
-                    career.getSkill(),
                     career.getActivity(),
+                    career.getSkill(),
                     career.getLink()
             );
         }
