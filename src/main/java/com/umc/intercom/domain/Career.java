@@ -3,8 +3,6 @@ package com.umc.intercom.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
-
 @Entity
 @Getter
 @Setter
