@@ -1,8 +1,9 @@
 package com.umc.intercom.domain;
 
-import com.umc.intercom.domain.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -19,25 +20,30 @@ public class Career {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(nullable = false, length = 15)
-    private String university;
+    @Column(nullable = false)
+    private String english; //어학
 
     @Column(nullable = false)
-    private String major;
+    private String score; //어학 획득 점수
 
     @Column(nullable = false)
-    private String skill;
+    private String certification; //자격증
 
     @Column(nullable = false)
-    private String title;
+    private String university; //학교
 
-    @Lob //body 필드 매우 큰 텍스트 정보에 유리
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String content;
+    @Column(nullable = false)
+    private String major; //학과
 
-    @OneToOne(mappedBy = "career")
-    private Spec spec;
+    @Column(nullable = false)
+    private String gpa; //전공 학점
 
+    @Column(nullable = false)
+    private String activity; //대외활동
 
+    @Column(nullable = false)
+    private String skill; //보유 스펙 ex)일러스트, 포토샵
 
+    @Column(nullable = false)
+    private String link; //링크
 }
