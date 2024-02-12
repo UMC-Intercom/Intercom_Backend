@@ -24,9 +24,15 @@ public class CareerService {
     public CareerDto.CareerResponseDto createCareer(CareerDto.CareerRequestDto careerDto, String userEmail){
         Optional<User> user = userRepository.findByEmail(userEmail);
         Career career = Career.builder()
+                .english(careerDto.getEnglish())
+                .score(careerDto.getScore())
+                .certification(careerDto.getCertification())
                 .university(careerDto.getUniversity())
                 .major(careerDto.getMajor())
+                .gpa(careerDto.getGpa())
+                .activity(careerDto.getActivity())
                 .skill(careerDto.getSkill())
+                .link(careerDto.getLink())
                 .user(user.orElseThrow(()-> new RuntimeException("User not Found")))
                 .build();
 
@@ -37,14 +43,12 @@ public class CareerService {
 
     public List<CareerDto.CareerResponseDto> getCareerByEmail(String userEmail){
         Optional<User> user = userRepository.findByEmail(userEmail);
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             throw new RuntimeException("User Not Found");
         }
         List<Career> careers = careerRepository.findByUser(user.get());
 
-        return careers.stream().map(career -> {
-            return CareerDto.CareerResponseDto.toDto(career);
-        }).collect(Collectors.toList());
+        return careers.stream().map(CareerDto.CareerResponseDto::toDto).collect(Collectors.toList());
     }
 
     public void updateCareer(Long id, String userEmail, CareerDto.CareerRequestDto requestDto){
@@ -53,7 +57,7 @@ public class CareerService {
 
         String careerOwner = careerToUpdate.getUser().getEmail();
         if(!careerOwner.equals(userEmail))
-            throw new RuntimeException("본인이 작성한 Career만 수정 가능합니다. ");
+            throw new RuntimeException("본인이 작성한 Career만 수정 가능합니다.");
 
         careerToUpdate.setEnglish(requestDto.getEnglish());
         careerToUpdate.setScore(requestDto.getScore());
