@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.umc.intercom.aws.AmazonS3Manager;
 import com.umc.intercom.domain.*;
+import com.umc.intercom.domain.common.enums.Gender;
 import com.umc.intercom.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -54,11 +55,25 @@ public class InterviewService {
             }
         }
 
+        // 성별
+        Gender gender;
+        if (interviewDto.getGender().equals("male")) {
+            gender = Gender.MALE;
+        }
+        else if (interviewDto.getGender().equals("female")) {
+            gender = Gender.FEMALE;
+        }
+        else {  // (requestDto.getGender().equals("no-selected")
+            gender = Gender.NONE;
+        }
+
         Post post = Post.builder()
                         .company(interviewDto.getCompany())
                         .department(interviewDto.getDepartment())
                         .year(interviewDto.getYear())
                         .semester(interviewDto.getSemester())
+                        .gender(gender)
+                        .birthday(interviewDto.getBirthday())
                         .postType(PostType.INTERVIEW_REVIEW)    // 저장할 때 postType 타입 지정
                         .viewCount(0)
                         .user(user.orElseThrow(() -> new RuntimeException("User not Found")))
@@ -88,6 +103,10 @@ public class InterviewService {
 
         PostDetail createdPostDetail = postDetailRepository.save(postDetail);
         PostSpec createdPostSpec = postSpecRepository.save(postSpec);
+
+        // 코인 부여
+        user.get().setCoin(user.get().getCoin() + 30);
+        userRepository.save(user.get());
 
         return InterviewDto.InterviewResponseDto.toDto(createdPost, createdPostDetail, createdPostSpec);
     }

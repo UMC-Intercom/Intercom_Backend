@@ -1,10 +1,13 @@
 package com.umc.intercom.domain;
 
 import com.umc.intercom.domain.common.BaseEntity;
+import com.umc.intercom.domain.common.enums.Gender;
 import com.umc.intercom.domain.common.enums.PostType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -28,6 +31,12 @@ public class Post extends BaseEntity {
 
     @Column(nullable = false)
     private String semester;    // 상반기, 하반기
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    @Column(nullable = false)
+    private LocalDate birthday;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "post_type")

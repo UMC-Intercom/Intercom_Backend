@@ -6,8 +6,8 @@ import com.umc.intercom.domain.PostSpec;
 import com.umc.intercom.domain.common.enums.PostType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import org.springframework.data.domain.Page;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +25,10 @@ public class ResumeDto {
         private String year;
         @Schema(description = "상반기 or 하반기", example = "상반기")
         private String semester;
+        @Schema(description = "성별", example = "male/female/no-selected")
+        private String gender;
+        @Schema(description = "생일", example = "2024-02-12")
+        private LocalDate birthday;
 
         @Schema(description = "step2) 학력", example = "학교명")
         private String education;
@@ -34,16 +38,16 @@ public class ResumeDto {
         private String gpa;
         @Schema(description = "대외활동", example = "대외활동 내용")
         private String activity;
-        @Schema(description = "자격증", example = "자격증1, 자격증2, 자격증3,")
+        @Schema(description = "자격증", example = "[\"자격증1\", \"자격증2\", \"자격증3,\"]")
         private List<String> certifications;
         @Schema(description = "어학", example = "어학 종류1, 종류2, 종류3,")
         private String english;
         @Schema(description = "취득 점수", example = "취득 점수1, 점수2, 점수3,")
         private String score;
 
-        @Schema(description = "step3) 자소서 문항", example = "문항")
+        @Schema(description = "step3) 자소서 문항", example = "[\"문항1\", \"문항2\", \"문항3,\"]")
         private List<String> titles;
-        @Schema(description = "자소서 답변", example = "답변")
+        @Schema(description = "자소서 답변", example = "[\"답변1\", \"답변2\", \"답변3,\"]")
         private List<String> contents;
 
     }
@@ -58,6 +62,8 @@ public class ResumeDto {
         private String department;
         private String year; //합격 년도
         private String semester; //상반기 , 하반기
+        private String gender;
+        private LocalDate birthday;
         private PostType postType;
         private int viewCount;
         private int scrapCount;
@@ -83,6 +89,8 @@ public class ResumeDto {
                     post.getDepartment(),
                     post.getYear(),
                     post.getSemester(),
+                    post.getGender().toString(),
+                    post.getBirthday(),
                     post.getPostType(),
                     post.getViewCount(),
                     post.getScrapCount(),
