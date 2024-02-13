@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.umc.intercom.dto.TalkDto.TalkResponseDto.toDto;
@@ -41,6 +42,8 @@ public class TalkDto {
         private int commentCount;
         private int replyCount;
         private String writer;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
 
         public static TalkResponseDto toDto(Talk talk) {
             return TalkResponseDto.builder()
@@ -55,6 +58,8 @@ public class TalkDto {
                     .commentCount(talk.getCommentCount())
                     .replyCount(talk.getReplyCount())
                     .writer(talk.getUser().getNickname())
+                    .createdAt(talk.getCreatedAt())
+                    .updatedAt(talk.getUpdatedAt())
                     .build();
         }
     }
