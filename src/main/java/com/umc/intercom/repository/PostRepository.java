@@ -15,4 +15,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByCompanyAndDepartmentAndPostType(String company, String department, PostType postType);
 
     Page<Post> findByUserAndPostType(User user, PostType postType, Pageable pageable);
+
+    List<Post> findByDepartmentContaining(String department);
+
+    List<Post> findByDepartmentIn(List<String> keywords);
 }
