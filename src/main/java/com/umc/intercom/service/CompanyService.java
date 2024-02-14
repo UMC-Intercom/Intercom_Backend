@@ -4,6 +4,8 @@ import com.umc.intercom.domain.Company;
 import com.umc.intercom.repository.CompanyRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class CompanyService {
 
@@ -16,8 +18,13 @@ public class CompanyService {
     }
 
     public Company getCompanyLogo(String name) {
+        Optional<Company> existingCompany = companyRepository.findByName(name);
+        if (existingCompany.isPresent()) {
+            return existingCompany.get();
+        }
+
         Company company = naverApiClient.getCompanyLogo(name);
-        return company;
+        return companyRepository.save(company);
     }
 
     public Company saveCompany(Company company) {
