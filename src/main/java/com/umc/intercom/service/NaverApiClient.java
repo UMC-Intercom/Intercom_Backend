@@ -2,6 +2,7 @@ package com.umc.intercom.service;
 
 import com.umc.intercom.domain.Company;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -36,15 +37,17 @@ public class NaverApiClient {
         String url = "https://openapi.naver.com/v1/search/image?query=" + name + "로고 이미지"; // API endpoint
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 
-        JSONObject jsonObject = new JSONObject(response.getBody());
-        JSONArray items = jsonObject.getJSONArray("items");
-        String logoUrl = items.getJSONObject(0).getString("link");
+        try {
+            JSONObject jsonObject = new JSONObject(response.getBody());
+            JSONArray items = jsonObject.getJSONArray("items");
 
-        Company company = Company.builder()
-                .name(name)
-                .logoUrl(logoUrl)
-                .build();
-
-        return company;
+            String logoUrl = null;
+            if (items.length() > 0) {
+                logoUrl = items.getJSONObject(0).getString("link");
+            }
+            return Company.builder().name(name).logoUrl(logoUrl).build(); // 로고 URL이 없으면 null로 설정
+        } catch (JSONException e) {
+            return null;
+        }
     }
 }
