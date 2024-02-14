@@ -10,6 +10,7 @@ import com.umc.intercom.repository.PostDetailRepository;
 import com.umc.intercom.repository.PostRepository;
 import com.umc.intercom.repository.PostSpecRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,33 +25,25 @@ public class SearchService {
     private final PostSpecRepository postSpecRepository;
 
 
-    public List<Object> searchResumesByDepartment(String department){
-        List<Post> posts = postRepository.findByDepartmentContaining(department);
+    public Page<ResumeDto.ResumeResponseDto> searchResumesByDepartment(String department, int page) {
+        Pageable pageable = PageRequest.of(page - 1, 4, Sort.by("id").descending());
+        Page<Post> posts = postRepository.findByPostTypeAndDepartmentContaining(PostType.SUCCESSFUL_RESUME, department, pageable);
 
-        return posts.stream().map(post -> {
+        return posts.map(post -> {
             List<PostDetail> postDetails = postDetailRepository.findAllByPost(post);
             PostSpec postSpec = postSpecRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
-
-            if (post.getPostType() == PostType.SUCCESSFUL_RESUME) {
-                return ResumeDto.ResumeResponseDto.toDto(post, postDetails, postSpec);
-            } else {
-                return null;
-            }
-        }).collect(Collectors.toList());
+            return ResumeDto.ResumeResponseDto.toDto(post, postDetails, postSpec);
+        });
     }
 
-    public List<Object> searchInterviewsByDepartment(String department){
-        List<Post> posts = postRepository.findByDepartmentContaining(department);
+    public Page<InterviewDto.InterviewResponseDto> searchInterviewsByDepartment(String department, int page) {
+        Pageable pageable = PageRequest.of(page - 1, 4, Sort.by("id").descending());
+        Page<Post> posts = postRepository.findByPostTypeAndDepartmentContaining(PostType.INTERVIEW_REVIEW, department, pageable);
 
-        return posts.stream().map(post -> {
+        return posts.map(post -> {
             List<PostDetail> postDetails = postDetailRepository.findAllByPost(post);
             PostSpec postSpec = postSpecRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
-
-             if (post.getPostType() == PostType.INTERVIEW_REVIEW) {
-                return InterviewDto.InterviewResponseDto.toDto(post, postDetails.get(0), postSpec);
-            } else {
-                return null;
-            }
-        }).collect(Collectors.toList());
+            return InterviewDto.InterviewResponseDto.toDto(post, postDetails.get(0), postSpec);
+        });
     }
 }
