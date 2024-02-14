@@ -42,6 +42,7 @@ public class TalkDto {
         private int commentCount;
         private int replyCount;
         private String writer;
+        private String mentorField;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
 
@@ -58,6 +59,7 @@ public class TalkDto {
                     .commentCount(talk.getCommentCount())
                     .replyCount(talk.getReplyCount())
                     .writer(talk.getUser().getNickname())
+                    .mentorField(talk.getUser().getMentorField())
                     .createdAt(talk.getCreatedAt())
                     .updatedAt(talk.getUpdatedAt())
                     .build();

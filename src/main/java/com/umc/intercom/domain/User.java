@@ -69,4 +69,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Notification> notifications = new ArrayList<>();
+
+    @Column(name = "mentor_field")
+    private String mentorField;
 }
