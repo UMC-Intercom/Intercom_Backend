@@ -17,6 +17,10 @@ public class CompanyService {
 
     public Company getCompanyLogo(String name) {
         Company company = naverApiClient.getCompanyLogo(name);
+        return company;
+    }
+
+    public Company saveCompany(Company company) {
         return companyRepository.save(company);
     }
 }
