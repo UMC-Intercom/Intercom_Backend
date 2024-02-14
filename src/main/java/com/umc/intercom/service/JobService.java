@@ -7,6 +7,7 @@ import com.umc.intercom.domain.Company;
 import com.umc.intercom.domain.Job;
 import com.umc.intercom.domain.common.enums.PostType;
 import com.umc.intercom.dto.JobDto;
+import com.umc.intercom.repository.CompanyRepository;
 import com.umc.intercom.repository.JobRepository;
 import com.umc.intercom.repository.LikeScrapRepository;
 import com.umc.intercom.repository.UserRepository;
@@ -33,6 +34,7 @@ public class JobService {
     private final LikeScrapRepository likeScrapRepository;
     private final UserRepository userRepository;
     private final CompanyService companyService;
+    private final CompanyRepository companyRepository;
 
     public void saveCompanyLogos() {
         List<Job> jobs = jobRepository.findAll();
@@ -154,14 +156,16 @@ public class JobService {
         Pageable pageable = PageRequest.of(page-1, 24, Sort.by(sorts));     // 페이지 당 데이터 24개씩 가져옴
 
         Page<Job> jobPage = jobRepository.findAllByJobMidCodeContaining(interest, pageable);
+
         // 현재 회원이 스크랩한 공고 목록 가져오기
         List<Long> userScrapedJobIds = likeScrapRepository.findJobIdsByUserEmailAndPostType(userEmail, PostType.JOB_INFO);
 
         // 스크랩 여부를 포함하여 DTO로 변환
-        return JobDto.JobListResponseDto.toDtoPageWithScrap(jobPage, userScrapedJobIds);
+        return JobDto.JobListResponseDto.toDtoPageWithScrap(jobPage, userScrapedJobIds, companyRepository);
     }
 
     public Page<JobDto.JobListResponseDto> getJobsByCount(int page) {
+        String userEmail = SecurityUtil.getCurrentUsername();
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("viewCount"));
         sorts.add(Sort.Order.desc("postingDate")); // 조회수가 같으면 최신 게시물 우선으로 정렬
@@ -169,7 +173,11 @@ public class JobService {
         Pageable pageable = PageRequest.of(page - 1, 24, Sort.by(sorts));
 
         Page<Job> jobPage = jobRepository.findAll(pageable);
-        return JobDto.JobListResponseDto.toDtoPageWithScrap(jobPage, Collections.emptyList());
+
+        // 현재 회원이 스크랩한 공고 목록 가져오기
+        List<Long> userScrapedJobIds = likeScrapRepository.findJobIdsByUserEmailAndPostType(userEmail, PostType.JOB_INFO);
+
+        return JobDto.JobListResponseDto.toDtoPageWithScrap(jobPage, userScrapedJobIds, companyRepository);
     }
 
     public Optional<JobDto.JobDetailsResponseDto> getJobById(Long id) {
@@ -225,7 +233,7 @@ public class JobService {
         List<Long> userScrapedJobIds = likeScrapRepository.findJobIdsByUserEmailAndPostType(userEmail, PostType.JOB_INFO);
 
         // 스크랩 여부를 포함하여 DTO로 변환
-        return JobDto.JobListResponseDto.toDtoPageWithScrap(jobPage, userScrapedJobIds);
+        return JobDto.JobListResponseDto.toDtoPageWithScrap(jobPage, userScrapedJobIds, companyRepository);
     }
 
 }
