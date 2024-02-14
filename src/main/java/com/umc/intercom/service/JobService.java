@@ -3,6 +3,7 @@ package com.umc.intercom.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.intercom.config.security.SecurityUtil;
+import com.umc.intercom.domain.Company;
 import com.umc.intercom.domain.Job;
 import com.umc.intercom.domain.common.enums.PostType;
 import com.umc.intercom.dto.JobDto;
@@ -31,6 +32,19 @@ public class JobService {
     private final JobRepository jobRepository;
     private final LikeScrapRepository likeScrapRepository;
     private final UserRepository userRepository;
+    private final CompanyService companyService;
+
+    public void saveCompanyLogos() {
+        List<Job> jobs = jobRepository.findAll();
+
+        for (Job job : jobs) {
+            String companyName = job.getCompany();
+            Company company = companyService.getCompanyLogo(companyName);
+            if (company != null) {
+                companyService.saveCompany(company);
+            }
+        }
+    }
 
     @Value("${api.accessKey}")
     private String ACCESS_KEY;
