@@ -37,6 +37,7 @@ public class CommentDto {
         private Long parentId; // 부모 댓글 ID
         private String content;
         private String writer;
+        private String mentorField; // 댓글 작성자의 현직자 분야
         private AdoptionStatus adoptionStatus;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
@@ -52,6 +53,7 @@ public class CommentDto {
                     .parentId(comment.getParentId() != null ? comment.getParentId().getId() : null)
                     .content(comment.getContent())
                     .writer(comment.getUser().getNickname())
+                    .mentorField(comment.getUser().getMentorField())
                     .adoptionStatus(comment.getAdoptionStatus())
                     .createdAt(comment.getCreatedAt())
                     .updatedAt(comment.getUpdatedAt())
