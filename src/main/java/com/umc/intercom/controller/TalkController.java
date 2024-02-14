@@ -4,6 +4,7 @@ import com.umc.intercom.config.security.SecurityUtil;
 import com.umc.intercom.domain.common.enums.Status;
 import com.umc.intercom.dto.TalkDto;
 import com.umc.intercom.service.TalkService;
+import com.umc.intercom.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,7 @@ import java.util.Optional;
 public class TalkController {
 
     private final TalkService talkService;
+    private final UserService userService;
 
     // talk 생성
     @Operation(summary = "톡톡 게시글 작성", description = "Content-Type을 multipart/form-data 형식으로 보내주세요.\n\n" +
@@ -139,4 +141,22 @@ public class TalkController {
         return ResponseEntity.ok(temporarilySavedTalk);
     }
 
+    @Operation(summary = "현직자 인증", description = "서버 응답으로 선택한 분야 반환(String)")
+    @PostMapping("/certification-mentor")
+    public ResponseEntity<String> certificationMentor(@RequestParam(value = "mentorField") String mentorField) {
+        // 현재 로그인한 유저의 이메일
+        String userEmail = SecurityUtil.getCurrentUsername();
+        String field = userService.certificationMentor(userEmail, mentorField);
+        return new ResponseEntity<>(field, HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "현직자 여부 조회", description = "톡톡 작성하기 클릭 시 호출 -> 현직자면 '잠시만요, 현직자이신가요?' 팝업창 띄우지 않기\n\n" +
+            "현직자면 해당 분야 string으로 반환(ex. IT개발·데이터), 현직자가 아니면 null 반환")
+    @PostMapping("/check-mentor")
+    public ResponseEntity<String> checkIfUserIsMentor() {
+        // 현재 로그인한 유저의 이메일
+        String userEmail = SecurityUtil.getCurrentUsername();
+        String field = userService.checkIfUserIsMentor(userEmail);
+        return new ResponseEntity<>(field, HttpStatus.CREATED);
+    }
 }

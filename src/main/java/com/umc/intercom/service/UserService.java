@@ -77,6 +77,8 @@ public class UserService {
             user.get().setDefaultProfile(pictureUrl);
         }
 
+        userRepository.save(user.get());
+
         return pictureUrl;
     }
 
@@ -90,4 +92,25 @@ public class UserService {
         return user.get().getDefaultProfile();
     }
 
+    public String certificationMentor(String userEmail, String mentorField) {
+        Optional<User> user = userRepository.findByEmail(userEmail);
+
+        if (!user.isPresent()) {
+            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
+        }
+
+        user.get().setMentorField(mentorField);
+        userRepository.save(user.get());
+
+        return user.get().getMentorField();
+    }
+
+    public String checkIfUserIsMentor(String userEmail) {
+        Optional<User> user = userRepository.findByEmail(userEmail);
+
+        if (!user.isPresent()) {
+            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
+        }
+        return user.get().getMentorField();
+    }
 }
