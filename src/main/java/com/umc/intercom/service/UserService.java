@@ -77,6 +77,8 @@ public class UserService {
             user.get().setDefaultProfile(pictureUrl);
         }
 
+        userRepository.save(user.get());
+
         return pictureUrl;
     }
 
