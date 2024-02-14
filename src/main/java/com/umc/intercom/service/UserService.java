@@ -104,4 +104,13 @@ public class UserService {
 
         return user.get().getMentorField();
     }
+
+    public String checkIfUserIsMentor(String userEmail) {
+        Optional<User> user = userRepository.findByEmail(userEmail);
+
+        if (!user.isPresent()) {
+            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
+        }
+        return user.get().getMentorField();
+    }
 }
