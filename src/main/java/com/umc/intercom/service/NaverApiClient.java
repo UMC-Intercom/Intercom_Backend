@@ -31,11 +31,13 @@ public class NaverApiClient {
         headers.set("X-Naver-Client-Secret", clientSecret);
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        String url = "https://openapi.naver.com/v1/search/image?query=" + name; // API endpoint
+        String url = "https://openapi.naver.com/v1/search/image?query=" + name + "로고 이미지"; // API endpoint
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 
-        Company company = new Company();
+        System.out.println(response);
+        //Company company = new Company();
 
-        return company;
+        //return company;
+        return null;
     }
 }
