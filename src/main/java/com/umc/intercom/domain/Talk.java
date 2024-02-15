@@ -25,7 +25,7 @@ public class Talk extends BaseEntity {
     private String title;
 
     @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "text")
     private String content;
 
     private String category;
