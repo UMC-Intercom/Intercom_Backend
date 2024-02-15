@@ -64,8 +64,9 @@ public class ResumeController {
 
     @Operation(summary = "기업명, 직무명으로 자소서 검색")
     @GetMapping("/search")
-    public ResponseEntity<List<ResumeDto.ResumeResponseDto>> searchResumes(@RequestParam String company, @RequestParam String department){
-        List<ResumeDto.ResumeResponseDto> resumes = resumeService.searchResume(company, department);
+    public ResponseEntity<Page<ResumeDto.ResumeResponseDto>> searchResumes(@RequestParam String company, @RequestParam String department,
+                                                                           @RequestParam(value = "page", defaultValue = "1") int page){
+        Page<ResumeDto.ResumeResponseDto> resumes = resumeService.searchResume(company, department, page);
         return ResponseEntity.ok(resumes);
     }
 }

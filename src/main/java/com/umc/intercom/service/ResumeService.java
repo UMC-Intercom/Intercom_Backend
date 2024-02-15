@@ -140,14 +140,19 @@ public class ResumeService {
         return Optional.empty();
     }
     //기업명, 직무명으로 자소서 검색
-    public List<ResumeDto.ResumeResponseDto> searchResume(String company, String department){
-        List<Post> posts = postRepository.findByCompanyAndDepartmentAndPostType(company, department, PostType.SUCCESSFUL_RESUME);
+    public Page<ResumeDto.ResumeResponseDto> searchResume(String company, String department, int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createdAt"));
 
-        return posts.stream().map(post -> {
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
+
+        Page<Post> posts = postRepository.findByCompanyAndDepartmentAndPostType(company, department, PostType.SUCCESSFUL_RESUME, pageable);
+
+        return posts.map(post -> {
             List<PostDetail> postDetails = postDetailRepository.findAllByPost(post);
             PostSpec postSpec = postSpecRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
             return ResumeDto.ResumeResponseDto.toDto(post, postDetails, postSpec);
-        }).collect(Collectors.toList());
+        });
     }
 
     public Page<ResumeDto.ResumeResponseDto> getAllResumesByScrapCounts(int page) {

@@ -112,30 +112,35 @@ public class InterviewService {
     }
     
     // 최신순으로 조회
-    public List<InterviewDto.InterviewResponseDto> getAllInterviews(int page) {
+    public Page<InterviewDto.InterviewResponseDto> getAllInterviews(int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createdAt"));
         
         Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
         
         Page<Post> interviewPage = postRepository.findByPostType(PostType.INTERVIEW_REVIEW, pageable);
-        
-        return interviewPage.getContent().stream().map(post -> {
+
+        return interviewPage.map(post -> {
             PostDetail postDetail = postDetailRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostDetail not Found"));
             PostSpec postSpec = postSpecRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
             return InterviewDto.InterviewResponseDto.toDto(post, postDetail, postSpec);
-        }).collect(Collectors.toList());
+        });
     }
     
     // 기업명, 직무명으로 면접 후기 검색
-    public List<InterviewDto.InterviewResponseDto> getAllInterviewsByCompanyAndDepartment(String company, String department) {
-        List<Post> interviewList = postRepository.findByCompanyAndDepartmentAndPostType(company, department, PostType.INTERVIEW_REVIEW);
-        
-        return interviewList.stream().map(post -> {
+    public Page<InterviewDto.InterviewResponseDto> getAllInterviewsByCompanyAndDepartment(String company, String department, int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createdAt"));
+
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
+
+        Page<Post> interviewPage = postRepository.findByCompanyAndDepartmentAndPostType(company, department, PostType.INTERVIEW_REVIEW, pageable);
+
+        return interviewPage.map(post -> {
             PostDetail postDetail = postDetailRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostDetail not Found"));
             PostSpec postSpec = postSpecRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
             return InterviewDto.InterviewResponseDto.toDto(post, postDetail, postSpec);
-        }).collect(Collectors.toList());
+        });
     }
 
     public Page<InterviewDto.InterviewResponseDto> getAllInterviewsByScrapCounts(int page) {

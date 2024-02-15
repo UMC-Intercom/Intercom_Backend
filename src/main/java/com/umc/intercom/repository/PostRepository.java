@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findByPostType(PostType postType, Pageable pageable);
 
-    List<Post> findByCompanyAndDepartmentAndPostType(String company, String department, PostType postType);
+    Page<Post> findByCompanyAndDepartmentAndPostType(String company, String department, PostType postType, Pageable pageable);
 
     Page<Post> findByUserAndPostType(User user, PostType postType, Pageable pageable);
 
