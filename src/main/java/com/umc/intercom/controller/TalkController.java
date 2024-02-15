@@ -33,7 +33,7 @@ public class TalkController {
                                                               @RequestParam(name = "id", required = false) Long id,
                                                               @RequestParam(name = "title") String title,
                                                               @RequestParam(name = "content") String content,
-                                                              @RequestParam(name = "category") String category) {
+                                                              @RequestParam(name = "category", required = false) String category) {
 
         TalkDto.TalkRequestDto talkRequestDto = TalkDto.TalkRequestDto.builder()
                 .id(id)
@@ -152,7 +152,7 @@ public class TalkController {
 
     @Operation(summary = "현직자 여부 조회", description = "톡톡 작성하기 클릭 시 호출 -> 현직자면 '잠시만요, 현직자이신가요?' 팝업창 띄우지 않기\n\n" +
             "현직자면 해당 분야 string으로 반환(ex. IT개발·데이터), 현직자가 아니면 null 반환")
-    @PostMapping("/check-mentor")
+    @GetMapping("/check-mentor")
     public ResponseEntity<String> checkIfUserIsMentor() {
         // 현재 로그인한 유저의 이메일
         String userEmail = SecurityUtil.getCurrentUsername();
