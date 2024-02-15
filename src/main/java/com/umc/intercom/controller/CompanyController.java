@@ -19,7 +19,7 @@ public class CompanyController {
         this.jobService = jobService;
     }
 
-    @Operation(summary = "네이버 검색 api 호출 후 DB에 응답 저장")
+    @Operation(summary = "네이버 검색 api 호출 후 DB에 응답 저장 - 프론트에서 사용x. 서버 api", description = "네이버 검색 API는 1일 최대 25000회 호출 가능합니다.")
     @PostMapping("/save")
     public ResponseEntity<Void> saveCompanyLogos() {
         jobService.saveCompanyLogos();

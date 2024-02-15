@@ -44,7 +44,7 @@ public class InterviewController {
         return new ResponseEntity<>(createdInterviewDto, HttpStatus.CREATED);
     }
 
-    @Operation(summary = "면접 후기 게시글 목록 조회", description = "서버 응답으로 페이징 구현 필요")
+    @Operation(summary = "면접 후기 게시글 목록 조회")
     // 최신순으로 정렬된 검색 결과를 보여줌
     @GetMapping
     public ResponseEntity<Page<InterviewDto.InterviewResponseDto>> getAllInterviews(@RequestParam(value = "page", defaultValue = "1") int page) {
