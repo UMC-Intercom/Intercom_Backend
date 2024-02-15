@@ -10,10 +10,7 @@ import com.umc.intercom.aws.AmazonS3Manager;
 import com.umc.intercom.domain.*;
 import com.umc.intercom.domain.common.enums.Gender;
 import com.umc.intercom.repository.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -134,7 +131,16 @@ public class InterviewService {
 
         Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
 
-        Page<Post> interviewPage = postRepository.findByCompanyAndDepartmentAndPostType(company, department, PostType.INTERVIEW_REVIEW, pageable);
+        Page<Post> interviewPage;
+        if (company != null && department != null) {
+            interviewPage = postRepository.findByCompanyContainingAndDepartmentContainingAndPostType(company, department, PostType.INTERVIEW_REVIEW, pageable);
+        } else if (company == null && department != null) {
+            interviewPage = postRepository.findByDepartmentContainingAndPostType(department, PostType.INTERVIEW_REVIEW, pageable);
+        } else if (company != null && department == null) {
+            interviewPage = postRepository.findByCompanyContainingAndPostType(company, PostType.INTERVIEW_REVIEW, pageable);
+        } else {
+            interviewPage = new PageImpl<>(new ArrayList<>(), pageable, 0);
+        }
 
         return interviewPage.map(post -> {
             PostDetail postDetail = postDetailRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostDetail not Found"));

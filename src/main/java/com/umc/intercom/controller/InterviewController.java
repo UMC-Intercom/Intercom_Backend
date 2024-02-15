@@ -62,8 +62,8 @@ public class InterviewController {
     @Operation(summary = "기업명, 직무명으로 면접 후기 검색")
     @GetMapping("/search")
     public ResponseEntity<Page<InterviewDto.InterviewResponseDto>> getAllInterviewsByCompanyAndDepartment(
-            @RequestParam("company") String company,
-            @RequestParam("department") String department,
+            @RequestParam(value = "company", required = false) String company,
+            @RequestParam(value = "department", required = false) String department,
             @RequestParam(value = "page", defaultValue = "1") int page) {
         Page<InterviewDto.InterviewResponseDto> interviewList = interviewService.getAllInterviewsByCompanyAndDepartment(company, department, page);
         return new ResponseEntity<>(interviewList, HttpStatus.OK);

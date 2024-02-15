@@ -146,7 +146,16 @@ public class ResumeService {
 
         Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
 
-        Page<Post> posts = postRepository.findByCompanyAndDepartmentAndPostType(company, department, PostType.SUCCESSFUL_RESUME, pageable);
+        Page<Post> posts;
+        if (company != null && department != null) {
+            posts = postRepository.findByCompanyContainingAndDepartmentContainingAndPostType(company, department, PostType.SUCCESSFUL_RESUME, pageable);
+        } else if (company == null && department != null) {
+            posts = postRepository.findByDepartmentContainingAndPostType(department, PostType.SUCCESSFUL_RESUME, pageable);
+        } else if (company != null && department == null) {
+            posts = postRepository.findByCompanyContainingAndPostType(company, PostType.SUCCESSFUL_RESUME, pageable);
+        } else {
+            posts = new PageImpl<>(new ArrayList<>(), pageable, 0);
+        }
 
         return posts.map(post -> {
             List<PostDetail> postDetails = postDetailRepository.findAllByPost(post);
