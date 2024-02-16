@@ -34,6 +34,7 @@ public class CareerService {
                 .certification(careerDto.getCertification())
                 .university(careerDto.getUniversity())
                 .major(careerDto.getMajor())
+                .graduateStatus(careerDto.getGraduateStatus())
                 .gpa(careerDto.getGpa())
                 .skill(careerDto.getSkill())
                 .link(careerDto.getLink())
@@ -121,6 +122,7 @@ public class CareerService {
         careerToUpdate.setCertification(requestDto.getCertification());
         careerToUpdate.setUniversity(requestDto.getUniversity());
         careerToUpdate.setMajor(requestDto.getMajor());
+        careerToUpdate.setGraduateStatus(requestDto.getGraduateStatus());
         careerToUpdate.setSkill(requestDto.getSkill());
         careerToUpdate.setGpa(requestDto.getGpa());
         careerToUpdate.setSkill(requestDto.getSkill());

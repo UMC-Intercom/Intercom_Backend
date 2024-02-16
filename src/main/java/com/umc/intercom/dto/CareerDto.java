@@ -25,6 +25,8 @@ public class CareerDto {
         private String university;
         @Schema(description = "학과", example = "학과명")
         private String major;
+        @Schema(description = "졸업 여부", example = "졸업예정")
+        private String graduateStatus;
         @Schema(description = "전공학점", example = "4.0/4.5")
         private String gpa;
         @Schema(description = "대외 활동")
@@ -46,6 +48,7 @@ public class CareerDto {
         private String certification;
         private String university;
         private String major;
+        private String graduateStatus;
         private String gpa;
         private List<ActivityDto> activity;
         private String skill;
@@ -62,6 +65,7 @@ public class CareerDto {
                     career.getCertification(),
                     career.getUniversity(),
                     career.getMajor(),
+                    career.getGraduateStatus(),
                     career.getGpa(),
                     activityDtoList,
                     career.getSkill(),

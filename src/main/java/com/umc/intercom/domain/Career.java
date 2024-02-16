@@ -31,6 +31,9 @@ public class Career {
 
     private String major; //학과
 
+    @Column(name = "graduate_status")
+    private String graduateStatus;  // 졸업 여부
+    
     private String gpa; //전공 학점
 
     private String skill; //보유 스펙 ex)일러스트, 포토샵
