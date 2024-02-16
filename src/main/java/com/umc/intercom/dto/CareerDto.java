@@ -2,6 +2,7 @@ package com.umc.intercom.dto;
 
 import com.umc.intercom.domain.Activity;
 import com.umc.intercom.domain.Career;
+import com.umc.intercom.domain.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -50,6 +51,7 @@ public class CareerDto {
         private String skill;
         private String link;
         private String careerProfile;
+        private boolean noCareer;
 
         public static CareerResponseDto toDto(Career career, List<ActivityDto> activityDtoList) {
 
@@ -64,7 +66,24 @@ public class CareerDto {
                     activityDtoList,
                     career.getSkill(),
                     career.getLink(),
-                    career.getUser().getCareerProfile()
+                    career.getUser().getCareerProfile(),
+                    false
+            );
+        }
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    public static class CareerEmptyResponseDto {
+        private String careerProfile;
+        private boolean noCareer;
+
+        public static CareerEmptyResponseDto toDto(User user) {
+
+            return new CareerEmptyResponseDto(
+                    user.getCareerProfile(),
+                    true
             );
         }
     }

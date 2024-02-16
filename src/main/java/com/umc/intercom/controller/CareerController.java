@@ -29,9 +29,9 @@ public class CareerController {
 
     @Operation(summary = "커리어 조회")
     @GetMapping()
-    public ResponseEntity<CareerDto.CareerResponseDto> getCareerByEmail() {
+    public ResponseEntity<Object> getCareerByEmail() {
         String userEmail = SecurityUtil.getCurrentUsername();   // 로그인한 사용자 이메일
-        CareerDto.CareerResponseDto careerDtos = careerService.getCareerByEmail(userEmail);
+        Object careerDtos = careerService.getCareerByEmail(userEmail);
 
         return ResponseEntity.ok(careerDtos);
     }

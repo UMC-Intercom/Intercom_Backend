@@ -58,14 +58,14 @@ public class CareerService {
                 .collect(Collectors.toList()));
     }
 
-    public CareerDto.CareerResponseDto getCareerByEmail(String userEmail){
+    public Object getCareerByEmail(String userEmail){
         Optional<User> user = userRepository.findByEmail(userEmail);
         if (user.isEmpty()) {
             throw new RuntimeException("User Not Found");
         }
         Optional<Career> career = careerRepository.findByUser(user.get());
         if (career.isEmpty()) {
-            return null;
+            return CareerDto.CareerEmptyResponseDto.toDto(user.get());
         }
 
         List<Activity> createdActivities = activityRepository.findByCareer(career.get());
