@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class LoginController {
-    
+
     private final LoginService loginService;
     private final UserRepository userRepository;
     private final UserDetailsService userDetailsService;
@@ -33,30 +33,29 @@ public class LoginController {
         UserDto.LoginSuccessDto loginSuccessDto = loginService.login(userRequestDto);
         return ResponseEntity.ok(loginSuccessDto);
     }
-    
+
     // 현재 로그인한 사용자 정보 조회
-    @Operation(summary = "현재 로그인한 사용자 정보 조회", description = "서버 테스트용 api")
+    @Operation(summary = "현재 로그인한 사용자 정보 조회")
     @GetMapping("/current-user")
     public ResponseEntity<UserDto.CurrentUserDto> getCurrentUser() {
         String username = SecurityUtil.getCurrentUsername();
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        Optional<User> user = userRepository.findByEmail(username); // Replace with your actual repository method
+        Optional<User> user = userRepository.findByEmail(username);
 
         List<String> authorities = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
         UserDto.CurrentUserDto currentUserDto = UserDto.CurrentUserDto.builder()
-//                .username(userDetails.getUsername())
                 .email(userDetails.getUsername())
                 .name(user.get().getName())
                 .nickname(user.get().getNickname())
+                .phone(user.get().getPhone())
+                .gender(String.valueOf(user.get().getGender()))
+                .birthday(user.get().getBirthday())
                 .authorities(authorities)
                 .build();
 
-        System.out.println("현재 유저 이메일: " + username);
-
         return ResponseEntity.ok(currentUserDto);
     }
-
 }

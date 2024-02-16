@@ -69,7 +69,7 @@ public class UserDto {
         String phone;
         String gender;
     }
-    
+
     @Builder
     @Getter
     @NoArgsConstructor
@@ -86,11 +86,12 @@ public class UserDto {
     @Builder
     @Getter
     public static class CurrentUserDto {
-//        private String username;
         private String email;
         private String name;
         private String nickname;
+        private String phone;
+        private String gender;
+        private LocalDate birthday;
         private List<String> authorities;
     }
-
 }
