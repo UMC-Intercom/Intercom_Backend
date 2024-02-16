@@ -29,6 +29,11 @@ public class SignUpService {
             throw new IllegalStateException("이미 존재하는 닉네임입니다.");
         }
 
+        // 비밀번호 유효성 검사
+        if (!isValidPassword(requestDto.getPassword())) {
+            throw new IllegalArgumentException("비밀번호는 영문 대문자, 소문자, 숫자, 특수문자를 포함한 8~20자여야 합니다.");
+        }
+
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
 
@@ -66,5 +71,11 @@ public class SignUpService {
     public Boolean checkNicknameDuplicate(String nickname) {
         Optional<User> user = userRepository.findByNickname(nickname);
         return user.isPresent(); //이미 있으면 true
+    }
+
+    // 비밀번호 검사 메소드
+    public Boolean isValidPassword(String password) {
+        String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*+=?-_])(?=\\S+$).{8,20}$";
+        return password.matches(passwordPattern);
     }
 }
