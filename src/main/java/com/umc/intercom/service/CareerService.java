@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -41,18 +42,20 @@ public class CareerService {
 
         Career createdCareer = careerRepository.save(career);
 
-        List<Activity> activities = careerDto.getActivity().stream()
-                .map(activityDto -> new Activity(
-                        activityDto.getName(),
-                        activityDto.getStartDate(),
-                        activityDto.getEndDate(),
-                        activityDto.getDescription()
-                ))
-                .collect(Collectors.toList());
+        // requestDto.getActivity()가 null이 아닌 경우에만 Activity 생성
+        List<Activity> updatedActivities = Optional.ofNullable(careerDto.getActivity())
+                .map(activities -> activities.stream()
+                        .map(activityDto -> new Activity(
+                                activityDto.getName(),
+                                activityDto.getStartDate(),
+                                activityDto.getEndDate(),
+                                activityDto.getDescription()
+                        ))
+                        .peek(activity -> activity.setCareer(createdCareer))
+                        .collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
 
-        activities.forEach(activity -> activity.setCareer(createdCareer));
-        List<Activity> createdActivities = activityRepository.saveAll(activities);
-
+        List<Activity> createdActivities = activityRepository.saveAll(updatedActivities);
         return CareerDto.CareerResponseDto.toDto(createdCareer, createdActivities.stream()
                 .map(CareerDto.ActivityDto::toDto)
                 .collect(Collectors.toList()));
@@ -99,18 +102,20 @@ public class CareerService {
         List<Activity> existingActivities = activityRepository.findByCareer(careerToUpdate);
         activityRepository.deleteAll(existingActivities);
 
-        List<Activity> updatedActivities = requestDto.getActivity().stream()
-                .map(activityDto -> new Activity(
-                        activityDto.getName(),
-                        activityDto.getStartDate(),
-                        activityDto.getEndDate(),
-                        activityDto.getDescription()
-                ))
-                .collect(Collectors.toList());
+        // requestDto.getActivity()가 null이 아닌 경우에만 Activity 생성
+        List<Activity> updatedActivities = Optional.ofNullable(requestDto.getActivity())
+                .map(activities -> activities.stream()
+                        .map(activityDto -> new Activity(
+                                activityDto.getName(),
+                                activityDto.getStartDate(),
+                                activityDto.getEndDate(),
+                                activityDto.getDescription()
+                        ))
+                        .peek(activity -> activity.setCareer(careerToUpdate))
+                        .collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
 
-        updatedActivities.forEach(activity -> activity.setCareer(careerToUpdate));
         List<Activity> createdActivities = activityRepository.saveAll(updatedActivities);
-
         careerToUpdate.setEnglish(requestDto.getEnglish());
         careerToUpdate.setScore(requestDto.getScore());
         careerToUpdate.setCertification(requestDto.getCertification());
