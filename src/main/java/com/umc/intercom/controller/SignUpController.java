@@ -16,7 +16,7 @@ public class SignUpController {
         this.signUpService = signUpService;
     }
 
-    @Operation(summary = "회원가입")
+    @Operation(summary = "회원가입", description = "비밀번호는 영문 대문자, 소문자, 숫자, 특수문자를 포함한 8~20자여야 합니다.")
     @PostMapping("/signup")
     public ResponseEntity<String> signUp(@RequestBody UserDto.SignUpRequestDto signUpRequestDto) {
         try {
