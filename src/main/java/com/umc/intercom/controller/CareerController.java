@@ -18,29 +18,29 @@ import java.util.Optional;
 public class CareerController {
     private final CareerService careerService;
 
-    @Operation(summary = "내 커리어 작성")
-    @PostMapping
-    public ResponseEntity<CareerDto.CareerResponseDto> createCareer(@RequestBody CareerDto.CareerRequestDto careerRequestDto){
-        String userEmail = SecurityUtil.getCurrentUsername();
+//    @Operation(summary = "내 커리어 작성")
+//    @PostMapping
+//    public ResponseEntity<CareerDto.CareerResponseDto> createCareer(@RequestBody CareerDto.CareerRequestDto careerRequestDto){
+//        String userEmail = SecurityUtil.getCurrentUsername();
+//
+//        CareerDto.CareerResponseDto createdCareerDto = careerService.createCareer(careerRequestDto, userEmail);
+//        return new ResponseEntity<>(createdCareerDto, HttpStatus.CREATED);
+//    }
 
-        CareerDto.CareerResponseDto createdCareerDto = careerService.createCareer(careerRequestDto, userEmail);
-        return new ResponseEntity<>(createdCareerDto, HttpStatus.CREATED);
-    }
-
-    @Operation(summary = "이메일로 커리어 조회")
+    @Operation(summary = "커리어 조회")
     @GetMapping()
-    public ResponseEntity<List<CareerDto.CareerResponseDto>> getCareerByEmail() {
+    public ResponseEntity<CareerDto.CareerResponseDto> getCareerByEmail() {
         String userEmail = SecurityUtil.getCurrentUsername();   // 로그인한 사용자 이메일
-        List<CareerDto.CareerResponseDto> careerDtos = careerService.getCareerByEmail(userEmail);
+        CareerDto.CareerResponseDto careerDtos = careerService.getCareerByEmail(userEmail);
 
         return ResponseEntity.ok(careerDtos);
     }
 
-    @Operation(summary = "아이디로 커리어 수정")
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> updateCareer(@PathVariable Long id, @RequestBody CareerDto.CareerRequestDto careerRequestDto){
+    @Operation(summary = "커리어 작성 또는 수정")
+    @PostMapping()
+    public ResponseEntity<CareerDto.CareerResponseDto> updateCareer(@RequestBody CareerDto.CareerRequestDto careerRequestDto){
         String userEmail = SecurityUtil.getCurrentUsername();
-        careerService.updateCareer(id, userEmail, careerRequestDto);
-        return ResponseEntity.noContent().build();
+        CareerDto.CareerResponseDto updatedCareerDto = careerService.updateCareer(userEmail, careerRequestDto);
+        return new ResponseEntity<>(updatedCareerDto, HttpStatus.CREATED);
     }
 }

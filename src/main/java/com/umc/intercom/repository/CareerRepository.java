@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CareerRepository extends JpaRepository<Career, Long> {
-    List<Career> findByUser(User user);
-    Optional<Career> findByid(Long id);
+    Optional<Career> findByUser(User user);
 }
 

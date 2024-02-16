@@ -1,8 +1,10 @@
 package com.umc.intercom.service;
 
+import com.umc.intercom.domain.Activity;
 import com.umc.intercom.domain.Career;
 import com.umc.intercom.domain.User;
 import com.umc.intercom.dto.CareerDto;
+import com.umc.intercom.repository.ActivityRepository;
 import com.umc.intercom.repository.CareerRepository;
 import com.umc.intercom.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -19,10 +21,12 @@ import java.util.stream.Collectors;
 public class CareerService {
     UserRepository userRepository;
     CareerRepository careerRepository;
+    ActivityRepository activityRepository;
 
     @Transactional
     public CareerDto.CareerResponseDto createCareer(CareerDto.CareerRequestDto careerDto, String userEmail){
         Optional<User> user = userRepository.findByEmail(userEmail);
+
         Career career = Career.builder()
                 .english(careerDto.getEnglish())
                 .score(careerDto.getScore())
@@ -30,7 +34,6 @@ public class CareerService {
                 .university(careerDto.getUniversity())
                 .major(careerDto.getMajor())
                 .gpa(careerDto.getGpa())
-                .activity(careerDto.getActivity())
                 .skill(careerDto.getSkill())
                 .link(careerDto.getLink())
                 .user(user.orElseThrow(()-> new RuntimeException("User not Found")))
@@ -38,26 +41,75 @@ public class CareerService {
 
         Career createdCareer = careerRepository.save(career);
 
-        return CareerDto.CareerResponseDto.toDto(createdCareer);
+        List<Activity> activities = careerDto.getActivity().stream()
+                .map(activityDto -> new Activity(
+                        activityDto.getName(),
+                        activityDto.getStartDate(),
+                        activityDto.getEndDate(),
+                        activityDto.getDescription()
+                ))
+                .collect(Collectors.toList());
+
+        activities.forEach(activity -> activity.setCareer(createdCareer));
+        List<Activity> createdActivities = activityRepository.saveAll(activities);
+
+        return CareerDto.CareerResponseDto.toDto(createdCareer, createdActivities.stream()
+                .map(CareerDto.ActivityDto::toDto)
+                .collect(Collectors.toList()));
     }
 
-    public List<CareerDto.CareerResponseDto> getCareerByEmail(String userEmail){
+    public CareerDto.CareerResponseDto getCareerByEmail(String userEmail){
         Optional<User> user = userRepository.findByEmail(userEmail);
         if (user.isEmpty()) {
             throw new RuntimeException("User Not Found");
         }
-        List<Career> careers = careerRepository.findByUser(user.get());
+        Optional<Career> career = careerRepository.findByUser(user.get());
+        if (career.isEmpty()) {
+            return null;
+        }
 
-        return careers.stream().map(CareerDto.CareerResponseDto::toDto).collect(Collectors.toList());
+        List<Activity> createdActivities = activityRepository.findByCareer(career.get());
+
+        List<CareerDto.ActivityDto> activityDtoList = createdActivities.stream()
+                .map(CareerDto.ActivityDto::toDto)
+                .collect(Collectors.toList());
+
+        return CareerDto.CareerResponseDto.toDto(career.get(), activityDtoList);
     }
 
-    public void updateCareer(Long id, String userEmail, CareerDto.CareerRequestDto requestDto){
-        Career careerToUpdate = careerRepository.findByid(id)
-                .orElseThrow(() -> new RuntimeException("Career를 찾을 수 없습니다."));
+    public CareerDto.CareerResponseDto updateCareer(String userEmail, CareerDto.CareerRequestDto requestDto){
+        Optional<User> user = userRepository.findByEmail(userEmail);
+        if (user.isEmpty()) {
+            throw new RuntimeException("User Not Found");
+        }
+
+        // 내역이 없으면 생성, 있으면 수정 진행
+        Optional<Career> optionalCareer = careerRepository.findByUser(user.get());
+        if (optionalCareer.isEmpty()) {
+            return createCareer(requestDto, userEmail);
+        }
+
+        Career careerToUpdate = optionalCareer.get();
 
         String careerOwner = careerToUpdate.getUser().getEmail();
         if(!careerOwner.equals(userEmail))
             throw new RuntimeException("본인이 작성한 Career만 수정 가능합니다.");
+
+        // 기존의 Activity 모두 삭제
+        List<Activity> existingActivities = activityRepository.findByCareer(careerToUpdate);
+        activityRepository.deleteAll(existingActivities);
+
+        List<Activity> updatedActivities = requestDto.getActivity().stream()
+                .map(activityDto -> new Activity(
+                        activityDto.getName(),
+                        activityDto.getStartDate(),
+                        activityDto.getEndDate(),
+                        activityDto.getDescription()
+                ))
+                .collect(Collectors.toList());
+
+        updatedActivities.forEach(activity -> activity.setCareer(careerToUpdate));
+        List<Activity> createdActivities = activityRepository.saveAll(updatedActivities);
 
         careerToUpdate.setEnglish(requestDto.getEnglish());
         careerToUpdate.setScore(requestDto.getScore());
@@ -66,10 +118,15 @@ public class CareerService {
         careerToUpdate.setMajor(requestDto.getMajor());
         careerToUpdate.setSkill(requestDto.getSkill());
         careerToUpdate.setGpa(requestDto.getGpa());
-        careerToUpdate.setActivity(requestDto.getActivity());
         careerToUpdate.setSkill(requestDto.getSkill());
         careerToUpdate.setLink(requestDto.getLink());
 
-        careerRepository.save(careerToUpdate);
+        Career updatedCareer = careerRepository.save(careerToUpdate);
+
+        List<CareerDto.ActivityDto> activityDtoList = createdActivities.stream()
+                .map(CareerDto.ActivityDto::toDto)
+                .collect(Collectors.toList());
+
+        return CareerDto.CareerResponseDto.toDto(updatedCareer, activityDtoList);
     }
 }
