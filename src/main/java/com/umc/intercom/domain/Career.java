@@ -3,6 +3,9 @@ package com.umc.intercom.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -35,9 +38,6 @@ public class Career {
 
     @Column(nullable = false)
     private String gpa; //전공 학점
-
-    @Column(nullable = false)
-    private String activity; //대외활동
 
     @Column(nullable = false)
     private String skill; //보유 스펙 ex)일러스트, 포토샵

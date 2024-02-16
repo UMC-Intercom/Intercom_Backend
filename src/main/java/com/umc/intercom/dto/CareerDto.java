@@ -1,10 +1,13 @@
 package com.umc.intercom.dto;
 
+import com.umc.intercom.domain.Activity;
 import com.umc.intercom.domain.Career;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public class CareerDto {
@@ -23,8 +26,8 @@ public class CareerDto {
         private String major;
         @Schema(description = "전공학점", example = "4.0/4.5")
         private String gpa;
-        @Schema(description = "대외 활동", example = "대외활동1, 대외활동2,")
-        private String activity;
+        @Schema(description = "대외 활동")
+        private List<ActivityDto> activity;
         @Schema(description = "보유 스킬", example = "Figma, Photoshop,")
         private String skill;
         @Schema(description = "링크", example = "개인 포트폴리오 url")
@@ -43,11 +46,13 @@ public class CareerDto {
         private String university;
         private String major;
         private String gpa;
-        private String activity;
+        private List<ActivityDto> activity;
         private String skill;
         private String link;
+        private String careerProfile;
 
-        public static CareerResponseDto toDto(Career career) {
+        public static CareerResponseDto toDto(Career career, List<ActivityDto> activityDtoList) {
+
             return new CareerResponseDto(
                     career.getId(),
                     career.getEnglish(),
@@ -56,10 +61,31 @@ public class CareerDto {
                     career.getUniversity(),
                     career.getMajor(),
                     career.getGpa(),
-                    career.getActivity(),
+                    activityDtoList,
                     career.getSkill(),
-                    career.getLink()
+                    career.getLink(),
+                    career.getUser().getCareerProfile()
             );
         }
     }
+
+    @Getter
+    @Setter
+    @Builder
+    public static class ActivityDto {
+        private String name;
+        private String startDate;
+        private String endDate;
+        private String description;
+
+        public static ActivityDto toDto(Activity activity) {
+            return ActivityDto.builder()
+                    .name(activity.getName())
+                    .startDate(activity.getStartDate())
+                    .endDate(activity.getEndDate())
+                    .description(activity.getDescription())
+                    .build();
+        }
+    }
+
 }
