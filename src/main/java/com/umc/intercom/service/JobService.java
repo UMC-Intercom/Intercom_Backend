@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.intercom.config.security.SecurityUtil;
 import com.umc.intercom.domain.Company;
 import com.umc.intercom.domain.Job;
+import com.umc.intercom.domain.LikeScrap;
 import com.umc.intercom.domain.common.enums.PostType;
 import com.umc.intercom.dto.JobDto;
 import com.umc.intercom.repository.CompanyRepository;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -180,33 +182,48 @@ public class JobService {
         return JobDto.JobListResponseDto.toDtoPageWithScrap(jobPage, userScrapedJobIds, companyRepository);
     }
 
+    @Transactional
     public Optional<JobDto.JobDetailsResponseDto> getJobById(Long id) {
         Optional<Job> optionalJob = jobRepository.findById(id);
 
-        return optionalJob.map(job -> {
-            String userEmail = SecurityUtil.getCurrentUsername();
-            return JobDto.JobDetailsResponseDto.builder()
-                    .id(job.getId())
-                    .jobId(job.getJobId())
-                    .url(job.getUrl())
-                    .company(job.getCompany())
-                    .title(job.getTitle())
-                    .industry(job.getIndustry())
-                    .location(job.getLocation())
-                    .jobMidCode(job.getJobMidCode())
-                    .jobCode(job.getJobCode())
-                    .experienceLevel(job.getExperienceLevel())
-                    .educationLevel(job.getEducationLevel())
-                    .keyword(job.getKeyword())
-                    .salary(job.getSalary())
-                    .postingDate(job.getPostingDate())
-                    .modificationDate(job.getModificationDate())
-                    .openingDate(job.getOpeningDate())
-                    .expirationDate(job.getExpirationDate())
-                    .closeType(job.getCloseType())
-                    .viewCount(job.getViewCount())
-                    .build();
-        });
+        if (optionalJob.isPresent()) {
+            Job job = optionalJob.get();
+
+            optionalJob.get().setViewCount(job.getViewCount()+1);
+            jobRepository.save(job);
+        }
+
+        String userEmail = SecurityUtil.getCurrentUsername();
+        boolean isScraped;
+        Optional<LikeScrap> scrapedJob = likeScrapRepository.findByJobAndUserEmail(optionalJob.get(), userEmail);
+        if (scrapedJob.isPresent()) {
+            isScraped = true;
+        } else {
+            isScraped = false;
+        }
+
+        return optionalJob.map(job -> JobDto.JobDetailsResponseDto.builder()
+                .id(job.getId())
+                .jobId(job.getJobId())
+                .url(job.getUrl())
+                .company(job.getCompany())
+                .title(job.getTitle())
+                .industry(job.getIndustry())
+                .location(job.getLocation())
+                .jobMidCode(job.getJobMidCode())
+                .jobCode(job.getJobCode())
+                .experienceLevel(job.getExperienceLevel())
+                .educationLevel(job.getEducationLevel())
+                .keyword(job.getKeyword())
+                .salary(job.getSalary())
+                .postingDate(job.getPostingDate())
+                .modificationDate(job.getModificationDate())
+                .openingDate(job.getOpeningDate())
+                .expirationDate(job.getExpirationDate())
+                .closeType(job.getCloseType())
+                .viewCount(job.getViewCount())
+                .isScraped(isScraped)
+                .build());
     }
 
     public Page<JobDto.JobListResponseDto> searchJob(String userEmail, String jobMidCode, String location, String keyword, int page)  {

@@ -60,6 +60,7 @@ public class Job {
     @Column(name = "close_type")
     private String closeType;   // 마감일 형식
 
+    @Setter
     @ColumnDefault("0")
     @Column(name = "view_count")
     private int viewCount;

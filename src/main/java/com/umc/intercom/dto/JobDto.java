@@ -73,5 +73,6 @@ public class JobDto {
         private LocalDate expirationDate;
         private String closeType;
         private int viewCount;
+        private boolean isScraped;
     }
 }
