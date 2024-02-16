@@ -69,6 +69,7 @@ public class CommentDto {
                     .parentId(comment.getParentId() != null ? comment.getParentId().getId() : null)
                     .content(comment.getContent())
                     .writer(comment.getUser().getNickname())
+                    .mentorField(comment.getUser().getMentorField())
                     .adoptionStatus(comment.getAdoptionStatus())
                     .createdAt(comment.getCreatedAt())
                     .updatedAt(comment.getUpdatedAt())
