@@ -118,4 +118,12 @@ public class UserController {
         Page<ResumeDto.ResumeResponseDto> resumeDtoPage = resumeService.getMyResumes(userEmail, page);
         return ResponseEntity.ok(resumeDtoPage);
     }
+
+    @Operation(summary = "내 코인 조회")
+    @GetMapping("/coin")
+    public ResponseEntity<Integer> getCoin(){
+        String userEmail = SecurityUtil.getCurrentUsername();
+        Integer coin = userService.getMyCoin(userEmail);
+        return ResponseEntity.ok(coin);
+    }
 }
