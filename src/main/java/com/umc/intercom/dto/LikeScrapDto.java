@@ -16,6 +16,8 @@ public class LikeScrapDto {
         private String nickname;
         private Long targetId;  // Talk 또는 Post 또는 Job id
         private PostType postType;
+        private int likeCount;
+        private int scrapCount;
 
         // Talk 좋아요 및 스크랩
         public static LikeScrapResponseDto toDtoFromTalk(LikeScrap likeScrap) {
@@ -25,6 +27,8 @@ public class LikeScrapDto {
                     .nickname(likeScrap.getUser().getNickname())
                     .targetId(likeScrap.getTalk().getId())
                     .postType(likeScrap.getPostType())
+                    .likeCount(likeScrap.getTalk().getLikeCount())
+                    .scrapCount(likeScrap.getTalk().getScrapCount())
                     .build();
         }
 
@@ -36,6 +40,7 @@ public class LikeScrapDto {
                     .nickname(likeScrap.getUser().getNickname())
                     .targetId(likeScrap.getPost().getId())
                     .postType(likeScrap.getPostType())
+                    .scrapCount(likeScrap.getPost().getScrapCount())
                     .build();
         }
 
