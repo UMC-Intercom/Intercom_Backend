@@ -34,7 +34,11 @@ public class UpdateService {
             gender = Gender.NONE;
         }
 
-        userToUpdate.setPassword(passwordEncoder.encode(requestDto.getPassword()));
+        String newPassword = requestDto.getPassword();
+        if (newPassword != null && !newPassword.isEmpty()) {
+            userToUpdate.setPassword(passwordEncoder.encode(newPassword));
+        }
+
         userToUpdate.setName(requestDto.getName());
         userToUpdate.setNickname(requestDto.getNickname());
         userToUpdate.setPhone(requestDto.getPhone());
