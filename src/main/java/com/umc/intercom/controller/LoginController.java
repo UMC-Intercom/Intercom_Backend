@@ -2,6 +2,7 @@ package com.umc.intercom.controller;
 
 import com.umc.intercom.config.security.SecurityUtil;
 import com.umc.intercom.domain.User;
+import com.umc.intercom.domain.common.enums.Gender;
 import com.umc.intercom.dto.UserDto;
 import com.umc.intercom.repository.UserRepository;
 import com.umc.intercom.service.LoginService;
@@ -46,12 +47,24 @@ public class LoginController {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
+        String genderStr = "none";
+
+        if (user.get().getGender() == Gender.MALE) {
+            genderStr = "male";
+        }
+        else if (user.get().getGender() == Gender.FEMALE) {
+            genderStr = "female";
+        }
+        else if (user.get().getGender() == Gender.NONE) {
+            genderStr = "none";
+        }
+
         UserDto.CurrentUserDto currentUserDto = UserDto.CurrentUserDto.builder()
                 .email(userDetails.getUsername())
                 .name(user.get().getName())
                 .nickname(user.get().getNickname())
                 .phone(user.get().getPhone())
-                .gender(String.valueOf(user.get().getGender()))
+                .gender(genderStr)
                 .birthday(user.get().getBirthday())
                 .authorities(authorities)
                 .build();
