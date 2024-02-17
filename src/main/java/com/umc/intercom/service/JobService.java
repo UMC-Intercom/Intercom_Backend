@@ -168,6 +168,7 @@ public class JobService {
 
     public Page<JobDto.JobListResponseDto> getJobsByCount(int page) {
         String userEmail = SecurityUtil.getCurrentUsername();
+        System.out.println(userEmail);
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("viewCount"));
         sorts.add(Sort.Order.desc("postingDate")); // 조회수가 같으면 최신 게시물 우선으로 정렬
@@ -176,8 +177,13 @@ public class JobService {
 
         Page<Job> jobPage = jobRepository.findAll(pageable);
 
-        // 현재 회원이 스크랩한 공고 목록 가져오기
-        List<Long> userScrapedJobIds = likeScrapRepository.findJobIdsByUserEmailAndPostType(userEmail, PostType.JOB_INFO);
+        // 만약 userEmail이 anonymous이면 스크랩 공고 목록을 가져오지 않고 모두 false로 설정
+        List<Long> userScrapedJobIds = new ArrayList<>();
+        if (!userEmail.equals("anonymousUser")) {
+            System.out.println(userEmail);
+            // userEmail이 anonymous가 아닌 경우에만 스크랩 공고 목록을 가져옴
+            userScrapedJobIds = likeScrapRepository.findJobIdsByUserEmailAndPostType(userEmail, PostType.JOB_INFO);
+        }
 
         return JobDto.JobListResponseDto.toDtoPageWithScrap(jobPage, userScrapedJobIds, companyRepository);
     }
