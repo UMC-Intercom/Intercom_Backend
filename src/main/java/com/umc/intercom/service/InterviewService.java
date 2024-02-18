@@ -167,4 +167,19 @@ public class InterviewService {
             return InterviewDto.InterviewResponseDto.toDto(post, postDetail, postSpec);
         });
     }
+
+    public Optional<InterviewDto.InterviewResponseDto> getInterviewById(Long id){
+        Optional<Post> post = postRepository.findById(id);
+
+        if(post.isPresent()){
+            if(post.get().getPostType() != PostType.INTERVIEW_REVIEW)
+                return Optional.empty();
+        else {
+            List<PostDetail> postDetails = postDetailRepository.findAllByPost(post.get());
+            PostSpec postSpec = postSpecRepository.findByPost(post.get()).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
+            return Optional.of(InterviewDto.InterviewResponseDto.toDto(post.get(), postDetails.get(0), postSpec));
+        }
+    }
+        return Optional.empty();
+    }
 }

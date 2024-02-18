@@ -1,6 +1,7 @@
 package com.umc.intercom.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,5 +63,18 @@ public class InterviewController {
             @RequestParam(value = "page", defaultValue = "1") int page) {
         Page<InterviewDto.InterviewResponseDto> interviewList = interviewService.getAllInterviewsByCompanyAndDepartment(company, department, page);
         return new ResponseEntity<>(interviewList, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Id로 면접후기 상세 조회")
+    @GetMapping("/{id}")
+    public ResponseEntity<InterviewDto.InterviewResponseDto> getInterviewById(@PathVariable long id){
+        Optional<InterviewDto.InterviewResponseDto> optionalInterviewDto = interviewService.getInterviewById(id);
+
+        if(optionalInterviewDto.isPresent()){
+            return ResponseEntity.ok(optionalInterviewDto.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+
     }
 }
