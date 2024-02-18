@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.umc.intercom.aws.AmazonS3Manager;
 import com.umc.intercom.domain.*;
@@ -30,27 +31,10 @@ public class InterviewService {
     private PostDetailRepository postDetailRepository;
     private PostSpecRepository postSpecRepository;
     private UserRepository userRepository;
-    private UuidRepository uuidRepository;
-    private AmazonS3Manager s3Manager;
-
 
     @Transactional
-    public InterviewDto.InterviewResponseDto createInterview(List<MultipartFile> files, InterviewDto.InterviewRequestDto  interviewDto, String userEmail){
+    public InterviewDto.InterviewResponseDto createInterview(InterviewDto.InterviewRequestDto  interviewDto, String userEmail){
         Optional<User> user = userRepository.findByEmail(userEmail);
-
-        // 이미지 업로드
-        List<String> pictureUrls = new ArrayList<>(); // 이미지 URL들을 저장할 리스트
-        if (files != null && !files.isEmpty()){
-            for (MultipartFile file : files) {
-                String uuid = UUID.randomUUID().toString();
-                Uuid savedUuid = uuidRepository.save(Uuid.builder()
-                        .uuid(uuid).build());
-                String pictureUrl = s3Manager.uploadFile(s3Manager.generatePostKeyName(savedUuid), file);
-                pictureUrls.add(pictureUrl); // 리스트에 이미지 URL 추가
-
-                System.out.println("s3 url(클릭 시 브라우저에 사진 뜨는지 확인): " + pictureUrl);
-            }
-        }
 
         // 성별
         Gender gender;
@@ -75,36 +59,34 @@ public class InterviewService {
                         .viewCount(0)
                         .user(user.orElseThrow(() -> new RuntimeException("User not Found")))
                         .build();
-//        post.getUser().setNickname(user.get().getNickname());
-        
-        Post createdPost = postRepository.save(post);
-        
-        
-        PostDetail postDetail = PostDetail.builder()
-                                        .content(interviewDto.getContent())
-                                        .imageUrls(pictureUrls)   // S3 url 저장
-                                        .post(createdPost)
-                                        .build();
 
+        PostDetail postDetails = PostDetail.builder()
+                .post(post)
+                .content(interviewDto.getContents())
+                .build();
+
+        String certifications = String.join(", ", interviewDto.getCertifications());
         PostSpec postSpec = PostSpec.builder()
-                                    .education(interviewDto.getEducation())
-                                    .major(interviewDto.getMajor())
-                                    .gpa(interviewDto.getGpa())
-                                    .activity(interviewDto.getActivity())
-                                    .certification(interviewDto.getCertification())
-                                    .english(interviewDto.getEnglish())
-                                    .score(interviewDto.getScore())
-                                    .post(createdPost)
-                                    .build();
+                .post(post)
+                .education(interviewDto.getEducation())
+                .major(interviewDto.getMajor())
+                .gpa(interviewDto.getGpa())
+                .activity(interviewDto.getActivity())
+                .certification(certifications)
+                .english(interviewDto.getEnglish())
+                .score(interviewDto.getScore())
+                .build();
 
-        PostDetail createdPostDetail = postDetailRepository.save(postDetail);
+
+        Post createdPost = postRepository.save(post);
+        PostDetail createdPostDetails = postDetailRepository.save(postDetails);
         PostSpec createdPostSpec = postSpecRepository.save(postSpec);
 
         // 코인 부여
         user.get().setCoin(user.get().getCoin() + 30);
         userRepository.save(user.get());
 
-        return InterviewDto.InterviewResponseDto.toDto(createdPost, createdPostDetail, createdPostSpec);
+        return InterviewDto.InterviewResponseDto.toDto(createdPost, createdPostDetails, createdPostSpec);
     }
     
     // 최신순으로 조회
