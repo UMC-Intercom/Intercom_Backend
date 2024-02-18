@@ -207,8 +207,8 @@ public class InterviewService {
             List<PostDetail> postDetails = postDetailRepository.findAllByPost(post.get());
             PostSpec postSpec = postSpecRepository.findByPost(post.get()).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
 
-            // 열람 시 10코인 차감
-            user.setCoin(user.getCoin() - 10);
+            // 열람 시 5코인 차감
+            user.setCoin(user.getCoin() - 5);
             userRepository.save(user);
                 
             return Optional.of(InterviewDto.InterviewResponseDto.toDto(post.get(), postDetails.get(0), postSpec));
