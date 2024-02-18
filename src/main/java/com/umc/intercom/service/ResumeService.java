@@ -202,7 +202,7 @@ public class ResumeService {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createdAt"));
 
-        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
+        Pageable pageable = PageRequest.of(page-1, 4, Sort.by(sorts));
 
         Page<Post> postPage = postRepository.findByUserAndPostType(user.get(), PostType.SUCCESSFUL_RESUME, pageable);
 

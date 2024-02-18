@@ -180,7 +180,7 @@ public class TalkService {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createdAt"));
 
-        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(sorts));
+        Pageable pageable = PageRequest.of(page - 1, 4, Sort.by(sorts));
 
         Page<Talk> talkPage = talkRepository.findByUserAndStatus(user.get(), Status.SAVED, pageable);
         return TalkDto.toDtoPage(talkPage);

@@ -157,7 +157,7 @@ public class InterviewService {
         sorts.add(Sort.Order.desc("scrapCount"));
         sorts.add(Sort.Order.desc("createdAt"));
 
-        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
+        Pageable pageable = PageRequest.of(page-1, 4, Sort.by(sorts));
 
         Page<Post> posts = postRepository.findByUserAndPostType(user.get(), PostType.INTERVIEW_REVIEW, pageable);
 
