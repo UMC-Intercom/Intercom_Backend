@@ -224,4 +224,29 @@ public class ResumeService {
 
         return new PageImpl<>(resumeDtos, pageable, postPage.getTotalElements());
     }
+
+    public Page<ResumeDto.ResumeResponseDto> searchResumeByScrapCounts(String company, String department, int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("scrapCount"));
+        sorts.add(Sort.Order.desc("createdAt"));
+
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
+
+        Page<Post> posts;
+        if (company != null && department != null) {
+            posts = postRepository.findByCompanyContainingAndDepartmentContainingAndPostType(company, department, PostType.SUCCESSFUL_RESUME, pageable);
+        } else if (company == null && department != null) {
+            posts = postRepository.findByDepartmentContainingAndPostType(department, PostType.SUCCESSFUL_RESUME, pageable);
+        } else if (company != null && department == null) {
+            posts = postRepository.findByCompanyContainingAndPostType(company, PostType.SUCCESSFUL_RESUME, pageable);
+        } else {
+            posts = new PageImpl<>(new ArrayList<>(), pageable, 0);
+        }
+
+        return posts.map(post -> {
+            List<PostDetail> postDetails = postDetailRepository.findAllByPost(post);
+            PostSpec postSpec = postSpecRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
+            return ResumeDto.ResumeResponseDto.toDto(post, postDetails, postSpec);
+        });
+    }
 }

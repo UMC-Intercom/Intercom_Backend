@@ -55,7 +55,7 @@ public class InterviewController {
         return ResponseEntity.ok(interviewDtoPage);
     }
     
-    @Operation(summary = "기업명, 직무명으로 면접 후기 검색")
+    @Operation(summary = "기업명, 직무명으로 면접 후기 검색 - 최신 순 정렬")
     @GetMapping("/search")
     public ResponseEntity<Page<InterviewDto.InterviewResponseDto>> getAllInterviewsByCompanyAndDepartment(
             @RequestParam(value = "company", required = false) String company,

@@ -62,12 +62,21 @@ public class ResumeController {
         return ResponseEntity.ok(resumeDtoPage);
     }
 
-    @Operation(summary = "기업명, 직무명으로 자소서 검색")
+    @Operation(summary = "기업명, 직무명으로 자소서 검색 - 최신 순 정렬")
     @GetMapping("/search")
     public ResponseEntity<Page<ResumeDto.ResumeResponseDto>> searchResumes(@RequestParam(value = "company", required = false) String company,
                                                                            @RequestParam(value = "department", required = false) String department,
                                                                            @RequestParam(value = "page", defaultValue = "1") int page){
         Page<ResumeDto.ResumeResponseDto> resumes = resumeService.searchResume(company, department, page);
+        return ResponseEntity.ok(resumes);
+    }
+
+    @Operation(summary = "기업명, 직무명으로 자소서 검색 - 스크랩 순 정렬")
+    @GetMapping("/search/scrap-counts")
+    public ResponseEntity<Page<ResumeDto.ResumeResponseDto>> searchResumesByScrapCounts(@RequestParam(value = "company", required = false) String company,
+                                                                           @RequestParam(value = "department", required = false) String department,
+                                                                           @RequestParam(value = "page", defaultValue = "1") int page){
+        Page<ResumeDto.ResumeResponseDto> resumes = resumeService.searchResumeByScrapCounts(company, department, page);
         return ResponseEntity.ok(resumes);
     }
 }
