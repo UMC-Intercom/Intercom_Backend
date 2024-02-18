@@ -32,6 +32,7 @@ public class LikeScrapService {
     private final PostDetailRepository postDetailRepository;
     private final PostSpecRepository postSpecRepository;
     private final CommentRepository commentRepository;
+    private final CompanyRepository companyRepository;
 
     /* talk 좋아요 */
     public Optional<LikeScrap> checkIfUserLiked(User user, Talk talk) {
@@ -385,7 +386,7 @@ public class LikeScrapService {
 
         Page<LikeScrap> scrapPage = likeScrapRepository.findByUserAndLikeScrapTypeAndPostType(user, LikeScrapType.SCRAP, PostType.JOB_INFO, pageable);
 
-        return scrapPage.map(scrap -> JobDto.JobListResponseDto.toScrapListDto(scrap.getJob()));
+        return scrapPage.map(scrap -> JobDto.JobListResponseDto.toScrapListDto(scrap.getJob(), companyRepository));
     }
 
     public Boolean validateIfUserScrapedJob(String userEmail, Long id) {

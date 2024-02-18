@@ -30,13 +30,18 @@ public class JobDto {
         @Schema(description = "기업 로고 이미지 url")
         private String logoUrl;
 
-        public static JobDto.JobListResponseDto toScrapListDto(Job job) {
+        public static JobDto.JobListResponseDto toScrapListDto(Job job, CompanyRepository companyRepository) {
+
+            Optional<Company> company = companyRepository.findByName(job.getCompany());
+            String logoUrl = (company.isPresent()) ? company.get().getLogoUrl() : null;
+
             return JobListResponseDto.builder()
                     .id(job.getId())
                     .company(job.getCompany())
                     .title(job.getTitle())
                     .viewCount(job.getViewCount())
                     .expirationDate(job.getExpirationDate())
+                    .logoUrl(logoUrl)
                     .build();
         }
 
