@@ -24,11 +24,6 @@ public class PostDetail {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @ElementCollection
-    @CollectionTable(name = "post_images", joinColumns = @JoinColumn(name = "post_detail_id"))
-    @Column(name = "image_url")
-    private List<String> imageUrls;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;

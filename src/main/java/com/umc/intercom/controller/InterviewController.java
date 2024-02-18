@@ -1,6 +1,7 @@
 package com.umc.intercom.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,16 +32,11 @@ public class InterviewController {
             "{ \"company\": \"회사명\", \"department\": \"부서 및 직무명\", \"year\": \"2024\", \"semester\": \"상반기\", \"gender\": \"no-selected\", \"birthday\": \"2024-02-12\", " +
             "\"education\": \"학교명\", \"major\": \"학과명\", \"gpa\": \"4.0/4.5\", \"activity\": \"대외활동 내용\", \"certification\": \"자격증1, 자격증2, 자격증3,\", \"english\": \"어학 종류1, 종류2, 종류3,\", \"score\": \"취득 점수1, 점수2, 점수3,\", " +
             "\"title\": \"문항\", \"content\": \"답변\" }")
-    @PostMapping(value = "", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<InterviewDto.InterviewResponseDto> createInterview(@RequestPart(value = "file", required = false) List<MultipartFile> files,
-                                                                             @RequestPart("interviewRequestDto") String interviewRequestDtoString) throws JsonProcessingException {
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        InterviewDto.InterviewRequestDto interviewRequestDto = objectMapper.readValue(interviewRequestDtoString, InterviewDto.InterviewRequestDto.class);
-
+    @PostMapping
+    public ResponseEntity<InterviewDto.InterviewResponseDto> createInterview(@RequestBody InterviewDto.InterviewRequestDto interviewRequestDto) {
         String userEmail = SecurityUtil.getCurrentUsername();
-        InterviewDto.InterviewResponseDto  createdInterviewDto = interviewService.createInterview(files, interviewRequestDto, userEmail);
+
+        InterviewDto.InterviewResponseDto  createdInterviewDto = interviewService.createInterview(interviewRequestDto, userEmail);
         return new ResponseEntity<>(createdInterviewDto, HttpStatus.CREATED);
     }
 
@@ -67,5 +63,18 @@ public class InterviewController {
             @RequestParam(value = "page", defaultValue = "1") int page) {
         Page<InterviewDto.InterviewResponseDto> interviewList = interviewService.getAllInterviewsByCompanyAndDepartment(company, department, page);
         return new ResponseEntity<>(interviewList, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Id로 면접후기 상세 조회")
+    @GetMapping("/{id}")
+    public ResponseEntity<InterviewDto.InterviewResponseDto> getInterviewById(@PathVariable long id){
+        Optional<InterviewDto.InterviewResponseDto> optionalInterviewDto = interviewService.getInterviewById(id);
+
+        if(optionalInterviewDto.isPresent()){
+            return ResponseEntity.ok(optionalInterviewDto.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+
     }
 }

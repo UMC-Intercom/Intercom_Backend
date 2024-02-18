@@ -39,16 +39,14 @@ public class InterviewDto {
         @Schema(description = "대외활동", example = "대외활동 내용")
         private String activity;
         @Schema(description = "자격증", example = "자격증1, 자격증2, 자격증3,")
-        private String certification;
+        private List<String> certifications;
         @Schema(description = "어학", example = "어학 종류1, 종류2, 종류3,")
         private String english;
         @Schema(description = "취득 점수", example = "취득 점수1, 점수2, 점수3,")
         private String score;
 
-        @Schema(description = "step3) 면접 후기 제목", example = "제목")
-        private String title;
         @Schema(description = "면접 후기 내용", example = "내용")
-        private String content;
+        private String contents;
     }
 
     @Getter
@@ -71,9 +69,7 @@ public class InterviewDto {
         private LocalDateTime updatedAt;
 
         // PostDetail
-        private String title;
-        private String content;
-        private List<String> imageUrls;
+        private String contents;
 
         // PostSpec
         private String education;
@@ -99,9 +95,7 @@ public class InterviewDto {
                     post.getUser().getNickname(),
                     post.getCreatedAt(),
                     post.getUpdatedAt(),
-                    postDetail.getTitle(),
                     postDetail.getContent(),
-                    postDetail.getImageUrls(),
                     postSpec.getEducation(),
                     postSpec.getMajor(),
                     postSpec.getGpa(),
