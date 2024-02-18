@@ -81,7 +81,6 @@ public class InterviewService {
         
         
         PostDetail postDetail = PostDetail.builder()
-                                        .title(interviewDto.getTitle())
                                         .content(interviewDto.getContent())
                                         .imageUrls(pictureUrls)   // S3 url 저장
                                         .post(createdPost)
