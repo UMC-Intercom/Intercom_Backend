@@ -43,8 +43,9 @@ public class CommentService {
         talk.get().setCommentCount(talk.get().getCommentCount() + 1);
         talkRepository.save(talk.get());
 
-        // 코인 부여
-        checkAndAddCoins(user.get());
+        // 코인 부여 - 댓글 작성 시 2코인
+        user.get().setCoin(user.get().getCoin() + 2);
+        userRepository.save(user.get());
 
         // 알림 전송
         sendNotification(savedComment.getTalk().getUser(), savedComment);
@@ -100,8 +101,8 @@ public class CommentService {
         talk.get().setReplyCount(talk.get().getReplyCount() + 1);
         talkRepository.save(talk.get());
 
-        // 코인 부여
-        checkAndAddCoins(user.get());
+        // 코인 부여x - 대댓글은 안하기로
+//        user.get().setCoin(user.get().getCoin() + 2);
 
         // 알림 전송
         sendNotification(savedComment.getTalk().getUser(), savedComment);
@@ -119,21 +120,22 @@ public class CommentService {
         notificationRepository.save(notification);
     }
 
-    private void checkAndAddCoins(User user) {
-        long totalInteractions = commentRepository.countByUser(user);
-
-        // 5의 배수일 때 코인 부여
-        if (totalInteractions % 5 == 0) {
-            user.setCoin(user.getCoin() + 10);
-            userRepository.save(user);
-        }
-    }
+//    private void checkAndAddCoins(User user) {
+//        long totalInteractions = commentRepository.countByUser(user);
+//
+//        // 5의 배수일 때 코인 부여
+//        if (totalInteractions % 5 == 0) {
+//            user.setCoin(user.getCoin() + 10);
+//            userRepository.save(user);
+//        }
+//    }
 
     public boolean checkAdoptionStatus(Long talkId) {
         Optional<Comment> adoptedComment = commentRepository.findByTalkIdAndAdoptionStatus(talkId, AdoptionStatus.ADOPTED);
         return adoptedComment.isPresent();  // 채택된 댓글이 존재하면 true
     }
 
+    @Transactional
     public CommentDto.CommentResponseDto adoptComment(String userEmail, Long commentId) {
         Optional<User> user = userRepository.findByEmail(userEmail);
         Comment comment = commentRepository.findById(commentId)
@@ -159,6 +161,11 @@ public class CommentService {
 
         comment.setAdoptionStatus(AdoptionStatus.ADOPTED);
         Comment savedComment = commentRepository.save(comment);
+
+        // 채택된 사람한테 10코인
+        comment.getUser().setCoin(comment.getUser().getCoin() + 10);
+        userRepository.save(comment.getUser());
+
         return CommentDto.CommentResponseDto.toDto(savedComment);
     }
 
