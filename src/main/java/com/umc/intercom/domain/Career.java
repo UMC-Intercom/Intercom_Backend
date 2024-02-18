@@ -38,5 +38,7 @@ public class Career {
 
     private String skill; //보유 스펙 ex)일러스트, 포토샵
 
+    private String linkTitle;   // 링크의 제목
+
     private String link; //링크
 }

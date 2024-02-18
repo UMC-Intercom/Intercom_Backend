@@ -33,7 +33,9 @@ public class CareerDto {
         private List<ActivityDto> activity;
         @Schema(description = "보유 스킬", example = "Figma, Photoshop,")
         private String skill;
-        @Schema(description = "링크", example = "개인 포트폴리오 url")
+        @Schema(description = "링크의 제목", example = "개인 포트폴리오")
+        private String linkTitle;
+        @Schema(description = "링크", example = "url")
         private String link;
     }
 
@@ -52,6 +54,7 @@ public class CareerDto {
         private String gpa;
         private List<ActivityDto> activity;
         private String skill;
+        private String linkTitle;
         private String link;
         private String careerProfile;
         private boolean noCareer;
@@ -69,6 +72,7 @@ public class CareerDto {
                     career.getGpa(),
                     activityDtoList,
                     career.getSkill(),
+                    career.getLinkTitle(),
                     career.getLink(),
                     career.getUser().getCareerProfile(),
                     false

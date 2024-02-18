@@ -37,6 +37,7 @@ public class CareerService {
                 .graduateStatus(careerDto.getGraduateStatus())
                 .gpa(careerDto.getGpa())
                 .skill(careerDto.getSkill())
+                .linkTitle(careerDto.getLinkTitle())
                 .link(careerDto.getLink())
                 .user(user.orElseThrow(()-> new RuntimeException("User not Found")))
                 .build();
@@ -125,7 +126,7 @@ public class CareerService {
         careerToUpdate.setGraduateStatus(requestDto.getGraduateStatus());
         careerToUpdate.setSkill(requestDto.getSkill());
         careerToUpdate.setGpa(requestDto.getGpa());
-        careerToUpdate.setSkill(requestDto.getSkill());
+        careerToUpdate.setLinkTitle(requestDto.getLinkTitle());
         careerToUpdate.setLink(requestDto.getLink());
 
         Career updatedCareer = careerRepository.save(careerToUpdate);
