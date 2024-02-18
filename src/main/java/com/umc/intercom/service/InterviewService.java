@@ -193,7 +193,11 @@ public class InterviewService {
         });
     }
 
-    public Optional<InterviewDto.InterviewResponseDto> getInterviewById(Long id){
+    @Transactional
+    public Optional<InterviewDto.InterviewResponseDto> getInterviewById(String userEmail, Long id){
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
         Optional<Post> post = postRepository.findById(id);
 
         if(post.isPresent()){
@@ -202,6 +206,11 @@ public class InterviewService {
         else {
             List<PostDetail> postDetails = postDetailRepository.findAllByPost(post.get());
             PostSpec postSpec = postSpecRepository.findByPost(post.get()).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
+
+            // 열람 시 10코인 차감
+            user.setCoin(user.getCoin() - 10);
+            userRepository.save(user);
+                
             return Optional.of(InterviewDto.InterviewResponseDto.toDto(post.get(), postDetails.get(0), postSpec));
         }
     }

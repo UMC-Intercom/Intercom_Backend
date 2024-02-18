@@ -46,7 +46,8 @@ public class ResumeController {
     @Operation(summary = "합격 자소서 게시글 상세 조회", description = "{id} 자리에 상세 조회할 합격 자소서 id를 전달해주세요.")
     @GetMapping("/{id}")
     public ResponseEntity<ResumeDto.ResumeResponseDto> getResumeById(@PathVariable Long id){
-        Optional<ResumeDto.ResumeResponseDto> optionalResumeDto = resumeService.getResumeById(id);
+        String userEmail = SecurityUtil.getCurrentUsername();
+        Optional<ResumeDto.ResumeResponseDto> optionalResumeDto = resumeService.getResumeById(userEmail, id);
 
         if(optionalResumeDto.isPresent()){
             return ResponseEntity.ok(optionalResumeDto.get());

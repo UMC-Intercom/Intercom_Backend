@@ -78,7 +78,8 @@ public class InterviewController {
     @Operation(summary = "Id로 면접후기 상세 조회")
     @GetMapping("/{id}")
     public ResponseEntity<InterviewDto.InterviewResponseDto> getInterviewById(@PathVariable long id){
-        Optional<InterviewDto.InterviewResponseDto> optionalInterviewDto = interviewService.getInterviewById(id);
+        String userEmail = SecurityUtil.getCurrentUsername();
+        Optional<InterviewDto.InterviewResponseDto> optionalInterviewDto = interviewService.getInterviewById(userEmail, id);
 
         if(optionalInterviewDto.isPresent()){
             return ResponseEntity.ok(optionalInterviewDto.get());

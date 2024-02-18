@@ -125,7 +125,11 @@ public class ResumeService {
         return new PageImpl<>(resumeDtos, pageable, postPage.getTotalElements());
     }
 
-    public Optional<ResumeDto.ResumeResponseDto> getResumeById(Long id){
+    @Transactional
+    public Optional<ResumeDto.ResumeResponseDto> getResumeById(String userEmail, Long id){
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
         Optional<Post> post = postRepository.findById(id);
 
         if(post.isPresent()){
@@ -134,11 +138,17 @@ public class ResumeService {
             else {
                 List<PostDetail> postDetails = postDetailRepository.findAllByPost(post.get());
                 PostSpec postSpec = postSpecRepository.findByPost(post.get()).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
+
+                // 열람 시 10코인 차감
+                user.setCoin(user.getCoin() - 10);
+                userRepository.save(user);
+
                 return Optional.of(ResumeDto.ResumeResponseDto.toDto(post.get(), postDetails, postSpec));
             }
         }
         return Optional.empty();
     }
+
     //기업명, 직무명으로 자소서 검색
     public Page<ResumeDto.ResumeResponseDto> searchResume(String company, String department, int page) {
         List<Sort.Order> sorts = new ArrayList<>();
