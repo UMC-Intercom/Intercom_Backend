@@ -65,6 +65,16 @@ public class InterviewController {
         return new ResponseEntity<>(interviewList, HttpStatus.OK);
     }
 
+    @Operation(summary = "기업명, 직무명으로 면접 후기 검색 - 스크랩 순 정렬")
+    @GetMapping("/search/scrap-counts")
+    public ResponseEntity<Page<InterviewDto.InterviewResponseDto>> getAllInterviewsByCompanyAndDepartmentByScrapCounts(
+            @RequestParam(value = "company", required = false) String company,
+            @RequestParam(value = "department", required = false) String department,
+            @RequestParam(value = "page", defaultValue = "1") int page) {
+        Page<InterviewDto.InterviewResponseDto> interviewList = interviewService.getAllInterviewsByCompanyAndDepartmentByScrapCounts(company, department, page);
+        return new ResponseEntity<>(interviewList, HttpStatus.OK);
+    }
+    
     @Operation(summary = "Id로 면접후기 상세 조회")
     @GetMapping("/{id}")
     public ResponseEntity<InterviewDto.InterviewResponseDto> getInterviewById(@PathVariable long id){

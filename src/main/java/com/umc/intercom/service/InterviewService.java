@@ -130,6 +130,31 @@ public class InterviewService {
         });
     }
 
+    public Page<InterviewDto.InterviewResponseDto> getAllInterviewsByCompanyAndDepartmentByScrapCounts(String company, String department, int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("scrapCount"));
+        sorts.add(Sort.Order.desc("createdAt"));
+
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
+
+        Page<Post> interviewPage;
+        if (company != null && department != null) {
+            interviewPage = postRepository.findByCompanyContainingAndDepartmentContainingAndPostType(company, department, PostType.INTERVIEW_REVIEW, pageable);
+        } else if (company == null && department != null) {
+            interviewPage = postRepository.findByDepartmentContainingAndPostType(department, PostType.INTERVIEW_REVIEW, pageable);
+        } else if (company != null && department == null) {
+            interviewPage = postRepository.findByCompanyContainingAndPostType(company, PostType.INTERVIEW_REVIEW, pageable);
+        } else {
+            interviewPage = new PageImpl<>(new ArrayList<>(), pageable, 0);
+        }
+
+        return interviewPage.map(post -> {
+            PostDetail postDetail = postDetailRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostDetail not Found"));
+            PostSpec postSpec = postSpecRepository.findByPost(post).orElseThrow(() -> new RuntimeException("PostSpec not Found"));
+            return InterviewDto.InterviewResponseDto.toDto(post, postDetail, postSpec);
+        });
+    }
+
     public Page<InterviewDto.InterviewResponseDto> getAllInterviewsByScrapCounts(int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("scrapCount"));
