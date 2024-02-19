@@ -54,7 +54,6 @@ public class CareerDto {
         private String gpa;
         private List<ActivityDto> activity;
         private String skill;
-        private String linkTitle;
         private String link;
         private String careerProfile;
         private boolean noCareer;
@@ -72,7 +71,6 @@ public class CareerDto {
                     career.getGpa(),
                     activityDtoList,
                     career.getSkill(),
-                    career.getLinkTitle(),
                     career.getLink(),
                     career.getUser().getCareerProfile(),
                     false
