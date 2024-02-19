@@ -8,6 +8,9 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Builder
@@ -41,6 +44,9 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "parent_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Comment parentId;
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    private List<LikeScrap> likeScraps = new ArrayList<>();
 
     @Setter
     @ColumnDefault("0")

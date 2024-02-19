@@ -70,6 +70,9 @@ public class Talk extends BaseEntity {
     @Column(nullable = false)
     private Status status;  // 저장 상태
 
+    @OneToMany(mappedBy = "talk", cascade = CascadeType.ALL)
+    private List<LikeScrap> likeScraps = new ArrayList<>();
+
     public void update(String title, String content, String category, List<String> pictureUrls, Status status) {
         this.title = title;
         this.content = content;

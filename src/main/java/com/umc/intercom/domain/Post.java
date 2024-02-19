@@ -6,8 +6,12 @@ import com.umc.intercom.domain.common.enums.PostType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -53,6 +57,15 @@ public class Post extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    //@OnDelete(action = OnDeleteAction.CASCADE)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
+
+    @OneToOne(mappedBy = "post", cascade = CascadeType.ALL)
+    private PostSpec postSpec;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostDetail> postDetails = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<LikeScrap> likeScraps = new ArrayList<>();
 }

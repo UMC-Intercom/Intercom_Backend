@@ -5,6 +5,8 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -69,4 +71,7 @@ public class Job {
     @ColumnDefault("0")
     @Column(name = "scrap_count")
     private int scrapCount;
+
+    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL)
+    private List<LikeScrap> likeScraps = new ArrayList<>();
 }

@@ -2,6 +2,8 @@ package com.umc.intercom.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 
 @Entity
@@ -25,6 +27,7 @@ public class Activity {
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "career_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Career career;
 
     public Activity(String name, String startDate, String endDate, String description) {

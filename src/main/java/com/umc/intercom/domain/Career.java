@@ -39,4 +39,7 @@ public class Career {
     private String skill; //보유 스펙 ex)일러스트, 포토샵
 
     private String link; //링크
+
+    @OneToMany(mappedBy = "career", cascade = CascadeType.ALL)
+    private List<Activity> activities = new ArrayList<>();
 }
