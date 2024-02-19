@@ -169,4 +169,7 @@ public class CommentService {
         return CommentDto.CommentResponseDto.toDto(savedComment);
     }
 
+    public boolean checkIfUserAdopted(Long talkId) {
+        return checkAdoptionStatus(talkId);
+    }
 }

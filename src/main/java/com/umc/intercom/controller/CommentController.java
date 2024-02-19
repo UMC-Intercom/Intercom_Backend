@@ -5,6 +5,7 @@ import com.umc.intercom.dto.CommentDto;
 import com.umc.intercom.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,4 +58,10 @@ public class CommentController {
         return ResponseEntity.ok(adoptedComment);
     }
 
+    @Operation(summary = "답변 채택 여부 조회", description = "{id} 자리에 톡톡 게시글 id를 전달해주세요.")
+    @GetMapping("/check-adopt/{id}")
+    public ResponseEntity<Boolean> checkIfUserIsMentor(@PathVariable Long id) {
+        boolean isAdopted = commentService.checkIfUserAdopted(id);
+        return new ResponseEntity<>(isAdopted, HttpStatus.CREATED);
+    }
 }
