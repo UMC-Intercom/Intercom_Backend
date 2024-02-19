@@ -3,6 +3,9 @@ package com.umc.intercom.dto;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import org.joda.time.DateTime;
+
+import java.time.LocalDateTime;
 
 @Data
 public class NotificationDto {
@@ -16,5 +19,6 @@ public class NotificationDto {
         private Long talkId;
         private String talkTitle;
         private boolean isRead;
+        private LocalDateTime createdAt;
     }
 }

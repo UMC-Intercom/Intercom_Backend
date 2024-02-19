@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,7 +32,7 @@ public class NotificationService {
 
         List<Notification> notifications = notificationRepository.findByUser(user.get());
 
-        return notifications.stream()
+        List<NotificationDto.NotificationResponseDto> responseDtos = notifications.stream()
                 .map(notification -> {
                     NotificationDto.NotificationResponseDto.NotificationResponseDtoBuilder builder =
                             NotificationDto.NotificationResponseDto.builder()
@@ -43,19 +44,26 @@ public class NotificationService {
                         builder.writer(notification.getComment().getUser().getNickname())
                                 .commentId(notification.getComment().getId())
                                 .comment(notification.getComment().getContent())
-                                .talkId(null)
-                                .talkTitle(null);
+                                .talkId(notification.getComment().getTalk().getId())
+                                .talkTitle(null)
+                                .createdAt(notification.getCreatedAt());
                     } else if (notification.getLikeScrap() != null) {
                         // 좋아요 알림인 경우
                         builder.writer(notification.getLikeScrap().getUser().getNickname())
                                 .commentId(null)
                                 .comment(null)
                                 .talkId(notification.getLikeScrap().getTalk().getId())
-                                .talkTitle(notification.getLikeScrap().getTalk().getTitle());
+                                .talkTitle(notification.getLikeScrap().getTalk().getTitle())
+                                .createdAt(notification.getCreatedAt());
                     }
 
                     return builder.build();
                 })
                 .collect(Collectors.toList());
+
+        // 최신 순으로 정렬
+        responseDtos.sort(Comparator.comparing(NotificationDto.NotificationResponseDto::getCreatedAt).reversed());
+
+        return responseDtos;
     }
 }
